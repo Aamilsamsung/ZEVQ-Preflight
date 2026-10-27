@@ -2,15 +2,48 @@ name: Tests
 on:
   push:
   pull_request:
+permissions:
+  contents: read
 jobs:
   python:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: preflight
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: preflight_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install
+          cache: pip
+      - name: Install locked dependencies
         run: pip install -r requirements.txt
-      - name: Test
-        run: python -m pytest -q
+      - name: Check installed dependency consistency
+        run: pip check
+      - name: SQLite regression suite
+        run: python -m pytest -q --junitxml=artifacts/sqlite.xml
+      - name: PostgreSQL migrations and API boundaries
+        env:
+          DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test
+          TEST_DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test
+        run: |
+          python -m alembic upgrade head
+          python -m alembic downgrade base
+          python -m alembic upgrade head
+          python -m pytest tests/test_api.py -q --junitxml=artifacts/postgres.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: artifacts/*.xml
