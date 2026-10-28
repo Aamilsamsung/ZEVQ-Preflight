@@ -30,7 +30,7 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
  try {
  for(const path of ['/','/features','/how-it-works','/use-cases','/docs','/faq','/security','/pricing','/contact','/privacy','/terms','/login']){
-   const response=await page.goto(base+path);assert.equal(response.status(),200);await page.locator('h1').waitFor();assert.ok((await page.locator('h1').innerText()).length);record('Public page '+path);
+   const response=await page.goto(base+path);assert.equal(response.status(),200);await page.locator('h1').waitFor();assert.ok((await page.locator('h1').innerText()).length);for(const width of [390,768,1440]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,path+' overflow at '+width)}record('Public page '+path,'390, 768 and 1440px; no horizontal overflow');if(['/','/docs','/login'].includes(path))await page.screenshot({path:'artifacts/theme-public-'+(path==='/'?'home':path.slice(1))+'.png',fullPage:true});
  }
  await page.locator('#email').fill(credentials.email);
  await page.locator('#password').fill(credentials.password);
@@ -64,7 +64,7 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  await page.goto(base+'/app#new');await page.getByRole('tab',{name:'Upload Code'}).click();
  await page.locator('#file').setInputFiles('artifacts/qa-source.zip');
  await startScan();await page.waitForURL('**/app#scan/*');await page.getByRole('heading',{name:'Evidence-backed findings'}).waitFor({timeout:45000});record('ZIP source scan through background worker');
- for(const [view,title]of [['history','Scan history'],['team','Team members'],['audit','Audit log'],['settings','Workspace settings']]){await page.goto(base+'/app#'+view);await page.getByRole('heading',{name:title,exact:true}).waitFor();record('Workspace page '+view)}
+ for(const [view,title]of [['history','Scan history'],['team','Team members'],['audit','Audit log'],['settings','Workspace settings']]){await page.goto(base+'/app#'+view);await page.getByRole('heading',{name:title,exact:true}).waitFor();for(const width of [390,768,1440]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,view+' overflow at '+width)}await page.screenshot({path:'artifacts/theme-'+view+'.png',fullPage:true});record('Workspace page '+view,'390, 768 and 1440px; no horizontal overflow')}
  await page.goto(base+'/app#settings');await page.getByRole('link',{name:'Export account data'}).waitFor();record('Account export and deletion controls present');
  for(const [label,width,height]of [['mobile',390,844],['tablet',768,1024],['desktop',1440,1000]]){
    await page.setViewportSize({width,height});await page.goto(base+'/app#dashboard');await page.getByRole('heading',{name:'Deployment overview'}).waitFor();
