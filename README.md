@@ -2,6 +2,8 @@
 
 **Know what breaks before it breaks.** Evidence-backed static change analysis by ZEVQ Labs.
 
+Protected Free staging: **https://zevq-preflight-staging.onrender.com**. Access details are in [operations](docs/OPERATIONS.md).
+
 This branch is a closed-evaluation MVP, not a commercially released or enterprise-certified SaaS. Public registration, payment collection, AI transmission, private GitHub authentication and customer-code execution are disabled.
 
 ## Working capabilities

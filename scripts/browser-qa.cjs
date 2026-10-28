@@ -12,7 +12,7 @@ const errors = [];
 const record=(name,details='')=>results.push({name,status:'PASS',details});
 (async()=>{
  let launch={headless:true};
- if(process.env.QA_CHROMIUM_MODULE){const binary=(await import(process.env.QA_CHROMIUM_MODULE)).default;launch={...launch,args:binary.args,executablePath:await binary.executablePath()}}
+ if(process.env.QA_CHROMIUM_MODULE){const binary=(await import(process.env.QA_CHROMIUM_MODULE)).default;launch={...launch,args:binary.args.filter(arg=>arg!=='--disable-web-security'&&arg!=='--single-process'&&!arg.startsWith('--ignore-certificate-errors')),executablePath:await binary.executablePath()}}
  const services=[];
  if(process.env.QA_START_SERVICES==='1'){
  const {spawn}=require('child_process');
@@ -21,8 +21,9 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  services.push(spawn(python,['-m','app.worker'],{stdio:'ignore'}));
  for(let attempt=0;attempt<60;attempt++){try{const r=await fetch(base+'/health');if(r.ok)break}catch{}await new Promise(r=>setTimeout(r,250))}
  }
+ if(process.env.QA_PROXY_SERVER)launch.proxy={server:process.env.QA_PROXY_SERVER};
  const browser=await chromium.launch(launch);
- const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,...(process.env.QA_HTTP_PASSWORD?{httpCredentials:{username:process.env.QA_HTTP_USERNAME||'staging',password:process.env.QA_HTTP_PASSWORD,origin:new URL(base).origin}}:{})});
  const page=await context.newPage();
  page.on('pageerror',error=>errors.push(error.message));
  page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});

@@ -44,6 +44,8 @@ def main():
             driver.execute('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO preflight_runtime')
             driver.execute('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO preflight_runtime')
             driver.execute('REVOKE CREATE ON SCHEMA public FROM PUBLIC')
+            if driver.execute("SELECT to_regclass('public.alembic_version')").fetchone()[0]:
+                driver.execute('REVOKE ALL ON TABLE public.alembic_version FROM preflight_runtime')
         created = provision_account(factory(engine), email, password)
         print('Closed-staging runtime role ready; account ' + ('provisioned.' if created else 'already exists; password unchanged.'))
     finally:

@@ -25,3 +25,4 @@ def test_runtime_role_can_use_application_tables_without_admin_privileges():
         flags = db.execute('SELECT rolsuper, rolcreatedb, rolcreaterole, rolbypassrls FROM pg_roles WHERE rolname=current_user').fetchone()
         assert flags == (False, False, False, False)
         assert not db.execute("SELECT has_schema_privilege(current_user, 'public', 'CREATE')").fetchone()[0]
+        assert not db.execute("SELECT has_table_privilege(current_user, 'public.alembic_version', 'UPDATE')").fetchone()[0]
