@@ -1,0 +1,94 @@
+{
+  "results": [
+    {
+      "feature": "Review renders four real summary rows",
+      "status": "FAIL",
+      "evidence": "Expected values to be strictly equal:\n\n0 !== 4\n"
+    },
+    {
+      "feature": "Confirmation dialog has accessible name",
+      "status": "FAIL",
+      "evidence": "locator.waitFor: Timeout 1000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: 'Permanently delete your account?', exact: true }) to be visible\u001b[22m\n"
+    },
+    {
+      "feature": "Accessibility /",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /login",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#dashboard",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#settings",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#new",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility confirmation-dialog",
+      "status": "PASS",
+      "evidence": []
+    }
+  ],
+  "axe": [
+    {
+      "page": "/",
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "/login",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "/app#dashboard",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "/app#settings",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "/app#new",
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "confirmation-dialog",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    }
+  ]
+}

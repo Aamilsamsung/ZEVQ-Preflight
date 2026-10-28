@@ -1,0 +1,13 @@
+{
+  "source": "Render get_metrics service srv-dbgr4v0n74is73d798e0",
+  "window": "Provider samples through 2026-10-28T10:42Z, before controlled scan burst; not a peak-load benchmark",
+  "instance": "srv-dbgr4v0n74is73d798e0-dnrvl",
+  "memory_bytes": [
+    143437820,
+    144195580,
+    146051070
+  ],
+  "memory_limit_bytes": 536870900,
+  "cpu_usage_sample": 0.0019607467,
+  "cpu_limit": 0.15
+}

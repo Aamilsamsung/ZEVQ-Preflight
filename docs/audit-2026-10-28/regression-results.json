@@ -1,0 +1,651 @@
+{
+  "suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "3",
+    "tests": "106",
+    "time": "14.781",
+    "timestamp": "2026-10-28T18:52:31.907650+08:00",
+    "hostname": "a5414c2934d5"
+  },
+  "testcases": [
+    {
+      "name": "tests.test_analyzer.test_removed_api_endpoint",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_syntax_detection",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_valid_source",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_reject_url[http://github.com/x/y]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_reject_url[https://example.com/x/y]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_reject_url[https://github.com/x/y?key=1]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_rejects_unsafe_paths[../evil.py]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_rejects_unsafe_paths[/evil.py]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_rejects_unsafe_paths[C:/evil.py]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_rejects_unsafe_paths[a\\\\evil.py]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_symlink_rejected",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_oversized_file_is_disclosed",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_duplicate_rejected",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_invalid_rejected",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_comments_and_strings_are_not_routes_or_dangerous_calls",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_keyword_route_and_async_handler",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_signatures_and_removals_have_evidence",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_syntax_failure_does_not_claim_routes_removed",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_security_calls_not_secrets_in_evidence",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_no_customer_code_executed",
+      "seconds": "0.002",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_javascript_not_silently_reported_as_parsed",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_revision_archive_roots_normalized",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_omitted_head_does_not_claim_removed_function_or_route[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx [truncated; full test identity in local XML]",
+      "seconds": "0.002",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_omitted_head_does_not_claim_removed_function_or_route[\\xff-non-utf8]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_omitted_head_does_not_claim_removed_function_or_route[abc\\x00-binary-content]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_route_moved_to_omitted_file_not_reported_removed",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_file_count_omission_does_not_claim_removal",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_archive_root_decision_includes_skipped_paths",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_sources_roundtrip_preserves_omission_uncertainty",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_analyzer.test_zip_rejects_canonical_path_aliases",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_session_csrf_logout",
+      "seconds": "0.491",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_expiration_and_revoke_all",
+      "seconds": "0.792",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_tenant_reads[repos]",
+      "seconds": "0.457",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_tenant_reads[scans]",
+      "seconds": "0.415",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_tenant_reads[dashboard]",
+      "seconds": "0.399",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_tenant_reads[members]",
+      "seconds": "0.389",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_tenant_reads[audit]",
+      "seconds": "0.398",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_viewer_writes[repos-payload0]",
+      "seconds": "0.476",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_viewer_writes[scans-payload1]",
+      "seconds": "0.451",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_viewer_writes[members-payload2]",
+      "seconds": "0.389",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_closed_registration_and_legacy",
+      "seconds": "0.299",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_repo_scan_idempotency_and_quota",
+      "seconds": "0.438",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_foreign_scan_and_csv",
+      "seconds": "0.484",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_malicious_zip",
+      "seconds": "0.401",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_invalid_credentials_and_rate_limit",
+      "seconds": "1.218",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_account_delete_ownership_guard",
+      "seconds": "0.460",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_chunked_body_limit",
+      "seconds": "0.374",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_api.test_dashboard_chart_evidence_is_tenant_scoped",
+      "seconds": "0.423",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_audit_regressions.test_anonymous_denial_includes_security_headers",
+      "seconds": "0.040",
+      "status": "XFAIL",
+      "reason": "AUDIT-02: staging boundary returns before security header middleware"
+    },
+    {
+      "name": "tests.test_audit_regressions.test_openapi_evidence_pointer_resolves_baseline",
+      "seconds": "0.000",
+      "status": "XFAIL",
+      "reason": "AUDIT-05: OpenAPI evidence paths are not RFC6901 escaped"
+    },
+    {
+      "name": "tests.test_audit_regressions.test_database_rate_limit_exact_boundary",
+      "seconds": "0.040",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_bootstrap.test_staging_provisioning_is_idempotent_and_never_resets_password",
+      "seconds": "0.306",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_endpoint_removal",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_identical_contract",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_added_endpoint_is_nonbreaking",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_enum_variance[request-old0-new0-True]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_enum_variance[request-old1-new1-False]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_enum_variance[response-old2-new2-True]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_enum_variance[response-old3-new3-False]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_required_variance[request-old0-new0-True]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_required_variance[request-old1-new1-False]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_required_variance[response-old2-new2-True]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_required_variance[response-old3-new3-False]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_local_reference_changes_resolved",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_remote_reference_unknown_not_fetched",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_recursive_reference_unknown",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_composed_schemas_unknown",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_required_parameter_inherited_from_path",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_operation_parameter_overrides_path",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_security_change",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_body_becomes_required",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_response_property_removed",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_full_analyzer_finds_contract_change",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_unsupported_version_unknown",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_malformed_schema_does_not_report_clean[None]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_malformed_schema_does_not_report_clean[bad1]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_malformed_schema_does_not_report_clean[4]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_malformed_schema_does_not_report_clean[wrong]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_malformed_schema_does_not_report_clean[bad4]",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_invalid_proposed_json_with_arbitrary_filename_reported",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_removed_contract_is_inconclusive_not_silent",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_skipped_contract_not_claimed_deleted",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_changed_unsupported_schema_keyword_is_unknown",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_contracts.test_documentation_annotation_change_is_not_risk",
+      "seconds": "0.000",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_unsafe_redirect[http://codeload.github.com/x]",
+      "seconds": "0.002",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_unsafe_redirect[https://evil.test/x]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_unsafe_redirect[https://user:pass@codeload.github.com/x]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_unsafe_redirect[https://codeload.github.com:443/x]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_download_bounded",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_download_http_failure[403]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_download_http_failure[404]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_download_http_failure[429]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_github.test_download_http_failure[500]",
+      "seconds": "0.001",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_postgres_bootstrap.test_runtime_role_can_use_application_tables_without_admin_privileges",
+      "seconds": "0.000",
+      "status": "SKIPPED",
+      "reason": "Dedicated PostgreSQL CI database required"
+    },
+    {
+      "name": "tests.test_serve.test_free_instance_processes_a_durable_contract_job",
+      "seconds": "3.215",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_serve.test_supervisor_fails_if_a_service_exits",
+      "seconds": "0.535",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_staging_auth.test_normal_staging_login_has_no_basic_auth_loop",
+      "seconds": "0.308",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_staging_auth.test_cached_wrong_basic_credentials_do_not_override_valid_session",
+      "seconds": "0.304",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_staging_auth.test_staging_session_expiry_still_blocks_private_data",
+      "seconds": "0.246",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_durable_claim_and_static_evidence",
+      "seconds": "0.045",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_cancelled_job_cannot_publish",
+      "seconds": "0.034",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_stale_lease_recovers_and_eventually_fails",
+      "seconds": "0.030",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_wrong_lease_cannot_publish",
+      "seconds": "0.030",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_contract_scan_runs_without_code_execution",
+      "seconds": "0.036",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "name": "tests.test_worker.test_source_never_executed",
+      "seconds": "0.035",
+      "status": "PASS",
+      "reason": null
+    }
+  ],
+  "raw_xml": "Retained locally in ignored artifacts/independent-audit/regression-final.xml; summary avoids oversized embedded tracebacks"
+}
