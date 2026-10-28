@@ -41,7 +41,7 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
-          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
+          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_retention.py tests/test_alerts.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
       - name: Synthetic PostgreSQL backup and restore drill
         env:
           DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test

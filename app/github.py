@@ -24,8 +24,34 @@ def archive_url(url, branch):
     return 'https://api.github.com/repos/' + name + '/zipball/' + quote(valid_ref(branch), safe='')
 
 
+def http_failure(response, stage='archive'):
+    status=response.status_code
+    if status==429 or (status==403 and (response.headers.get('x-ratelimit-remaining')=='0' or 'retry-after' in response.headers)):
+        return f'GitHub rate limit reached (HTTP {status}); wait before retrying. No automatic retry was made.'
+    if status in (401,403):return f'GitHub {stage} access denied (HTTP {status}); check permissions or provider policy. Private access is not configured.'
+    if status>=500:return f'GitHub {stage} service failure (HTTP {status}); retry later.'
+    return f'GitHub {stage} unavailable (HTTP {status})'
+
+
+async def diagnose_404(client, original_url, redirected):
+    prefix,ref=original_url.rsplit('/zipball/',1)
+    stage='archive download host' if redirected else 'archive API'
+    try:
+        async with client.stream('GET',prefix,timeout=5) as repo:
+            if repo.status_code==404:
+                return 'GitHub repository not publicly accessible (HTTP 404). Missing and private repositories cannot be distinguished without authorization; private access is not configured.'
+            if repo.status_code!=200:return http_failure(repo,'repository metadata')
+        async with client.stream('GET',prefix+'/commits/'+ref,timeout=5) as commit:
+            if commit.status_code==404:return 'GitHub revision not found (HTTP 404) in a confirmed public repository; check the exact branch, tag or commit SHA.'
+            if commit.status_code!=200:return http_failure(commit,'revision lookup')
+        return f'GitHub {stage} returned HTTP 404 although the public repository and revision resolved; archive retrieval failed. Retry later or upload a permitted ZIP.'
+    except httpx.HTTPError:
+        return f'GitHub {stage} returned HTTP 404; repository/revision diagnostics were inconclusive due to a network error. Missing/private access is not established.'
+
+
 async def download(repo, branch):
     url = archive_url(repo, branch)
+    original_url=url
     async with httpx.AsyncClient(follow_redirects=False, timeout=httpx.Timeout(25), headers={'Accept-Encoding': 'identity', 'User-Agent': 'ZEVQ-Preflight/0.2'}) as client:
         for attempt in range(2):
             async with client.stream('GET', url) as response:
@@ -36,7 +62,8 @@ async def download(repo, branch):
                         raise ValueError('Unexpected archive redirect')
                     continue
                 if response.status_code != 200:
-                    raise ValueError(f'GitHub archive unavailable (HTTP {response.status_code}); check public access, ref and rate limits')
+                    message=await diagnose_404(client,original_url,attempt>0) if response.status_code==404 else http_failure(response)
+                    raise ValueError(message)
                 data = bytearray()
                 async for chunk in response.aiter_bytes(chunk_size=65536):
                     if len(data) + len(chunk) > MAX_BYTES:

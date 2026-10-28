@@ -129,3 +129,27 @@ class FindingReviewEvent(Base):
     expires_at: Mapped[float | None] = mapped_column(Float, nullable=True)
     actor_id: Mapped[str] = mapped_column(String(36))
     updated_at: Mapped[float] = mapped_column(Float)
+
+
+class RetentionPolicy(Base):
+    __tablename__='retention_policies'
+    org_id: Mapped[str]=mapped_column(ForeignKey('organizations.id',ondelete='CASCADE'),primary_key=True)
+    days: Mapped[int | None]=mapped_column(Integer,nullable=True)
+    version: Mapped[int]=mapped_column(Integer)
+    updated_at: Mapped[float]=mapped_column(Float)
+
+
+class CleanupRun(Base):
+    __tablename__='cleanup_runs'
+    id: Mapped[str]=mapped_column(String(36),primary_key=True,default=uid)
+    org_id: Mapped[str]=mapped_column(ForeignKey('organizations.id',ondelete='CASCADE'),index=True)
+    actor_id: Mapped[str]=mapped_column(String(36))
+    policy_version: Mapped[int]=mapped_column(Integer)
+    cutoff: Mapped[float]=mapped_column(Float)
+    scan_ids: Mapped[str]=mapped_column(Text)
+    created_at: Mapped[float]=mapped_column(Float)
+    expires_at: Mapped[float]=mapped_column(Float)
+    status: Mapped[str]=mapped_column(String(24))
+    deleted_count: Mapped[int]=mapped_column(Integer,default=0)
+    preserved_count: Mapped[int]=mapped_column(Integer,default=0)
+    reason: Mapped[str]=mapped_column(Text,default='')

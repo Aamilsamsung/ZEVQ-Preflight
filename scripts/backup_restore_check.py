@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from sqlalchemy import select,func
 from fastapi.testclient import TestClient
-from app.db import Base,User,Organization,Membership,Scan,Repository,FindingReview,FindingReviewEvent,make_engine,factory
+from app.db import Base,User,Organization,Membership,Scan,Repository,FindingReview,FindingReviewEvent,RetentionPolicy,CleanupRun,make_engine,factory
 from app.security import hasher
 from app.analyzer import analyze
 from app.main import create_app
@@ -24,6 +24,7 @@ try:
    db.add_all([Membership(org_id=a.id,user_id=first.id,role='owner'),Membership(org_id=b.id,user_id=second.id,role='owner')]);scan=Scan(org_id=a.id,status='completed',result=json.dumps(analyze({'app.py':'def broken(\n'})));db.add(scan);db.commit()
    fid=json.loads(scan.result)['findings'][0]['id'];decision=dict(version=1,status='acknowledged',reason='Synthetic review for restore verification',expires_at=None,actor_id=first.id,updated_at=time.time())
    db.add(FindingReview(scan_id=scan.id,finding_id=fid,**decision));db.add(FindingReviewEvent(scan_id=scan.id,finding_id=fid,**decision));db.commit()
+   db.add(RetentionPolicy(org_id=a.id,days=30,version=1,updated_at=time.time()));db.add(CleanupRun(org_id=a.id,actor_id=first.id,policy_version=1,cutoff=time.time()-30*86400,scan_ids='[]',created_at=time.time(),expires_at=time.time()+600,status='preview',deleted_count=0,preserved_count=0,reason=''));db.commit()
    counts={table.name:db.scalar(select(func.count()).select_from(table)) for table in Base.metadata.sorted_tables}
    data={'started':time.time(),'org_id':a.id,'scan_id':scan.id,'finding_id':fid,'counts':counts};manifest.write_text(json.dumps(data))
   print('Synthetic backup fixture ready; database archive must remain in temporary CI storage')
@@ -40,9 +41,11 @@ try:
    assert report['reviews'][data['finding_id']]['status']=='acknowledged'
    history=client.get(f'/api/orgs/{data["org_id"]}/scans/{data["scan_id"]}/findings/{data["finding_id"]}/reviews').json()
    assert len(history)==1 and history[0]['reason']=='Synthetic review for restore verification'
+   assert client.get(f'/api/orgs/{data["org_id"]}/retention').json()['days']==30
+   assert client.get(f'/api/orgs/{data["org_id"]}/retention/runs').json()[0]['status']=='preview'
   with TestClient(app) as other:
    assert other.post('/api/auth/login',json={'email':'restore-other@example.test','password':password}).status_code==200
    assert other.get(f'/api/orgs/{data["org_id"]}/scans/{data["scan_id"]}/report').status_code==404
-  summary.write_text(json.dumps({'row_counts_match':True,'restored_login':True,'restored_report':True,'restored_reviews':True,'restored_tenant_isolation':True,'roundtrip_seconds':round(time.time()-data['started'],3),'scope':'Synthetic disposable PostgreSQL16 CI database; not a Neon point-in-time restore drill'},indent=2))
+  summary.write_text(json.dumps({'row_counts_match':True,'restored_login':True,'restored_report':True,'restored_reviews':True,'restored_retention_policy_and_preview':True,'restored_tenant_isolation':True,'roundtrip_seconds':round(time.time()-data['started'],3),'scope':'Synthetic disposable PostgreSQL16 CI database; not a Neon point-in-time restore drill'},indent=2))
   print('Restore checks passed: row counts, login, report evidence, review history and two-user isolation')
 finally:engine.dispose()

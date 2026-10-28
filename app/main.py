@@ -17,6 +17,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
+from . import retention, alerts
+from .db import RetentionPolicy, CleanupRun
 from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
 from .github import NAME, valid_ref, archive_url, download
@@ -50,6 +52,16 @@ class ReviewInput(BaseModel):
     reason: str = Field(min_length=10, max_length=2000)
     expires_at: float | None = Field(default=None, allow_inf_nan=False)
     expected_version: int = Field(ge=0)
+
+
+class RetentionInput(BaseModel):
+    days: int | None = Field(default=None,ge=7,le=3650)
+    expected_version: int = Field(ge=0)
+
+
+class CleanupInput(BaseModel):
+    confirmation: str = Field(max_length=100)
+    reason: str = Field(min_length=10,max_length=1000)
 
 
 class OrgInput(BaseModel):
@@ -274,6 +286,47 @@ def create_app(database_url=None, mode=None):
             db.add(Membership(org_id=org.id, user_id=user.id, role='owner'))
             event(db, org.id, user.id, 'organization.created'); db.commit()
             return {'id': org.id, 'name': org.name}
+
+    @app.get('/api/orgs/{org_id}/alerts')
+    def operational_alerts(org_id: str, request: Request):
+        actor,_=member(request,org_id)
+        with app.state.db() as db:return alerts.current_alerts(db,org_id,actor.id)
+
+    @app.post('/api/orgs/{org_id}/alerts/{alert_id}/acknowledge')
+    def acknowledge_alert(org_id: str, alert_id: str, request: Request):
+        actor,_=member(request,org_id);limit(app.state.db,'alert-ack:'+actor.id,60,900)
+        with app.state.db() as db:
+            current=alerts.current_alerts(db,org_id,actor.id)
+            found=next((a for a in current['alerts'] if a['id']==alert_id),None)
+            if not found:raise HTTPException(404,'Alert not found in this organization')
+            if not found['acknowledged']:event(db,org_id,actor.id,'alert.ack:'+alert_id);db.commit()
+        return {'acknowledged':True}
+
+    @app.get('/api/orgs/{org_id}/retention')
+    def retention_policy(org_id: str, request: Request):
+        member(request,org_id)
+        with app.state.db() as db:return retention.policy_dict(db.get(RetentionPolicy,org_id))
+
+    @app.put('/api/orgs/{org_id}/retention')
+    def retention_update(org_id: str, data: RetentionInput, request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        with app.state.db() as db:return retention.set_policy(db,org_id,actor.id,data.days,data.expected_version)
+
+    @app.post('/api/orgs/{org_id}/retention/preview')
+    def retention_preview(org_id: str, request: Request):
+        actor,_=member(request,org_id,{'owner'});limit(app.state.db,'retention:'+org_id,10,900)
+        with app.state.db() as db:return retention.preview(db,org_id,actor.id)
+
+    @app.post('/api/orgs/{org_id}/retention/{run_id}/apply')
+    def retention_apply(org_id: str, run_id: str, data: CleanupInput, request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        if data.confirmation!='DELETE UNREVIEWED SCANS' or len(data.reason.strip())<10:raise HTTPException(422,'Enter the exact confirmation and a non-blank reason')
+        with app.state.db() as db:return retention.apply(db,org_id,actor.id,run_id,data.reason.strip())
+
+    @app.get('/api/orgs/{org_id}/retention/runs')
+    def retention_runs(org_id: str, request: Request):
+        member(request,org_id,{'owner'})
+        with app.state.db() as db:return [retention.run_dict(r) for r in db.scalars(select(CleanupRun).where(CleanupRun.org_id==org_id).order_by(CleanupRun.created_at.desc()).limit(50))]
 
     @app.get('/api/orgs/{org_id}/repos')
     def repos(org_id: str, request: Request):
