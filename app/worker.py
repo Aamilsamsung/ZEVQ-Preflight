@@ -106,6 +106,7 @@ def process_one(db_factory, subprocess_mode=True):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(); parser.add_argument('--once', action='store_true'); parser.add_argument('--job'); parser.add_argument('--lease'); parser.add_argument('--on-demand', action='store_true')
     args = parser.parse_args()
     if args.job:
@@ -114,7 +115,6 @@ def main():
             resource.setrlimit(resource.RLIMIT_CPU, (60, 60))
             resource.setrlimit(resource.RLIMIT_AS, (768 * 1024**2, 768 * 1024**2))
         execute(factory(make_engine()), args.job, args.lease); return
-    logging.basicConfig(level=logging.INFO)
     db_factory = factory(make_engine()); stop = False
     def shutdown(*_):
         nonlocal stop

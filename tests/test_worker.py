@@ -82,3 +82,15 @@ def test_source_never_executed(queue, tmp_path):
     scan_id=put(queue,payload=json.dumps({'files':{'evil.py':f'open({str(sentinel)!r}, "w").write("bad")'}}))
     process_one(db_factory,subprocess_mode=False)
     assert not sentinel.exists()
+
+
+def test_job_subprocess_emits_redacted_completion(queue):
+    import os,subprocess,sys
+    db_factory,_=queue
+    scan_id=put(queue,payload=json.dumps({'files':{'private-source.py':'SYNTHETIC_LOG_SECRET = True\n'}}))
+    _,lease=claim(db_factory)
+    process_env=os.environ.copy();process_env['DATABASE_URL']=str(db_factory.kw['bind'].url)
+    run=subprocess.run([sys.executable,'-m','app.worker','--job',scan_id,'--lease',lease],env=process_env,capture_output=True,text=True,timeout=30)
+    assert run.returncode==0
+    assert 'scan_finished' in run.stderr and '"status": "completed"' in run.stderr
+    assert 'queue_wait_ms' in run.stderr and 'SYNTHETIC_LOG_SECRET' not in run.stderr and 'private-source.py' not in run.stderr
