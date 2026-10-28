@@ -64,3 +64,4 @@ tbody tr:hover{background:#1a2224}
 .layout{color:var(--text)}.dashboard-grid>*,.dashboard-charts,.dashboard-actions,.latest-findings,.reference-dashboard{min-width:0}.sidebar .brand{font-size:17px;letter-spacing:-.6px;white-space:nowrap;gap:10px}.sidebar .brand:before{width:40px;height:40px}.bar-track i{background:#35d9a0}.metric .number{overflow-wrap:anywhere}.hero-art{transform:scale(.88)}
 @media(max-width:1250px){.sidebar .brand{font-size:14px;gap:8px}.sidebar .brand:before{width:33px;height:33px}}
 .dashboard-hero{--text:#f4f7fd;--muted:#c6d5e1}.layout tbody tr:hover{background:#f3f8fc}.layout .secondary:hover{background:#edf5f8;color:#142a3e}.dashboard-hero .secondary:hover{background:#18332e;color:#fff}
+.layout .topbar{background:transparent}.layout .metric{display:block}.reference-dashboard .metric{display:flex}@media(max-width:760px){.layout .topbar{background:#eef5fc}}
