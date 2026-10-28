@@ -1,0 +1,43 @@
+{
+  "application_commit": "9e78cde832e0d9213aae6450c5fb7d80f90ff6f4",
+  "deploy_id": "dep-dbh0k0mi0phs73adn9qg",
+  "deploy_status": "live",
+  "ci_run": 40708267502,
+  "ci_job": 122886185736,
+  "python_passed": 139,
+  "python_skipped": 2,
+  "postgres_passed": 49,
+  "browser_workflow_passed": 37,
+  "supplemental_browser_passed": 15,
+  "hosted_checks": [
+    {
+      "feature": "Hosted comparison observes known endpoint finding",
+      "status": "PASS",
+      "evidence": {
+        "http": 200,
+        "seconds": 0.338,
+        "baseline_id": "96260831-a92d-4dd4-baf5-8b3ef79665d4",
+        "proposed_id": "82254336-3f2a-447f-8306-e8d9aa39fdf2"
+      }
+    },
+    {
+      "feature": "Comparison includes identity/coverage limitations",
+      "status": "PASS",
+      "evidence": "No claim of a verified fix"
+    },
+    {
+      "feature": "Viewer reads authorized comparison",
+      "status": "PASS",
+      "evidence": "HTTP200"
+    }
+  ],
+  "hosted_browser": {
+    "picker": "PASS",
+    "known_endpoint_finding": "PASS",
+    "original_evidence": "PASS",
+    "console_errors_observed": 0,
+    "download": "BLOCKED: cloud browser wait-for-download timed out; local Chromium download test passed",
+    "screenshot": "zevq-scan-comparison-live.jpg"
+  },
+  "scope": "Partial comparison verification only; not full private beta acceptance"
+}

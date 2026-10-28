@@ -74,6 +74,7 @@ def execute(db_factory, scan_id, lease):
     with db_factory() as db:
         scan = db.get(Scan, scan_id)
         if not scan or scan.status != 'running' or scan.lease != lease: return
+        queue_wait_ms=round(max(0,time.time()-scan.created_at)*1000,2)
     try:
         result = asyncio.run(asyncio.wait_for(calculate(scan), timeout=90))
         result['duration_ms'] = round((time.monotonic() - started) * 1000, 2)
@@ -83,8 +84,9 @@ def execute(db_factory, scan_id, lease):
         safe = str(exc) if isinstance(exc, ValueError) else type(exc).__name__
         values = dict(status='failed', error=safe[:300])
     with db_factory() as db:
-        db.execute(update(Scan).where(Scan.id == scan_id, Scan.status == 'running', Scan.lease == lease).values(**values, payload=None, lease=None, updated_at=time.time()))
+        published=db.execute(update(Scan).where(Scan.id == scan_id, Scan.status == 'running', Scan.lease == lease).values(**values, payload=None, lease=None, updated_at=time.time())).rowcount==1
         db.commit()
+    log.info(json.dumps({'event':'scan_finished','scan_id':scan_id,'status':values['status'] if published else 'discarded','duration_ms':round((time.monotonic()-started)*1000,2),'queue_wait_ms':queue_wait_ms,'attempts':scan.attempts},sort_keys=True))
 
 
 def process_one(db_factory, subprocess_mode=True):

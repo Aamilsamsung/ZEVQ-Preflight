@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 import pytest
 from app.db import Base, make_engine, factory, Organization, Scan
@@ -19,13 +20,16 @@ def put(queue, **kwargs):
     with db_factory() as db:
         scan = Scan(org_id=org_id, **kwargs); db.add(scan); db.commit(); return scan.id
 
-def test_durable_claim_and_static_evidence(queue):
+def test_durable_claim_and_static_evidence(queue,caplog):
     db_factory, _ = queue
     scan_id = put(queue, payload=json.dumps({'files': {'api.py': 'def broken(\n'}, 'baseline': None, 'skipped': [{'file':'big.ts','reason':'file-size-limit'}]}))
     job = claim(db_factory)
     assert job[0] == scan_id
     assert claim(db_factory) is None
-    execute(db_factory, *job)
+    with caplog.at_level(logging.INFO,logger='preflight.worker'):execute(db_factory,*job)
+    entry=json.loads(next(r.message for r in caplog.records if r.message.startswith('{')))
+    assert entry['event']=='scan_finished' and entry['status']=='completed' and entry['queue_wait_ms']>=0
+    assert 'api.py' not in json.dumps(entry) and 'broken' not in json.dumps(entry)
     with db_factory() as db:
         scan = db.get(Scan, scan_id)
         assert scan.status == 'completed' and scan.payload is None

@@ -22,6 +22,7 @@ from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal,
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 from .contracts import VERSION
+from .observability import RequestDiagnostics, instrument_engine
 from .comparisons import compare_results
 from .reviews import STATUSES, MAX_SUPPRESSION_SECONDS, decision_dict, annotate_scan
 
@@ -122,8 +123,16 @@ def create_app(database_url=None, mode=None):
 
     app = FastAPI(title='ZEVQ Preflight', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.engine = make_engine(db_url)
+    instrument_engine(app.state.engine)
     app.state.db = factory(app.state.engine)
     app.state.mode = mode
+
+    @app.exception_handler(Exception)
+    async def unexpected_error(request, error):
+        reference=request.scope.get('preflight_request_id','unavailable')
+        headers={'X-Request-ID':reference,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; frame-ancestors 'none'"}
+        if mode=='staging':headers['Strict-Transport-Security']='max-age=31536000'
+        return JSONResponse({'detail':'Service temporarily unavailable. Retry or contact support with reference '+reference},status_code=500,headers=headers)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, error):
@@ -179,6 +188,8 @@ def create_app(database_url=None, mode=None):
         if mode == 'staging':
             response.headers['Strict-Transport-Security'] = 'max-age=31536000'
         return response
+
+    app.add_middleware(RequestDiagnostics)
 
     @app.get('/health')
     def health():

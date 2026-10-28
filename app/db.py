@@ -93,7 +93,7 @@ def make_engine(url=None):
     elif url.startswith('postgresql://'):
         url = url.replace('postgresql://', 'postgresql+psycopg://', 1)
     options = {'pool_size': 2, 'max_overflow': 2, 'pool_recycle': 300} if not url.startswith('sqlite') else {}
-    engine = create_engine(url, pool_pre_ping=True, connect_args={'check_same_thread': False} if url.startswith('sqlite') else {'connect_timeout': 15, 'prepare_threshold': None}, **options)
+    engine = create_engine(url, hide_parameters=True, pool_pre_ping=True, connect_args={'check_same_thread': False} if url.startswith('sqlite') else {'connect_timeout': 15, 'prepare_threshold': None}, **options)
     if url.startswith('sqlite'):
         @event.listens_for(engine, 'connect')
         def foreign_keys(dbapi, _):

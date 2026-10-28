@@ -60,7 +60,7 @@ def main():
             env.pop(key, None)
         env['PREFLIGHT_WAKE_FILE'] = str(Path(directory) / 'jobs.signal')
         commands = [
-            [sys.executable, '-m', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', os.getenv('PORT', '10000')],
+            [sys.executable, '-m', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', os.getenv('PORT', '10000'), '--no-access-log'],
             [sys.executable, '-m', 'app.worker', '--on-demand'],
         ]
         return supervise(commands, env)

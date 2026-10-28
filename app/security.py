@@ -42,20 +42,30 @@ def limit(factory, key, maximum, seconds):
         raise HTTPException(429, 'Rate limit reached. Try again later.', headers={'Retry-After': str(seconds)})
 
 
-def principal(request: Request):
-    token = request.cookies.get('preflight_session', '')
+def authenticated(request):
+    """One database-backed identity snapshot per request; never cached across requests."""
+    cached=getattr(request.state,'preflight_identity',None)
+    if cached is not None:
+        if cached[1].expires < time.time():raise HTTPException(401,'Sign in required')
+        return cached
+    token=request.cookies.get('preflight_session','')
+    if not token:raise HTTPException(401,'Sign in required')
     with request.app.state.db() as db:
-        session = db.get(SessionRecord, digest(token)) if token else None
-        if not session or session.expires < time.time():
-            raise HTTPException(401, 'Sign in required')
-        user = db.get(User, session.user_id)
-        if not user or not user.verified:
-            raise HTTPException(401, 'Verified account required')
-        if request.method not in ('GET', 'HEAD', 'OPTIONS'):
-            supplied = request.headers.get('X-CSRF-Token', '')
-            if not secrets.compare_digest(supplied, session.csrf):
-                raise HTTPException(403, 'Invalid CSRF token')
-        return user, session
+        row=db.execute(select(User,SessionRecord).join(SessionRecord,SessionRecord.user_id==User.id).where(
+            SessionRecord.token_hash==digest(token),SessionRecord.expires>time.time(),User.verified==1)).first()
+        if row is None:raise HTTPException(401,'Sign in required')
+        identity=(row[0],row[1])
+    request.state.preflight_identity=identity
+    return identity
+
+
+def principal(request: Request):
+    user,session=authenticated(request)
+    # Authentication reuse must never bypass the endpoint's mutation checks.
+    if request.method not in ('GET','HEAD','OPTIONS'):
+        supplied=request.headers.get('X-CSRF-Token','')
+        if not secrets.compare_digest(supplied,session.csrf):raise HTTPException(403,'Invalid CSRF token')
+    return user,session
 
 
 def member(request, org_id, roles=None):
@@ -70,13 +80,10 @@ def member(request, org_id, roles=None):
 
 
 def has_active_session(request):
-    """Check only authentication for the staging boundary; endpoints enforce CSRF/RBAC."""
-    token = request.cookies.get('preflight_session', '')
-    if not token:
-        return False
-    with request.app.state.db() as db:
-        session = db.get(SessionRecord, digest(token))
-        if not session or session.expires < time.time():
-            return False
-        user = db.get(User, session.user_id)
-        return bool(user and user.verified)
+    """The staging boundary shares identity only within this request; CSRF/RBAC remain enforced."""
+    try:
+        authenticated(request)
+        return True
+    except HTTPException as exc:
+        if exc.status_code==401:return False
+        raise
