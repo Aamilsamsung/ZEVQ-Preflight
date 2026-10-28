@@ -47,3 +47,8 @@ Implemented stored-report comparison with deterministic ID matching, changed-fie
 Request-local identity reuse reduced measured staging authentication/membership SQL reads5→2. Added generated request references, route-template request logs, SQL/new-connection timings, hidden SQL parameters and generic errors. Added worker queue/elapsed records; hosted inspection found the job-child logging initializer was too late, so a subprocess regression and follow-up fix were added. Controlled warm report/review samples are recorded separately from initial connection and end-to-end scan delays; no material speedup is claimed from three samples. See REQUEST_DIAGNOSTICS.md and PRIVATE_BETA_CHECKPOINT_2026-10-28.md.
 
 The hosted Chromium responsive suite is implemented but blocked by certificate trust failure in the runner. The separate cloud browser verified desktop navigation but disconnected during the scan input step. These are not PASS states. Hosted recovery, actual Render HTTP health configuration, retention/alerting, provider-backed auth/private repositories and the final acceptance audit remain open. GETTING_STARTED.md documents only supported evaluation workflows.
+
+
+## Acceptance update — 29 October 2026
+
+See [final acceptance](../PRIVATE_BETA_FINAL_ACCEPTANCE.md) for current evidence and remaining gates. Live application5e0e211 uses additive schema0003; retention defaults disabled, no live cleanup applied. In-app alerts are implemented; external outage alerts remain pending. CI restored sessions/static jobs and previous-source read compatibility passed; hosted recovery and actual service rollback remain untested. Provider HTTP healthCheckPath is still empty and requires the documented owner setting change.

@@ -18,3 +18,8 @@ Scope: existing release reports, current scanner/security/worker/schema, CI, Ren
 | P3 | PDF, advanced graph, AI explanation, broader commercial billing | Incomplete; do not imply supported execution, private access or live payment readiness |
 
 Do not enable public registration or public launch. Do not execute customer source. Preserve all existing application data and schema0002 review tables. Use only existing Free infrastructure unless explicitly approved otherwise.
+
+
+## Acceptance update — 29 October 2026
+
+See [final acceptance](../PRIVATE_BETA_FINAL_ACCEPTANCE.md) for current evidence and remaining gates. Live application5e0e211 uses additive schema0003; retention defaults disabled, no live cleanup applied. In-app alerts are implemented; external outage alerts remain pending. CI restored sessions/static jobs and previous-source read compatibility passed; hosted recovery and actual service rollback remain untested. Provider HTTP healthCheckPath is still empty and requires the documented owner setting change.

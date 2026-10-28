@@ -1,0 +1,250 @@
+{
+  "phase": "after",
+  "scope": "20 sequential report/save pairs on the same synthetic finding and reused HTTPS client; no load test or guaranteed cold-start equivalence",
+  "rows": [
+    {
+      "operation": "login",
+      "seconds": 11.403
+    },
+    {
+      "operation": "report",
+      "iteration": 0,
+      "seconds": 0.715,
+      "server_timing": "app;dur=37.37, db;dur=17.19, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 0,
+      "seconds": 0.316,
+      "server_timing": "app;dur=72.79, db;dur=43.17, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 1,
+      "seconds": 0.38,
+      "server_timing": "app;dur=31.49, db;dur=15.10, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 1,
+      "seconds": 0.313,
+      "server_timing": "app;dur=63.52, db;dur=34.38, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 2,
+      "seconds": 0.282,
+      "server_timing": "app;dur=32.95, db;dur=15.82, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 2,
+      "seconds": 0.306,
+      "server_timing": "app;dur=64.36, db;dur=33.76, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 3,
+      "seconds": 0.283,
+      "server_timing": "app;dur=37.80, db;dur=16.30, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 3,
+      "seconds": 0.297,
+      "server_timing": "app;dur=61.68, db;dur=33.03, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 4,
+      "seconds": 0.283,
+      "server_timing": "app;dur=33.01, db;dur=15.93, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 4,
+      "seconds": 0.347,
+      "server_timing": "app;dur=60.66, db;dur=32.99, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 5,
+      "seconds": 0.268,
+      "server_timing": "app;dur=34.05, db;dur=15.58, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 5,
+      "seconds": 0.318,
+      "server_timing": "app;dur=61.66, db;dur=32.87, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 6,
+      "seconds": 0.271,
+      "server_timing": "app;dur=32.70, db;dur=15.67, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 6,
+      "seconds": 0.334,
+      "server_timing": "app;dur=95.03, db;dur=43.76, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 7,
+      "seconds": 0.288,
+      "server_timing": "app;dur=32.22, db;dur=15.47, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 7,
+      "seconds": 0.314,
+      "server_timing": "app;dur=60.39, db;dur=32.70, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 8,
+      "seconds": 0.285,
+      "server_timing": "app;dur=33.57, db;dur=15.50, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 8,
+      "seconds": 0.291,
+      "server_timing": "app;dur=61.26, db;dur=32.60, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 9,
+      "seconds": 0.452,
+      "server_timing": "app;dur=209.36, db;dur=15.37, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 9,
+      "seconds": 0.314,
+      "server_timing": "app;dur=72.22, db;dur=43.79, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 10,
+      "seconds": 0.263,
+      "server_timing": "app;dur=31.83, db;dur=15.41, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 10,
+      "seconds": 0.295,
+      "server_timing": "app;dur=61.71, db;dur=33.10, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 11,
+      "seconds": 0.294,
+      "server_timing": "app;dur=48.09, db;dur=25.23, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 11,
+      "seconds": 0.312,
+      "server_timing": "app;dur=73.73, db;dur=39.37, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 12,
+      "seconds": 0.305,
+      "server_timing": "app;dur=38.05, db;dur=18.08, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 12,
+      "seconds": 0.343,
+      "server_timing": "app;dur=73.06, db;dur=37.57, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 13,
+      "seconds": 0.262,
+      "server_timing": "app;dur=32.58, db;dur=15.44, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 13,
+      "seconds": 0.298,
+      "server_timing": "app;dur=60.30, db;dur=32.62, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 14,
+      "seconds": 0.281,
+      "server_timing": "app;dur=37.50, db;dur=15.77, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 14,
+      "seconds": 0.291,
+      "server_timing": "app;dur=60.34, db;dur=32.79, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 15,
+      "seconds": 0.266,
+      "server_timing": "app;dur=31.94, db;dur=15.19, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 15,
+      "seconds": 0.424,
+      "server_timing": "app;dur=176.09, db;dur=95.94, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 16,
+      "seconds": 0.274,
+      "server_timing": "app;dur=32.85, db;dur=15.66, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 16,
+      "seconds": 0.342,
+      "server_timing": "app;dur=93.13, db;dur=52.99, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 17,
+      "seconds": 0.264,
+      "server_timing": "app;dur=32.10, db;dur=15.28, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 17,
+      "seconds": 0.293,
+      "server_timing": "app;dur=62.68, db;dur=32.98, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 18,
+      "seconds": 0.263,
+      "server_timing": "app;dur=33.16, db;dur=15.25, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 18,
+      "seconds": 0.3,
+      "server_timing": "app;dur=61.65, db;dur=32.69, connect;dur=0.00"
+    },
+    {
+      "operation": "report",
+      "iteration": 19,
+      "seconds": 0.258,
+      "server_timing": "app;dur=35.10, db;dur=15.64, connect;dur=0.00"
+    },
+    {
+      "operation": "review_save",
+      "iteration": 19,
+      "seconds": 0.297,
+      "server_timing": "app;dur=64.71, db;dur=34.01, connect;dur=0.00"
+    }
+  ]
+}

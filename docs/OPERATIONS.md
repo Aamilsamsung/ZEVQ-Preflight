@@ -87,3 +87,8 @@ Owners can change non-owner membership roles and remove memberships from Team. E
 The pipeline dumps its disposable PostgreSQL16 test database into temporary runner storage, restores into a separate `preflight_restore` database, compares table counts and verifies restored login, report evidence and two-user isolation. `scripts/backup_restore_check.py` refuses other database names, non-local hosts or execution outside CI. Only the summary is retained as an artifact; the database archive is not uploaded.
 
 This tests the dump/restore toolchain with synthetic fixtures. It does **not** verify Neon point-in-time recovery, live backup retention, encryption/key recovery, production recovery time, or a hosted disaster-recovery drill. Those remain separate release gates.
+
+
+## Acceptance update — 29 October 2026
+
+See [final acceptance](../PRIVATE_BETA_FINAL_ACCEPTANCE.md) for current evidence and remaining gates. Live application5e0e211 uses additive schema0003; retention defaults disabled, no live cleanup applied. In-app alerts are implemented; external outage alerts remain pending. CI restored sessions/static jobs and previous-source read compatibility passed; hosted recovery and actual service rollback remain untested. Provider HTTP healthCheckPath is still empty and requires the documented owner setting change.

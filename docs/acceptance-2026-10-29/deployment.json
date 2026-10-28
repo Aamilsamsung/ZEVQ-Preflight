@@ -1,0 +1,12 @@
+{
+  "application_commit": "5e0e211fe10045d6fbb4ee8c6b3c0b31cd706c70",
+  "deployment": "dep-dbh4jk6c6qcc73cihja0",
+  "status": "live",
+  "render_plan": "free",
+  "healthCheckPath": "",
+  "schema": "0003",
+  "enabled_retention": 0,
+  "applied_cleanup": 0,
+  "product_ci_run": 40752162231,
+  "verification_ci_run": 40753599019
+}
