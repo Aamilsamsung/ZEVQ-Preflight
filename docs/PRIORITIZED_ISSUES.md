@@ -5,14 +5,14 @@ Scope: existing release reports, current scanner/security/worker/schema, CI, Ren
 | Priority | Issue | State / next action |
 |---|---|---|
 | P0 | Confirmed cross-tenant/data-loss/authentication bypass | No confirmed issue in executed boundary tests; do not infer absence of vulnerabilities from this scope |
-| P1 | Hosted request timeouts and unexplained historical review latency | Investigating; local repeated authentication reads reduced5→2; request/SQL diagnostics implemented, not yet deployed |
+| P1 | Hosted request timeouts and unexplained historical review latency | Investigating; local repeated authentication reads reduced5→2; request/SQL diagnostics deployed at15504be; warm report/save medians0.271/0.313s but separate end-to-end scan/save14.635/8.282s did not improve |
 | P1 | Hosted browser download verification | BLOCKED by cloud browser timeout; local Chromium download passed; retest hosted after diagnosing request path |
 | P1 | Hosted responsive/manual accessibility acceptance | NOT TESTED; local viewport/axe checks do not substitute for hosted device coverage |
 | P1 | Operational recovery/monitoring/retention | Synthetic restore passed; hosted isolated restore, alerts, retention enforcement and production rollback drill remain incomplete |
 | P1 | Actual Render health-check configuration differs from Blueprint | Existing service reports empty HTTP health path (TCP probe); configure /health using supported authorized provider operation |
 | P1 | Private repository integration and email-backed account workflows | Implementation/configuration incomplete; keep unavailable until real authorized provider tests succeed |
-| P2 | Request and worker diagnostics / sensitive log minimization | Implemented locally: generated request references, template-only structured logs, parameter hiding, successful-query timing, generic errors |
-| P2 | Report comparison usability | Deployed core comparison; spacing improvement and latest diagnostics release pending |
+| P2 | Request and worker diagnostics / sensitive log minimization | Deployed and tested: generated request references, template-only structured logs, parameter hiding, successful-query timing, generic errors |
+| P2 | Report comparison usability | Deployed core comparison; spacing improvement and diagnostics deployed; eight hosted API comparison checks passed |
 | P2 | Rule support documentation and controlled-fixture expansion | Existing Python/OpenAPI tests pass; remaining config/migration/dependency/JS-TS rules require scoped implementation and tests |
 | P2 | Core New Scan and account/team/review workflows | Existing CI/local suites pass; repeat full hosted acceptance after final candidate |
 | P3 | PDF, advanced graph, AI explanation, broader commercial billing | Incomplete; do not imply supported execution, private access or live payment readiness |

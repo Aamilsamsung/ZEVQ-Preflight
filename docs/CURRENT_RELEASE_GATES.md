@@ -19,7 +19,7 @@ This is the current tracker; earlier audit reports remain historical evidence. T
 | Synthetic PostgreSQL restore | PASS | CI row counts, auth, report, review history, two-user isolation |
 | Hosted Neon restore / production rollback drill | NOT TESTED | Runbook available; hosted drill not executed |
 | Hosting readiness configuration | FAIL | Free cold-start observed; actual Render service still uses TCP probe despite /health in Blueprint |
-| Monitoring/alerts/retention and load validation | FAIL | Production operational controls and throughput verification incomplete |
+| Monitoring/alerts/retention and load validation | FAIL | Request/SQL/connection logs and worker job events verified atb7701b2; alerting, retention and load validation incomplete |
 | Terms/privacy professional review | NOT TESTED | Draft informational pages only |
 | Public registration / launch | BLOCKED | Explicit owner launch approval required after release gates pass |
 
