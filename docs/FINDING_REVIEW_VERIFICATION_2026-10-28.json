@@ -1,0 +1,114 @@
+{
+  "application_commit": "576fd92012851bf32b8613d2b73c81848e43125e",
+  "deploy_id": "dep-dbh05h5g1s2s73ce96a0",
+  "deploy_state": "live",
+  "database_revision": "0002",
+  "ci_run": 40703211126,
+  "ci_job": 122868291450,
+  "sqlite": {
+    "passed": 131,
+    "skipped": 2
+  },
+  "postgres": {
+    "passed": 41
+  },
+  "browser_workflow": {
+    "passed": 37,
+    "console_errors": 0
+  },
+  "supplemental_browser": {
+    "passed": 13
+  },
+  "synthetic_restore": {
+    "passed": true,
+    "scope": "Disposable PostgreSQL16 CI; row counts, login, evidence, review history, tenant isolation; not a hosted Neon restore"
+  },
+  "hosted_checks": [
+    {
+      "feature": "Controlled breaking-change scan completes",
+      "status": "PASS",
+      "evidence": {
+        "scan_id": "82254336-3f2a-447f-8306-e8d9aa39fdf2",
+        "seconds": 13.422
+      }
+    },
+    {
+      "feature": "Viewer review write denied",
+      "status": "PASS",
+      "evidence": "HTTP403"
+    },
+    {
+      "feature": "Cross-tenant review write denied",
+      "status": "PASS",
+      "evidence": "HTTP404"
+    },
+    {
+      "feature": "Cross-tenant history denied",
+      "status": "PASS",
+      "evidence": "HTTP404"
+    },
+    {
+      "feature": "Owner acknowledges finding",
+      "status": "PASS",
+      "evidence": {
+        "http": 200,
+        "seconds": 7.95
+      }
+    },
+    {
+      "feature": "Stale decision rejected",
+      "status": "PASS",
+      "evidence": "HTTP409"
+    },
+    {
+      "feature": "Viewer reads decision with original evidence",
+      "status": "PASS",
+      "evidence": "JSON export preserves scanner result"
+    },
+    {
+      "feature": "CSV contains decision",
+      "status": "PASS",
+      "evidence": "Current review columns exported"
+    },
+    {
+      "feature": "Owner time-limited suppression",
+      "status": "PASS",
+      "evidence": "Five-second synthetic expiry"
+    },
+    {
+      "feature": "Expired suppression reopens without score changes",
+      "status": "PASS",
+      "evidence": "Raw finding and score identical"
+    },
+    {
+      "feature": "Owner explicitly reopens",
+      "status": "PASS",
+      "evidence": "HTTP200"
+    },
+    {
+      "feature": "Viewer sees all decision versions",
+      "status": "PASS",
+      "evidence": "Three retained decisions"
+    },
+    {
+      "feature": "Review history pagination",
+      "status": "PASS",
+      "evidence": "Offset2 returns original decision"
+    }
+  ],
+  "live_browser": {
+    "scope": "Existing signed-in owner, synthetic QA organization/report only",
+    "saved_decision": true,
+    "refresh_persistence": true,
+    "history": "Version1 displayed after refresh",
+    "application_console_errors": 0,
+    "screenshot": "zevq-finding-review-live.jpg"
+  },
+  "limitations": [
+    "Free Render cold start observed",
+    "Review save measured 7.95 seconds from test client; no throughput claim",
+    "Hosted mobile and complete manual accessibility assessment not executed",
+    "History append-only through API, not database-admin tamper-evident",
+    "Public launch and signup remain disabled"
+  ]
+}
