@@ -23,6 +23,8 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -52,6 +54,12 @@ jobs:
           docker exec "$PREFLIGHT_TEST_CONTAINER" createdb -U preflight preflight_restore
           docker exec -i "$PREFLIGHT_TEST_CONTAINER" pg_restore -U preflight -d preflight_restore --no-owner --no-privileges --exit-on-error < "$RUNNER_TEMP/preflight-ci-backup.dump"
           DATABASE_URL=postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_restore python -m scripts.backup_restore_check verify
+      - name: Previous application compatibility on restored current schema
+        env:
+          DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_restore
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/preflight-rollback" 9e78cde832e0d9213aae6450c5fb7d80f90ff6f4
+          PREFLIGHT_ROLLBACK_SOURCE="$RUNNER_TEMP/preflight-rollback" PREFLIGHT_RESTORE_MANIFEST="$GITHUB_WORKSPACE/artifacts/restore-manifest.json" PREFLIGHT_ROLLBACK_SUMMARY="$GITHUB_WORKSPACE/artifacts/rollback-results.json" PYTHONPATH="$RUNNER_TEMP/preflight-rollback" python "$GITHUB_WORKSPACE/scripts/rollback_compatibility_check.py"
       - name: Install browser QA tooling
         run: |
           npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1 @axe-core/playwright@4.10.2
@@ -71,6 +79,7 @@ jobs:
           path: |
             artifacts/*.xml
             artifacts/restore-results.json
+            artifacts/rollback-results.json
             artifacts/browser-qa-results.json
             artifacts/independent-audit/frontend-results.json
             artifacts/qa-desktop*.png

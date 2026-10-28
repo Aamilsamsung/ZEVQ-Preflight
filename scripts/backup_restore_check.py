@@ -4,8 +4,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from sqlalchemy import select,func
 from fastapi.testclient import TestClient
-from app.db import Base,User,Organization,Membership,Scan,Repository,FindingReview,FindingReviewEvent,RetentionPolicy,CleanupRun,make_engine,factory
-from app.security import hasher
+from app.db import Base,User,Organization,Membership,Scan,Repository,SessionRecord,FindingReview,FindingReviewEvent,RetentionPolicy,CleanupRun,make_engine,factory
+from app.security import hasher,digest
 from app.analyzer import analyze
 from app.main import create_app
 
@@ -25,8 +25,10 @@ try:
    fid=json.loads(scan.result)['findings'][0]['id'];decision=dict(version=1,status='acknowledged',reason='Synthetic review for restore verification',expires_at=None,actor_id=first.id,updated_at=time.time())
    db.add(FindingReview(scan_id=scan.id,finding_id=fid,**decision));db.add(FindingReviewEvent(scan_id=scan.id,finding_id=fid,**decision));db.commit()
    db.add(RetentionPolicy(org_id=a.id,days=30,version=1,updated_at=time.time()));db.add(CleanupRun(org_id=a.id,actor_id=first.id,policy_version=1,cutoff=time.time()-30*86400,scan_ids='[]',created_at=time.time(),expires_at=time.time()+600,status='preview',deleted_count=0,preserved_count=0,reason=''));db.commit()
+   db.add(SessionRecord(token_hash=digest('ci-only-restored-session-token'),user_id=first.id,csrf='ci-only-restored-csrf',expires=time.time()+3600))
+   queued=Scan(org_id=a.id,status='queued',created_at=0,payload=json.dumps({'contracts':{'baseline':{'openapi':'3.0.3','paths':{}},'proposed':{'openapi':'3.0.3','paths':{}}}}));db.add(queued);db.commit()
    counts={table.name:db.scalar(select(func.count()).select_from(table)) for table in Base.metadata.sorted_tables}
-   data={'started':time.time(),'org_id':a.id,'scan_id':scan.id,'finding_id':fid,'counts':counts};manifest.write_text(json.dumps(data))
+   data={'started':time.time(),'org_id':a.id,'scan_id':scan.id,'finding_id':fid,'queued_id':queued.id,'counts':counts};manifest.write_text(json.dumps(data))
   print('Synthetic backup fixture ready; database archive must remain in temporary CI storage')
  else:
   data=json.loads(manifest.read_text())
@@ -35,6 +37,9 @@ try:
   assert counts==data['counts'],'Restored row counts differ'
   app=create_app(url,mode='development')
   with TestClient(app) as client:
+   client.cookies.set('preflight_session','ci-only-restored-session-token')
+   assert client.get('/api/auth/me').json()['email']=='restore-owner@example.test'
+   client.cookies.clear()
    assert client.post('/api/auth/login',json={'email':'restore-owner@example.test','password':password}).status_code==200
    report=client.get(f'/api/orgs/{data["org_id"]}/scans/{data["scan_id"]}/report').json()
    assert report['result']['findings'][0]['category']=='syntax'
@@ -46,6 +51,10 @@ try:
   with TestClient(app) as other:
    assert other.post('/api/auth/login',json={'email':'restore-other@example.test','password':password}).status_code==200
    assert other.get(f'/api/orgs/{data["org_id"]}/scans/{data["scan_id"]}/report').status_code==404
-  summary.write_text(json.dumps({'row_counts_match':True,'restored_login':True,'restored_report':True,'restored_reviews':True,'restored_retention_policy_and_preview':True,'restored_tenant_isolation':True,'roundtrip_seconds':round(time.time()-data['started'],3),'scope':'Synthetic disposable PostgreSQL16 CI database; not a Neon point-in-time restore drill'},indent=2))
+  from app.worker import claim,execute
+  job=claim(db_factory);assert job and job[0]==data['queued_id'];execute(db_factory,*job)
+  with db_factory() as db:
+   completed=db.get(Scan,data['queued_id']);assert completed.status=='completed' and json.loads(completed.result)['simulation']['status']=='not-executed'
+  summary.write_text(json.dumps({'row_counts_match':True,'restored_login':True,'restored_existing_session':True,'restored_worker_execution':True,'restored_report':True,'restored_reviews':True,'restored_retention_policy_and_preview':True,'restored_tenant_isolation':True,'roundtrip_seconds':round(time.time()-data['started'],3),'scope':'Synthetic disposable PostgreSQL16 CI database; not a Neon point-in-time restore drill'},indent=2))
   print('Restore checks passed: row counts, login, report evidence, review history and two-user isolation')
 finally:engine.dispose()
