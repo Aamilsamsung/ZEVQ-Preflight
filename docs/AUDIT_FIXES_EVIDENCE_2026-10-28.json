@@ -1,0 +1,46 @@
+{
+  "application_commit": "e7ddbc3be6127cecf1d758fbfa7c5976d967e3e7",
+  "live_api": {
+    "health_version": "0.2.1",
+    "GET /api/auth/me": {
+      "status": 401,
+      "security_headers": "PASS"
+    },
+    "GET /app": {
+      "status": 303,
+      "security_headers": "PASS"
+    },
+    "POST /api/auth/register": {
+      "status": 403,
+      "security_headers": "PASS"
+    },
+    "new_scan": {
+      "id": "a3983df9-f6ae-43a5-b2d4-6635528aa767",
+      "status": "completed",
+      "pointer": "/paths/~1fixed~0orders/get",
+      "version": "0.2.1",
+      "resolution": "PASS"
+    },
+    "logout": "PASS"
+  },
+  "live_browser": {
+    "review_rows": 4,
+    "object_strings": false,
+    "named_dialog": 1,
+    "dialog_cancelled": true,
+    "landing_cta_reached_dashboard": true
+  },
+  "local_regressions": {
+    "python_passed": 110,
+    "python_skipped": 1,
+    "workflow_passed": 37,
+    "supplemental_passed": 9
+  },
+  "ci_harness_correction": "Select installed Python instead of assuming .venv/bin/python; final CI result checked separately",
+  "remaining_gates": [
+    "Hosted two-principal tenant/RBAC matrix",
+    "Hosted mobile/touch verification",
+    "Manual accessibility checks",
+    "Backup restoration and operator recovery drill"
+  ]
+}

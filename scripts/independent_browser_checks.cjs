@@ -2,7 +2,8 @@
 const fs=require('fs');const {spawn}=require('child_process');const {chromium}=require('playwright');const assert=require('assert/strict');
 (async()=>{const results=[],axe=[];const children=[];const record=async(name,fn)=>{try{await fn();results.push({feature:name,status:'PASS'})}catch(e){results.push({feature:name,status:'FAIL',evidence:e.message})}};
 let launch={headless:true};if(process.env.QA_CHROMIUM_MODULE){const binary=(await import(process.env.QA_CHROMIUM_MODULE)).default;launch={...launch,executablePath:await binary.executablePath(),args:binary.args.filter(a=>a!=='--disable-web-security'&&a!=='--single-process'&&!a.startsWith('--ignore-certificate-errors'))}}
-children.push(spawn('.venv/bin/python',['-m','uvicorn','app.main:app','--port','8011'],{stdio:'ignore'}));
+const python=process.env.QA_PYTHON||(fs.existsSync('.venv/bin/python')?'.venv/bin/python':'python');
+children.push(spawn(python,['-m','uvicorn','app.main:app','--port','8011'],{stdio:'ignore'}));
 let browser;try{for(let i=0;i<60;i++){try{if((await fetch('http://127.0.0.1:8011/health')).ok)break}catch{}await new Promise(r=>setTimeout(r,200))}
 browser=await chromium.launch(launch);const context=await browser.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage();const AxeBuilder=require(process.env.QA_AXE_MODULE||'@axe-core/playwright').default;
 for(const path of ['/','/login']){await page.goto('http://127.0.0.1:8011'+path);await page.locator('h1').waitFor();axe.push({page:path,...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()})}

@@ -17,3 +17,10 @@ Local verification:110 Python checks passed; one PostgreSQL-only local check ski
 One browser run during simultaneous local diagnostics saw a500 on logout. It was not reproduced when the suites ran sequentially; the captured rerun showed logout200 and no console errors. The cause is not established. The shared SQLite fixture should not be exercised by multiple browser runners concurrently.
 
 Deployment and live verification must be recorded separately against the resulting commit; local passes alone do not close hosted release gates. Two-user hosted isolation/RBAC, hosted mobile/touch, manual contrast/screen-reader QA, backup restoration and operator recovery exercises remain blocked or not tested. Public-beta readiness is not asserted by this correction.
+
+
+## Protected staging follow-up
+
+Application commit e7ddbc3be6127cecf1d758fbfa7c5976d967e3e7 became live in Render deploy dep-dbgv8d3l550s7389et1g. Live cloud Chrome verified four repository-review rows with no object strings, a named deletion dialog (cancelled without deletion), and an authenticated landing CTA reaching the dashboard. Live API checks verified0.2.1 health, security headers on401/303/403 responses, a completed synthetic contract scan with resolvable `/paths/~1fixed~0orders/get` evidence and rule version0.2.1, and logout200. The screenshot and raw follow-up results are retained as audit artifacts.
+
+CI for that application commit passed the Python suite, PostgreSQL checks and37-check browser workflow. The new supplemental runner initially failed before testing because it assumed `.venv/bin/python`, absent on the hosted runner. The harness now selects QA_PYTHON, a local virtualenv when present, or the CI `python` interpreter. This is a runner portability correction; it does not alter application behavior.
