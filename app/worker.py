@@ -104,7 +104,7 @@ def process_one(db_factory, subprocess_mode=True):
 
 
 def main():
-    parser = argparse.ArgumentParser(); parser.add_argument('--once', action='store_true'); parser.add_argument('--job'); parser.add_argument('--lease')
+    parser = argparse.ArgumentParser(); parser.add_argument('--once', action='store_true'); parser.add_argument('--job'); parser.add_argument('--lease'); parser.add_argument('--on-demand', action='store_true')
     args = parser.parse_args()
     if args.job:
         if sys.platform == 'linux':
@@ -118,12 +118,35 @@ def main():
         nonlocal stop
         stop = True
     signal.signal(signal.SIGTERM, shutdown); signal.signal(signal.SIGINT, shutdown)
+    # Only the single-instance supervisor enables this mode. A local marker avoids
+    # continuously waking a free external database while no scans are pending.
+    observed = object()
+    draining = False
+    recovery_at = time.monotonic() + LEASE_SECONDS + 1
+    retry_at = None
     while not stop:
+        marker = None
+        if args.on_demand:
+            filename = os.getenv('PREFLIGHT_WAKE_FILE')
+            if not filename:
+                raise RuntimeError('--on-demand requires the supervisor wake file')
+            try: marker = os.stat(filename).st_mtime_ns
+            except FileNotFoundError: pass
+            now = time.monotonic()
+            recover_due = recovery_at is not None and now >= recovery_at
+            retry_due = retry_at is not None and now >= retry_at
+            if marker == observed and not draining and not recover_due and not retry_due:
+                time.sleep(0.5)
+                continue
+            observed = marker
+            if recover_due: recovery_at = None
+            retry_at = None
         try: processed = process_one(db_factory)
         except Exception:
-            log.error('worker_database_error'); processed = False
+            log.error('worker_database_error'); processed = False; retry_at = time.monotonic() + 15
+        draining = processed
         if args.once: break
-        if not processed: time.sleep(2)
+        if not processed: time.sleep(0.5 if args.on_demand else 2)
 
 if __name__ == '__main__':
     main()

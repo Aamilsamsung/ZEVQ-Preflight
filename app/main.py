@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit
+from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
@@ -264,6 +265,7 @@ def create_app(database_url=None, mode=None):
             admit(db, org_id)
             scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key)
             db.add(scan); event(db, org_id, user.id, 'scan.queued'); db.commit()
+            notify_worker()
             return scan_dict(scan, True)
 
     @app.post('/api/orgs/{org_id}/scans/zip', status_code=202)
@@ -278,6 +280,7 @@ def create_app(database_url=None, mode=None):
             admit(db, org_id)
             scan = Scan(org_id=org_id, payload=json.dumps(payload)); db.add(scan)
             event(db, org_id, user.id, 'scan.uploaded'); db.commit()
+            notify_worker()
             return scan_dict(scan, True)
 
     @app.post('/api/orgs/{org_id}/contracts', status_code=202)
@@ -292,12 +295,16 @@ def create_app(database_url=None, mode=None):
             admit(db, org_id)
             scan = Scan(org_id=org_id, repository='OpenAPI contract', payload=payload); db.add(scan)
             event(db, org_id, user.id, 'contract.queued'); db.commit()
+            notify_worker()
             return scan_dict(scan, True)
 
     @app.get('/api/orgs/{org_id}/scans/{scan_id}')
     def detail(org_id: str, scan_id: str, request: Request):
         member(request, org_id)
-        with app.state.db() as db: return scan_dict(scoped_scan(db, org_id, scan_id), True)
+        with app.state.db() as db:
+            scan = scoped_scan(db, org_id, scan_id)
+            if scan.status == 'queued': notify_worker()
+            return scan_dict(scan, True)
 
     @app.post('/api/orgs/{org_id}/scans/{scan_id}/cancel')
     def cancel(org_id: str, scan_id: str, request: Request):

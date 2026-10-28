@@ -1,6 +1,6 @@
 # Closed-evaluation release record
 
-Status: **useful local MVP; hosted staging blocked; public launch NOT approved**.
+Status: **useful local MVP; free hosted staging awaits database connection; public launch NOT approved**.
 
 Repository: https://github.com/Aamilsamsung/ZEVQ-Preflight
 Branch: `implementation/secure-preflight`
@@ -54,7 +54,7 @@ Live URL/deployed commit: **none**. No Preflight infrastructure was provisioned 
 | Final application CI | PASS | Application commit 4a06fa7; Actions run 40652078061 |
 | Browser core flow/mobile/tablet/desktop | PASS | 32 local checks |
 | WCAG 2.2 AA full assessment | NOT TESTED | Keyboard/overflow checks are partial |
-| Hosted restricted staging | BLOCKED | Additional free DB rejected; dedicated DB/worker funding or supplied infrastructure needed |
+| Hosted restricted staging | BLOCKED | Free single-service configuration prepared; connect a dedicated Free Neon PostgreSQL project |
 | Deployed commit/HTTPS/browser workflow | BLOCKED | No live deployment |
 | Backup restoration and production rollback drill | NOT TESTED | Runbook only |
 | Monitoring, alerts, retention | FAIL | Not configured |
@@ -72,3 +72,9 @@ Tests cover cross-tenant reads/mutations, viewer restrictions, session expiry/re
 Remaining risks include incomplete independent security review, no MFA/password recovery flow, no automated backup/retention monitoring, no production load/abuse test, and no hosted encryption/backup configuration verification. Full ASVS compliance is not claimed.
 
 Recommendation: **restricted evaluation with approved nonconfidential inputs after staging is provisioned and tested**. Do not market the full roadmap as available, collect live payments, or open customer registration yet. See OPERATIONS.md for provisioning, deployment, rollback and administrator setup.
+
+## Free-hosting revision — 28 October 2026
+
+The owner rejected paid hosting. Railway is excluded (expired trial). `render.yaml` now declares a single **Free** web service; no paid worker/database resource. `app.serve` supervises separate web/static-worker processes, applies migrations and terminates the web service if its worker exits. On-demand wake hints reduce idle external-database activity. New real-HTTP/process tests cover this setup. The original 95-test/32-browser evidence above predates this supervisor change; the updated branch CI must be checked before deployment.
+
+A dedicated external Free PostgreSQL project is still required. The two existing Supabase projects remain untouched. A Neon connection was requested through the available integration; no Neon project or credentials have yet been obtained. Free services have sleep, shared resource and usage limits; this is protected evaluation capacity, not an always-on enterprise service. No paid resources, upgrade, or trial renewal is authorized.

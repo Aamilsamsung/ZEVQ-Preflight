@@ -17,7 +17,7 @@ Audit: all original Python, HTML, requirements, workflow and deployment files re
 2. IMPLEMENTED: durable static scan jobs, bounded GitHub download, history, reports, quotas, cancellation.
 3. IMPLEMENTED: AST findings, OpenAPI compatibility, reproducible evidence and tests.
 4. IMPLEMENTED: connected dashboard, repository/scan workflow, honest limitations/docs.
-5. PARTIAL: regression/security and local browser checks passed; release record and runbook written. Hosted staging remains blocked by dedicated database/worker provisioning.
+5. PARTIAL: regression/security and local browser checks passed; release record and runbook written. Free single-service hosting is prepared with process-separated static workers. Hosted staging awaits a connected dedicated Free PostgreSQL project; Railway is excluded.
 6. REMAINING release roadmap: email delivery/verification/reset, OAuth/App private repository auth, webhook/PR checks, isolated execution, billing, MFA, scheduled scanning, retention/backups, PDF, dependency advisory feed, JS/TS parsers, full graph, admin tools. Do not advertise these as complete.
 
 Public customer registration and live payments remain disabled. No customer repository code is executed. No third-party AI transmission.

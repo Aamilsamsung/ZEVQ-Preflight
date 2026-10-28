@@ -65,6 +65,6 @@ Browser QA uses Playwright and a real running API/worker. See [instructions](doc
 
 ## Deployment
 
-`render.yaml` is a proposed restricted staging configuration and creates paid worker/database resources if applied. Do not apply without spending approval. It is configured for manual deployment from `implementation/secure-preflight`; no public launch is implied. Staging refuses to start without PostgreSQL and a strong staging password.
+`render.yaml` now configures one **Free** Render web instance with a process-separated static worker (`python -m app.serve`). A dedicated external Free PostgreSQL database must be supplied through the host secret store. No paid worker, Render database, disk or upgrade is configured. Render can sleep/restart; jobs remain in external PostgreSQL and recover on restart. No public launch is implied. Staging refuses to start without PostgreSQL and a strong staging password. See the free-tier limitations in the operator guide.
 
 Support: [zevqlabs@gmail.com](mailto:zevqlabs@gmail.com).
