@@ -41,7 +41,7 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
-          python -m pytest tests/test_api.py -q --junitxml=artifacts/postgres.xml
+          python -m pytest tests/test_api.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
       - name: Install browser QA tooling
         run: |
           npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1

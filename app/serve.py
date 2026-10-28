@@ -51,8 +51,13 @@ def supervise(commands, env=None):
 
 def main():
     subprocess.run([sys.executable, '-m', 'alembic', 'upgrade', 'head'], check=True)
+    if os.getenv('PREFLIGHT_BOOTSTRAP_EMAIL'):
+        subprocess.run([sys.executable, '-m', 'app.bootstrap'], check=True)
     with tempfile.TemporaryDirectory(prefix='preflight-') as directory:
         env = os.environ.copy()
+        # Runtime children use the restricted pooled role, not migration credentials.
+        for key in ("DATABASE_URL_UNPOOLED", "PREFLIGHT_BOOTSTRAP_PASSWORD", "PREFLIGHT_RUNTIME_PASSWORD"):
+            env.pop(key, None)
         env['PREFLIGHT_WAKE_FILE'] = str(Path(directory) / 'jobs.signal')
         commands = [
             [sys.executable, '-m', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', os.getenv('PORT', '10000')],
