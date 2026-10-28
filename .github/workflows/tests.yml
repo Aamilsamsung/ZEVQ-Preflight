@@ -41,7 +41,17 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
-          python -m pytest tests/test_api.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
+          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
+      - name: Synthetic PostgreSQL backup and restore drill
+        env:
+          DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test
+          PREFLIGHT_TEST_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          python -m scripts.backup_restore_check seed
+          docker exec "$PREFLIGHT_TEST_CONTAINER" pg_dump -U preflight -d preflight_test -Fc --no-owner --no-privileges > "$RUNNER_TEMP/preflight-ci-backup.dump"
+          docker exec "$PREFLIGHT_TEST_CONTAINER" createdb -U preflight preflight_restore
+          docker exec -i "$PREFLIGHT_TEST_CONTAINER" pg_restore -U preflight -d preflight_restore --no-owner --no-privileges --exit-on-error < "$RUNNER_TEMP/preflight-ci-backup.dump"
+          DATABASE_URL=postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_restore python -m scripts.backup_restore_check verify
       - name: Install browser QA tooling
         run: |
           npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1 @axe-core/playwright@4.10.2
@@ -58,6 +68,7 @@ jobs:
           name: test-results
           path: |
             artifacts/*.xml
+            artifacts/restore-results.json
             artifacts/browser-qa-results.json
             artifacts/independent-audit/frontend-results.json
             artifacts/qa-desktop*.png

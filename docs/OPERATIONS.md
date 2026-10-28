@@ -67,3 +67,23 @@ Logging currently uses server/worker logs; external error tracking, structured e
 The dedicated Free Neon project is `dawn-bonus-77001287` (Singapore, PostgreSQL 16); no existing product database is used. `DATABASE_URL_UNPOOLED` is the direct migration-owner connection. `DATABASE_URL` is the pooled restricted `preflight_runtime` role. The role has application-table DML and schema usage, without superuser/create-role/create-database/schema-create privileges. Migrations remain owner-only.
 
 The optional closed-staging bootstrap reads `PREFLIGHT_BOOTSTRAP_EMAIL`, `PREFLIGHT_BOOTSTRAP_PASSWORD` and `PREFLIGHT_RUNTIME_PASSWORD` from the host secret store. This provisions only the operator-attested evaluation account. It does not send a verification email or enable public signup. Existing accounts are never reset on restart. The supervisor strips migration/provisioning secret variables from the web/worker child environments. Operators can retrieve the initial account password from their own Render environment settings; credentials are not committed or included in reports.
+
+## Password changes and operator recovery
+
+Settings provides an authenticated password-change form. It requires the current password, a different new password of14–256 characters, CSRF protection and rate limiting. A successful change revokes **all** sessions, including the current session, and requires sign-in again. This does not send email or enable anonymous recovery.
+
+For a verified recovery request, use a trusted operator shell connected to the dedicated staging database:
+
+```sh
+python -m app.manage reset-password --email VERIFIED_ACCOUNT_EMAIL --identity-verified --reference SUPPORT_TICKET_ID
+```
+
+The operator must independently verify ownership before asserting `--identity-verified`. Use a non-secret ticket reference of3–64 letters/digits/dots/underscores/hyphens. The command prompts twice for the new password, updates its Argon2 hash, revokes all sessions, and records recovery events for the user's organizations. Never pass the password as a command argument or put it in logs. Changing Render's bootstrap password alone still does not reset an existing account. Email delivery and MFA remain unavailable.
+
+Owners can change non-owner membership roles and remove memberships from Team. Existing sessions use the new permissions on their next request. Role changes cannot grant ownership or change the current owner; ownership transfer remains a separate incomplete feature. Administrators can read audit logs but only owners manage membership.
+
+## Synthetic CI restore verification
+
+The pipeline dumps its disposable PostgreSQL16 test database into temporary runner storage, restores into a separate `preflight_restore` database, compares table counts and verifies restored login, report evidence and two-user isolation. `scripts/backup_restore_check.py` refuses other database names, non-local hosts or execution outside CI. Only the summary is retained as an artifact; the database archive is not uploaded.
+
+This tests the dump/restore toolchain with synthetic fixtures. It does **not** verify Neon point-in-time recovery, live backup retention, encryption/key recovery, production recovery time, or a hosted disaster-recovery drill. Those remain separate release gates.

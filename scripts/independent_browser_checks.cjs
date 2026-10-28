@@ -8,6 +8,21 @@ let browser;try{for(let i=0;i<60;i++){try{if((await fetch('http://127.0.0.1:8011
 browser=await chromium.launch(launch);const context=await browser.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage();const AxeBuilder=require(process.env.QA_AXE_MODULE||'@axe-core/playwright').default;
 for(const path of ['/','/login']){await page.goto('http://127.0.0.1:8011'+path);await page.locator('h1').waitFor();axe.push({page:path,...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()})}
 const creds=JSON.parse(fs.readFileSync('artifacts/qa-credentials.json'));await page.locator('#email').fill(creds.email);await page.locator('#password').fill(creds.password);await page.getByRole('button',{name:'Sign in to workspace'}).click();await page.waitForURL('**/app');await record('Signed-in landing CTA opens workspace',async()=>{await page.goto('http://127.0.0.1:8011/');await page.getByRole('link',{name:'Open your workspace',exact:false}).click();await page.waitForURL('**/app');await page.getByRole('heading',{name:'Deployment overview'}).waitFor()});
+await record('Owner role editor persists membership changes',async()=>{
+ await page.goto('http://127.0.0.1:8011/app#team');await page.getByRole('heading',{name:'Team members',exact:true}).waitFor();
+ const editor=page.getByRole('combobox',{name:'Role for qa-viewer@example.test',exact:true});
+ for(const role of ['developer','viewer']){
+  await editor.selectOption(role);await page.getByRole('row').filter({hasText:'qa-viewer@example.test'}).getByRole('button',{name:'Update role',exact:true}).click();
+  await page.getByRole('dialog',{name:'Change member role?',exact:true}).waitFor();
+  await Promise.all([page.waitForResponse(r=>r.request().method()==='PATCH'&&r.url().includes('/members/')&&r.status()===200),page.getByRole('button',{name:'Confirm',exact:true}).click()]);
+  await page.reload();await page.getByRole('heading',{name:'Team members',exact:true}).waitFor();assert.equal(await editor.inputValue(),role)
+ }
+});
+await record('Password confirmation mismatch is actionable',async()=>{
+ await page.goto('http://127.0.0.1:8011/app#settings');await page.getByRole('heading',{name:'Password and session security',exact:true}).waitFor();
+ await page.locator('#current-password').fill(creds.password);await page.locator('#new-password').fill('synthetic-test-password-one');await page.locator('#confirm-password').fill('synthetic-test-password-two');await page.getByRole('button',{name:'Change password',exact:true}).click();await page.getByText('New passwords do not match.',{exact:true}).waitFor();
+ assert.equal(await page.locator('#current-password').isVisible(),true)
+});
 for(const path of ['/app#dashboard','/app#settings','/app#new']){await page.goto('http://127.0.0.1:8011'+path);await page.locator('main h1').waitFor();axe.push({page:path,...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()})}
 await page.getByRole('tab',{name:'API / OpenAPI'}).click();const doc=JSON.stringify({openapi:'3.0.3',paths:{}});await page.locator('#baseline-contract').fill(doc);await page.locator('#proposed-contract').fill(doc);await page.getByRole('button',{name:'Continue to Configuration'}).click();await page.getByRole('button',{name:'Continue to Review'}).click();await record('Review renders four real summary rows',async()=>{assert.equal(await page.locator('.wizard-review .key-value').count(),4);assert.doesNotMatch(await page.locator('.wizard-review').innerText(),/\[object HTMLDivElement\]/)});
 await page.goto('http://127.0.0.1:8011/app#settings');await page.getByRole('button',{name:'Delete account',exact:true}).click();await record('Confirmation dialog has accessible name',async()=>{await page.getByRole('dialog',{name:'Permanently delete your account?',exact:true}).waitFor({timeout:1000})});axe.push({page:'confirmation-dialog',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});await page.getByRole('button',{name:'Cancel',exact:true}).click();

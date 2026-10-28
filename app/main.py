@@ -32,6 +32,15 @@ class Login(BaseModel):
     password: str = Field(min_length=1, max_length=256)
 
 
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=14, max_length=256)
+
+
+class RoleInput(BaseModel):
+    role: str = Field(max_length=20)
+
+
 class OrgInput(BaseModel):
     name: str = Field(min_length=2, max_length=100)
 
@@ -201,6 +210,25 @@ def create_app(database_url=None, mode=None):
         with app.state.db() as db:
             db.execute(delete(SessionRecord).where(SessionRecord.token_hash == session.token_hash)); db.commit()
         response = JSONResponse({'ok': True}); response.delete_cookie('preflight_session', path='/')
+        return response
+
+    @app.post('/api/auth/password')
+    def change_password(data: PasswordChange, request: Request):
+        user, _ = principal(request)
+        limit(app.state.db, 'password-change:' + user.id, 5, 900)
+        with app.state.db() as db:
+            current = db.scalar(select(User).where(User.id == user.id).with_for_update())
+            if not current or not password_ok(current.password_hash, data.current_password):
+                raise HTTPException(403, 'Current password is incorrect')
+            if password_ok(current.password_hash, data.new_password):
+                raise HTTPException(422, 'Choose a different new password')
+            current.password_hash = hasher.hash(data.new_password)
+            db.execute(delete(SessionRecord).where(SessionRecord.user_id == user.id))
+            for org_id in db.scalars(select(Membership.org_id).where(Membership.user_id == user.id)):
+                event(db, org_id, user.id, 'account.password_changed')
+            db.commit()
+        response = JSONResponse({'ok': True, 'sign_in_required': True})
+        response.delete_cookie('preflight_session', path='/')
         return response
 
     @app.post('/api/auth/logout-all')
@@ -402,6 +430,22 @@ def create_app(database_url=None, mode=None):
             db.add(Membership(org_id=org_id, user_id=user.id, role=data.role))
             event(db, org_id, actor.id, 'member.added'); db.commit()
         return {'ok': True}
+
+    @app.patch('/api/orgs/{org_id}/members/{user_id}')
+    def update_role(org_id: str, user_id: str, data: RoleInput, request: Request):
+        actor, _ = member(request, org_id, {'owner'})
+        if data.role not in {'administrator', 'developer', 'viewer'}:
+            raise HTTPException(422, 'Invalid role; ownership transfer is not supported')
+        with app.state.db() as db:
+            membership = db.scalar(select(Membership).where(Membership.org_id == org_id, Membership.user_id == user_id).with_for_update())
+            if not membership:
+                raise HTTPException(404, 'Member not found')
+            if membership.role == 'owner':
+                raise HTTPException(409, 'Owner role cannot be changed here')
+            membership.role = data.role
+            event(db, org_id, actor.id, 'member.role_' + data.role + ':' + user_id)
+            db.commit()
+        return {'ok': True, 'role': data.role}
 
     @app.delete('/api/orgs/{org_id}/members/{user_id}')
     def remove_member(org_id: str, user_id: str, request: Request):
