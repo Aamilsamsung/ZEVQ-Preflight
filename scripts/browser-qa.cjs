@@ -39,6 +39,7 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  await page.addInitScript(()=>{Object.defineProperty(window,'sessionStorage',{get(){throw new DOMException('Storage blocked for regression test','SecurityError')}})});
  await page.reload();await page.getByRole('heading',{name:'Deployment overview'}).waitFor();record('Workspace survives blocked optional browser storage');
  await page.screenshot({path:'artifacts/qa-desktop-dashboard.png',fullPage:true});
+ await page.getByRole('searchbox',{name:'Search projects, scans, reports'}).fill('no-matching-scan-qa-xyz');await page.getByRole('searchbox').press('Enter');await page.getByRole('heading',{name:'Scan history',exact:true}).waitFor();assert.equal(await page.locator('tbody tr').count(),0);record('Search filters actual scan history');await page.goto(base+'/app#dashboard');await page.getByRole('heading',{name:'Deployment overview'}).waitFor();
  await page.goto(base+'/app#repositories');await page.getByRole('heading',{name:'Repositories',exact:true}).waitFor();
  const repository='Aamilsamsung/ZEVQ-Preflight';
  if(!(await page.locator('td').allTextContents()).some(x=>x===repository)){
@@ -67,7 +68,7 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  for(const [label,width,height]of [['mobile',390,844],['tablet',768,1024],['desktop',1440,1000]]){
    await page.setViewportSize({width,height});await page.goto(base+'/app#dashboard');await page.getByRole('heading',{name:'Deployment overview'}).waitFor();
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,label+' dashboard overflow');
-   if(label==='mobile'){await page.getByRole('button',{name:'Toggle navigation'}).click();await page.getByRole('link',{name:'Repositories',exact:false}).click();await page.getByRole('heading',{name:'Repositories',exact:true}).waitFor();assert.equal(await page.locator('#sidebar').evaluate(n=>n.classList.contains('open')),false);record('Mobile navigation opens, navigates, closes')}
+   if(label==='mobile'){await page.getByRole('button',{name:'Toggle navigation'}).click();await page.getByRole('link',{name:'Projects',exact:true}).click();await page.getByRole('heading',{name:'Repositories',exact:true}).waitFor();assert.equal(await page.locator('#sidebar').evaluate(n=>n.classList.contains('open')),false);record('Mobile navigation opens, navigates, closes')}
    await page.screenshot({path:'artifacts/qa-'+label+'.png',fullPage:true});record(label+' responsive layout',width+'px; no document horizontal overflow');
  }
  await page.goto(base+'/');await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Skip to content');await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>location.hash),'#content');record('Keyboard skip navigation');

@@ -131,3 +131,19 @@ def test_chunked_body_limit(env):
     response=c.post('/api/auth/login',content=oversized(),headers={'Content-Type':'application/json'})
     assert 'content-length' not in response.request.headers
     assert response.status_code==413
+
+def test_dashboard_chart_evidence_is_tenant_scoped(env):
+    app,c,(org,other,*_)=env
+    login(c)
+    with app.state.db() as db:
+        db.add_all([
+            Scan(org_id=org, status='completed', result=json.dumps({'findings':[{'severity':'high','message':'Visible evidence','file':'app.py'}]})),
+            Scan(org_id=other, status='completed', result=json.dumps({'findings':[{'severity':'critical','message':'Private other tenant'}]}))
+        ])
+        db.commit()
+    data=c.get(f'/api/orgs/{org}/dashboard').json()
+    assert data['findings']==1
+    assert len(data['finding_trend'])==7
+    assert sum(day['count'] for day in data['finding_trend'])==1
+    assert data['latest_findings'][0]['message']=='Visible evidence'
+    assert 'Private other tenant' not in json.dumps(data)

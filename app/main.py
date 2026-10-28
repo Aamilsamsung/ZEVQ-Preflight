@@ -359,7 +359,18 @@ def create_app(database_url=None, mode=None):
             for finding in json.loads(scan.result or '{}').get('findings', []):
                 level = finding.get('severity')
                 if level in severity: severity[level] += 1
-        return {'repositories': repository_count, 'scans': len(rows), 'findings': sum(severity.values()), 'by_severity': severity, 'scan_status': statuses, 'recent_scans': [scan_dict(s) for s in rows[:10]], 'window': 'latest 500 scans'}
+        from datetime import datetime, timezone, timedelta
+        today = datetime.now(timezone.utc).date()
+        trend = {str(today - timedelta(days=i)): 0 for i in reversed(range(7))}
+        latest = []
+        for scan in rows:
+            findings = json.loads(scan.result or '{}').get('findings', [])
+            day = str(datetime.fromtimestamp(scan.created_at, timezone.utc).date())
+            if day in trend: trend[day] += len(findings)
+            for finding in findings:
+                if len(latest) < 5:
+                    latest.append({**finding, 'scan_id': scan.id})
+        return {'repositories': repository_count, 'scans': len(rows), 'findings': sum(severity.values()), 'by_severity': severity, 'scan_status': statuses, 'recent_scans': [scan_dict(s) for s in rows[:10]], 'window': 'latest 500 scans', 'latest_findings': latest, 'finding_trend': [{'date': day, 'count': count} for day, count in trend.items()]}
 
     @app.get('/api/orgs/{org_id}/audit')
     def audit(org_id: str, request: Request):

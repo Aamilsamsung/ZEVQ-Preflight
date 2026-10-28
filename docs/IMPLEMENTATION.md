@@ -21,3 +21,9 @@ Audit: all original Python, HTML, requirements, workflow and deployment files re
 6. REMAINING release roadmap: email delivery/verification/reset, OAuth/App private repository auth, webhook/PR checks, isolated execution, billing, MFA, scheduled scanning, retention/backups, PDF, dependency advisory feed, JS/TS parsers, full graph, admin tools. Do not advertise these as complete.
 
 Public customer registration and live payments remain disabled. No customer repository code is executed. No third-party AI transmission.
+
+### Reference UI update — 28 October 2026
+
+Rebuilt the authenticated workspace to follow the supplied dashboard reference: dark fixed sidebar, pale blue canvas, mint actions, glass-stack hero, recent-scan summary, four metric cards, scan table, severity donut, seven-day finding trend, quick actions, and latest findings. Existing repository, report, team, audit, settings and scan workflows remain connected. Dashboard charts and findings use organization-scoped stored data; no sample counts, artificial performance changes, compliance percentages, or execution results are displayed. The coverage panel describes actual supported capabilities. Search submits to filtered scan history. Mobile navigation remains collapsible; tables scroll within cards.
+
+The dashboard API now returns seven daily aggregate counts and five recent evidence records, limited to the same latest-500 scan window as existing metrics. A regression test verifies these aggregates exclude another tenant's findings. The illustration is decorative CSS and does not represent an executed simulation.
