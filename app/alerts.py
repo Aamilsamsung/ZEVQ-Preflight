@@ -18,5 +18,5 @@ def current_alerts(db,org,actor):
     keys=['alert.ack:'+a['id'] for a in alerts]
     acknowledged=set(db.scalars(select(Audit.action).where(Audit.org_id==org,Audit.actor_id==actor,Audit.action.in_(keys))))
     return {'alerts':[{**a,'acknowledged':'alert.ack:'+a['id'] in acknowledged} for a in alerts],
-            'scope':'Latest100 failed/queued/running scans created in the last7 days. In-app delivery only; no out-of-band availability monitor.',
+            'scope':'Latest 100 failed/queued/running scans created in the last 7 days. In-app delivery only; no out-of-band availability monitor.',
             'external_delivery':'disabled','thresholds':{'repeated_failures_per_hour':3,'running_stale_seconds':180,'queued_delay_seconds':300}}

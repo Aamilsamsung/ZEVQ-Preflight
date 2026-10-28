@@ -32,7 +32,7 @@ def test_download_http_failure(monkeypatch,status):
     with pytest.raises(ValueError,match=f'HTTP {status}'):
         asyncio.run(github.download('https://github.com/o/r','main'))
 
-@pytest.mark.parametrize('metadata,revision,expected',[(404,404,'Missing and private'),(200,404,'revision not found'),(200,200,'archive retrieval failed'),(403,200,'access denied')])
+@pytest.mark.parametrize('metadata,revision,expected',[(404,404,'Missing and private'),(200,404,'revision not found'),(200,422,'revision could not be resolved'),(200,200,'archive retrieval failed'),(403,200,'access denied')])
 def test_404_diagnostics_are_evidence_based(monkeypatch,metadata,revision,expected):
     original=httpx.AsyncClient;seen=[]
     def handler(request):

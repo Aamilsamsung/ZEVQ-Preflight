@@ -43,6 +43,7 @@ async def diagnose_404(client, original_url, redirected):
             if repo.status_code!=200:return http_failure(repo,'repository metadata')
         async with client.stream('GET',prefix+'/commits/'+ref,timeout=5) as commit:
             if commit.status_code==404:return 'GitHub revision not found (HTTP 404) in a confirmed public repository; check the exact branch, tag or commit SHA.'
+            if commit.status_code==422:return 'GitHub revision could not be resolved (HTTP 422) in a confirmed public repository; check the exact branch, tag or commit SHA.'
             if commit.status_code!=200:return http_failure(commit,'revision lookup')
         return f'GitHub {stage} returned HTTP 404 although the public repository and revision resolved; archive retrieval failed. Retry later or upload a permitted ZIP.'
     except httpx.HTTPError:

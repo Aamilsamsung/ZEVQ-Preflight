@@ -60,6 +60,8 @@ jobs:
         run: |
           python -m alembic upgrade head
           python -m scripts.seed_local_qa
+          node --check scripts/hosted_browser_qa.cjs
+          node --check scripts/hosted_scan_journeys.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" QA_START_SERVICES=1 node scripts/browser-qa.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/independent_browser_checks.cjs
       - uses: actions/upload-artifact@v4
