@@ -149,3 +149,25 @@ def test_invalid_proposed_json_with_arbitrary_filename_reported():
 def test_removed_contract_is_inconclusive_not_silent():
     result = analyze({}, {'api.json': json.dumps(document())})
     assert any(f['rule'] == 'OAS.DOCUMENT_REMOVED' for f in result['findings'])
+
+
+def test_skipped_contract_not_claimed_deleted():
+    from app.analyzer import Sources
+    head = Sources()
+    head.skipped = [{'file': 'openapi.json', 'reason': 'file-size-limit'}]
+    result = analyze(head, {'openapi.json': json.dumps(document())})
+    assert not any(f['rule'] == 'OAS.DOCUMENT_REMOVED' for f in result['findings'])
+    assert result['coverage']['comparison_unknown_files'] == ['openapi.json']
+
+
+def test_changed_unsupported_schema_keyword_is_unknown():
+    a = document({'type': 'array', 'items': {'type': 'string'}})
+    b = document({'type': 'array', 'items': {'type': 'string'}, 'uniqueItems': True})
+    result = compare_openapi(a, b)
+    assert any(f['rule'] == 'OAS.KEYWORD_UNKNOWN' and f['classification'] == 'unknown' for f in result)
+
+
+def test_documentation_annotation_change_is_not_risk():
+    a = document({'type': 'string', 'description': 'Old description'})
+    b = document({'type': 'string', 'description': 'New description'})
+    assert compare_openapi(a, b) == []

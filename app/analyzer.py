@@ -40,9 +40,9 @@ def read_zip(data):
                     raise ValueError("ZIP symlinks are not supported")
                 if info.flag_bits & 1:
                     raise ValueError("Encrypted ZIP entries are not supported")
-                if name in seen:
+                if str(p) in seen:
                     raise ValueError("Duplicate ZIP path")
-                seen.add(name)
+                seen.add(str(p))
                 if info.is_dir():
                     continue
                 if p.suffix.lower() not in SUPPORTED and p.name not in ("Dockerfile", ".env"):
@@ -78,11 +78,14 @@ def read_zip(data):
     if not files:
         raise ValueError("No supported UTF-8 sources found")
     # GitHub archives wrap every path in a revision-specific directory.
-    roots = {PurePosixPath(path).parts[0] for path in files}
-    if len(roots) == 1 and all(len(PurePosixPath(path).parts) > 1 for path in files):
+    all_paths = list(files) + [entry["file"] for entry in files.skipped]
+    roots = {PurePosixPath(path).parts[0] for path in all_paths}
+    if len(roots) == 1 and all(len(PurePosixPath(path).parts) > 1 for path in all_paths):
         normalized = {str(PurePosixPath(*PurePosixPath(path).parts[1:])): source for path, source in files.items()}
         files.clear()
         files.update(normalized)
+        for entry in files.skipped:
+            entry["file"] = str(PurePosixPath(*PurePosixPath(entry["file"]).parts[1:]))
     return files
 
 
@@ -152,6 +155,9 @@ def _python(source, file, found):
 
 def analyze(files, baseline=None):
     found, routes, functions, imports, parsed = [], {}, {}, [], {}
+    skipped = getattr(files, "skipped", [])
+    skipped_paths = {entry["file"] for entry in skipped}
+    baseline_skipped = getattr(baseline, "skipped", [])
     for filename, source in sorted(files.items()):
         if filename.endswith(".py"):
             r, f, i, ok = _python(source, filename, found)
@@ -163,13 +169,22 @@ def analyze(files, baseline=None):
             f = finding("SOURCE.LFS", filename, "Git LFS pointer was not resolved.", {"format": "git-lfs"}, severity="info", confidence="medium", classification="unknown", action="Provide the actual source object for analysis.")
             f["category"] = "coverage"
             found.append(f)
+    unknown_python = {path for path in skipped_paths if path.endswith(".py")} | {path for path, ok in parsed.items() if not ok}
+    comparison_unknown = sorted((skipped_paths & set(baseline or {})) | unknown_python)
     if baseline is not None:
+        if comparison_unknown:
+            f = finding("SOURCE.COMPARISON_INCOMPLETE", "coverage",
+                "Some proposed sources could not be inspected. Removal checks involving omitted files or unresolved Python routes are inconclusive.",
+                {"uninspected_files": comparison_unknown}, severity="info", confidence="medium", classification="unknown",
+                action="Provide supported, readable source within the size limits and rerun the comparison.")
+            f["category"] = "coverage"
+            found.append(f)
         old_routes = {}
         for filename, source in sorted(baseline.items()):
             if filename.endswith(".py"):
                 old_r, old_f, _, old_ok = _python(source, filename, [])
                 old_routes.update(old_r)
-                if not old_ok or (filename in parsed and not parsed[filename]):
+                if filename in skipped_paths or not old_ok or (filename in parsed and not parsed[filename]):
                     continue
                 for name, (line, signature) in old_f.items():
                     current = functions.get(filename, {}).get(name)
@@ -185,7 +200,8 @@ def analyze(files, baseline=None):
                         found.append(f)
         for route in sorted(old_routes.keys() - routes.keys()):
             old = old_routes[route]
-            if old["file"] in parsed and not parsed[old["file"]]:
+            # A route may have moved to any omitted Python file. Do not infer absence.
+            if unknown_python or old["file"] in skipped_paths:
                 continue
             f = finding("PY.ROUTE_REMOVED", old["file"], f"Removed endpoint: {route}", {"route": route, "baseline_location": old}, line=old["line"], confidence="medium", classification="potentially-breaking")
             f["category"] = "breaking-change"
@@ -207,6 +223,8 @@ def analyze(files, baseline=None):
                 f["category"] = "dependency-review"
                 found.append(f)
         for filename in sorted(baseline.keys() - files.keys()):
+            if filename in skipped_paths:
+                continue
             if filename.endswith(".json"):
                 try:
                     old = json.loads(baseline[filename])
@@ -220,13 +238,15 @@ def analyze(files, baseline=None):
     weights = {"critical": 40, "high": 20, "medium": 7, "low": 2, "info": 0}
     score = min(100, sum(weights[f["severity"]] for f in found))
     risk = "high" if any(f["severity"] in {"high", "critical"} for f in found) else "medium" if any(f["severity"] == "medium" for f in found) else "low"
-    skipped = getattr(files, "skipped", [])
     unsupported = sorted(f for f in files if not f.endswith(".py") and not (f.endswith(".json") and "openapi" in files[f]))
     return {"engine_version": VERSION, "risk_level": risk, "risk_score": score,
             "score_explanation": "Capped sum of rule weights: critical 40, high 20, medium 7, low 2, info 0. This is a prioritization index, not a failure probability.",
             "files_scanned": len(files), "python_files_parsed": sum(parsed.values()),
             "routes_detected": sorted(routes), "route_evidence": routes, "findings": found,
             "dependency_graph": {"edges": imports, "limitations": "Import declarations only; targets and runtime relationships are not resolved."},
-            "coverage": {"skipped": skipped, "files_without_language_analysis": unsupported, "baseline_provided": baseline is not None},
+            "coverage": {"skipped": skipped, "baseline_skipped": baseline_skipped,
+                         "comparison_unknown_files": comparison_unknown,
+                         "route_removal_checks_complete": not bool(unknown_python),
+                         "files_without_language_analysis": unsupported, "baseline_provided": baseline is not None},
             "simulation": {"status": "not-executed", "reason": "No isolated execution worker is configured. Static comparisons are not executed tests."},
             "limitations": "Static Python AST and selected OpenAPI JSON rules only. Python routes use literal app/router decorators; mounted prefixes, aliases, dynamic routes, classes, and response models are not resolved. JavaScript/TypeScript are retained but not parsed. No code execution, vulnerability database lookup, or guarantee of safety. Skipped files and unresolved contracts require review."}

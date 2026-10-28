@@ -412,7 +412,9 @@ def create_app(database_url=None, mode=None):
     @app.get('/{path:path}', include_in_schema=False)
     def page(path: str):
         if path not in ('', 'login', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
-            return JSONResponse({'detail': 'Page not found'}, status_code=404)
+            if path.startswith('api/'):
+                return JSONResponse({'detail': 'Endpoint not found'}, status_code=404)
+            return FileResponse(ROOT / 'static/index.html', status_code=404)
         return FileResponse(ROOT / 'static/index.html')
     return app
 

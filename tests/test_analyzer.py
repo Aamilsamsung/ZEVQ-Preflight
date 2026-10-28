@@ -91,7 +91,7 @@ def test_signatures_and_removals_have_evidence():
 
 def test_syntax_failure_does_not_claim_routes_removed():
     result = analyze({'a.py': 'def broken('}, {'a.py': '@app.get("/a")\ndef old(): pass'})
-    assert [f['rule'] for f in result['findings']] == ['PY.SYNTAX']
+    assert {f['rule'] for f in result['findings']} == {'PY.SYNTAX', 'SOURCE.COMPARISON_INCOMPLETE'}
 
 
 def test_security_calls_not_secrets_in_evidence():
@@ -118,3 +118,59 @@ def test_revision_archive_roots_normalized():
     base = read_zip(zip_bytes([('owner-repo-aaa/app.py', 'def x(): pass')]))
     head = read_zip(zip_bytes([('owner-repo-bbb/app.py', 'def x(): pass')]))
     assert analyze(head, base)['findings'] == []
+
+
+@pytest.mark.parametrize('content,reason', [('x' * 300001, 'file-size-limit'), (b'\xff', 'non-utf8'), (b'abc\x00', 'binary-content')])
+def test_omitted_head_does_not_claim_removed_function_or_route(content, reason):
+    old = read_zip(zip_bytes([('old-root/api.py', '@app.get("/x")\ndef handler(): pass'), ('old-root/ok.py', 'x=1')]))
+    head = read_zip(zip_bytes([('new-root/api.py', content), ('new-root/ok.py', 'x=1')]))
+    assert head.skipped == [{'file': 'api.py', 'reason': reason}]
+    result = analyze(head, old)
+    assert not any(f['rule'] in {'PY.ROUTE_REMOVED', 'PY.FUNCTION_REMOVED'} for f in result['findings'])
+    assert result['coverage']['comparison_unknown_files'] == ['api.py']
+    assert result['coverage']['route_removal_checks_complete'] is False
+    assert any(f['rule'] == 'SOURCE.COMPARISON_INCOMPLETE' for f in result['findings'])
+
+
+def test_route_moved_to_omitted_file_not_reported_removed():
+    old = {'old.py': '@app.get("/x")\ndef handler(): pass'}
+    head = read_zip(zip_bytes([('root/ok.py', 'x=1'), ('root/new.py', b'\xff')]))
+    result = analyze(head, old)
+    assert not any(f['rule'] == 'PY.ROUTE_REMOVED' for f in result['findings'])
+
+
+def test_file_count_omission_does_not_claim_removal(monkeypatch):
+    import app.analyzer as analyzer
+    monkeypatch.setattr(analyzer, 'MAX_FILES', 1)
+    head = read_zip(zip_bytes([('root/ok.py', 'x=1'), ('root/api.py', 'def handler(): pass')]))
+    result = analyze(head, {'api.py': 'def handler(): pass'})
+    assert head.skipped == [{'file': 'api.py', 'reason': 'file-count-limit'}]
+    assert not any(f['rule'] == 'PY.FUNCTION_REMOVED' for f in result['findings'])
+
+
+def test_archive_root_decision_includes_skipped_paths():
+    head = read_zip(zip_bytes([('module/api.py', 'x=1'), ('README.md', 'text')]))
+    assert 'module/api.py' in head
+    assert head.skipped == [{'file': 'README.md', 'reason': 'unsupported-extension'}]
+
+
+def test_sources_roundtrip_preserves_omission_uncertainty():
+    import json
+    from app.analyzer import Sources
+    source = read_zip(zip_bytes([('root/ok.py', 'x=1'), ('root/api.py', b'\xff')]))
+    payload = json.loads(json.dumps({'files': source, 'skipped': source.skipped}))
+    restored = Sources()
+    restored.update(payload['files'])
+    restored.skipped = payload['skipped']
+    result = analyze(restored, {'api.py': 'def handler(): pass'})
+    assert not any(f['rule'] == 'PY.FUNCTION_REMOVED' for f in result['findings'])
+    assert result['coverage']['comparison_unknown_files'] == ['api.py']
+
+
+def test_zip_rejects_canonical_path_aliases():
+    mem = io.BytesIO()
+    with zipfile.ZipFile(mem, 'w') as archive:
+        archive.writestr('root/app.py', 'x = 1')
+        archive.writestr('root/./app.py', 'x = 2')
+    with pytest.raises(ValueError, match='Duplicate ZIP path'):
+        read_zip(mem.getvalue())

@@ -56,6 +56,11 @@ def _compare_openapi(base, head, filename="openapi.json"):
         if any(k in a or k in b for k in ("allOf", "anyOf", "oneOf", "not", "if", "then", "else", "unevaluatedProperties", "$dynamicRef")):
             emit("OAS.SCHEMA_COMPLEX", "Composed or conditional schema is not evaluated.", path, classification="unknown")
             return
+        evaluated = {"type", "required", "enum", "nullable", "properties", "additionalProperties", "items", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "minLength", "maxLength", "minItems", "maxItems", "pattern", "format", "const", "readOnly", "writeOnly"}
+        annotations = {"title", "description", "default", "example", "examples", "deprecated", "externalDocs", "xml", "$id", "$schema", "$comment", "$defs", "definitions"}
+        for key in sorted((a.keys() | b.keys()) - evaluated - annotations):
+            if a.get(key) != b.get(key):
+                emit("OAS.KEYWORD_UNKNOWN", f"Changed schema keyword is not evaluated: {key}", path + "/" + key, classification="unknown")
         if a.get("type") != b.get("type"):
             emit("OAS.TYPE_CHANGED", "Schema type changed; compatibility requires review.", path, a.get("type"), b.get("type"), "potentially-breaking")
         ar, br = set(a.get("required", [])), set(b.get("required", []))

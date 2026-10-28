@@ -42,8 +42,22 @@ jobs:
           python -m alembic downgrade base
           python -m alembic upgrade head
           python -m pytest tests/test_api.py -q --junitxml=artifacts/postgres.xml
+      - name: Install browser QA tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1
+          "$RUNNER_TEMP/preflight-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Real browser workflow against local API and worker
+        run: |
+          python -m alembic upgrade head
+          python -m scripts.seed_local_qa
+          NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" QA_START_SERVICES=1 node scripts/browser-qa.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
-          path: artifacts/*.xml
+          path: |
+            artifacts/*.xml
+            artifacts/browser-qa-results.json
+            artifacts/qa-desktop*.png
+            artifacts/qa-mobile.png
+            artifacts/qa-tablet.png
