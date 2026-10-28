@@ -36,6 +36,8 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  await page.getByRole('button',{name:'Sign in to workspace'}).click();
  await page.waitForURL('**/app');await page.getByRole('heading',{name:'Deployment overview'}).waitFor();record('Account login');
  await page.reload();await page.getByRole('heading',{name:'Deployment overview'}).waitFor();record('Persistent login after refresh');
+ await page.addInitScript(()=>{Object.defineProperty(window,'sessionStorage',{get(){throw new DOMException('Storage blocked for regression test','SecurityError')}})});
+ await page.reload();await page.getByRole('heading',{name:'Deployment overview'}).waitFor();record('Workspace survives blocked optional browser storage');
  await page.screenshot({path:'artifacts/qa-desktop-dashboard.png',fullPage:true});
  await page.goto(base+'/app#repositories');await page.getByRole('heading',{name:'Repositories',exact:true}).waitFor();
  const repository='Aamilsamsung/ZEVQ-Preflight';

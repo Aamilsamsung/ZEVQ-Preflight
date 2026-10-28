@@ -10,14 +10,14 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit
 from .job_signal import notify_worker
-from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member
+from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 
@@ -107,7 +107,9 @@ def create_app(database_url=None, mode=None):
 
     @app.middleware('http')
     async def boundaries(request, call_next):
-        if mode == 'staging' and request.url.path != '/health':
+        path = request.url.path
+        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register') or path.startswith('/static/')
+        if mode == 'staging' and not public_access:
             expected = 'staging:' + os.getenv('STAGING_PASSWORD', '')
             supplied = request.headers.get('authorization', '')
             try:
@@ -115,7 +117,14 @@ def create_app(database_url=None, mode=None):
             except (ValueError, UnicodeError):
                 decoded = ''
             if not secrets.compare_digest(decoded, expected):
-                return Response(status_code=401, headers={'WWW-Authenticate': 'Basic realm="ZEVQ private staging"'})
+                try:
+                    authenticated = has_active_session(request)
+                except Exception:
+                    return JSONResponse({'detail': 'Sign-in service is temporarily unavailable. Please retry.'}, status_code=503, headers={'Cache-Control':'no-store'})
+                if not authenticated:
+                    if request.method in ('GET', 'HEAD') and not path.startswith('/api/'):
+                        return RedirectResponse('/login', status_code=303, headers={'Cache-Control':'no-store'})
+                    return JSONResponse({'detail': 'Sign in required'}, status_code=401, headers={'Cache-Control':'no-store'})
         if request.method not in ('GET', 'HEAD', 'OPTIONS'):
             origin = request.headers.get('origin')
             expected_origin = os.getenv('PUBLIC_ORIGIN', str(request.base_url).rstrip('/'))

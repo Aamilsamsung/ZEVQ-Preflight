@@ -94,3 +94,9 @@ A dedicated external Free PostgreSQL project is still required. The two existing
 - Actual configured base plans: Render Free $0 + Neon Free $0. Provider quotas, shared free hours, sleeping/cold starts, retention and network/build limits apply. No paid add-on or upgrade is authorized.
 
 Launch recommendation remains **restricted evaluation only**. Full commercial-roadmap, independent security, monitoring, restore, legal-review, email and billing gates have not been completed.
+
+## Sign-in loop correction
+
+The normal sign-in page and its static assets are reachable without the legacy shared Basic challenge. Only provisioned, verified account sessions can open private pages or data; registration remains closed. Legacy operator Basic access remains compatible and does not itself authorize organization data. Invalid cached Basic credentials no longer override a valid application session.
+
+The frontend verifies that the sign-in cookie was retained before navigating to the workspace, handles unavailable optional sessionStorage without failing startup, and shows non-authentication loading errors with Retry instead of redirecting every error to login. Regression checks cover normal HTTPS staging sign-in without Basic, incorrect cached Basic credentials, expired sessions, and blocked optional browser storage. Local suite: 101 passed, one PostgreSQL-only skip. Latest CI/deployment status must be checked for this correction.

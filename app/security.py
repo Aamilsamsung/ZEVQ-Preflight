@@ -67,3 +67,16 @@ def member(request, org_id, roles=None):
         if roles and membership.role not in roles:
             raise HTTPException(403, 'Role does not permit this action')
     return user, session
+
+
+def has_active_session(request):
+    """Check only authentication for the staging boundary; endpoints enforce CSRF/RBAC."""
+    token = request.cookies.get('preflight_session', '')
+    if not token:
+        return False
+    with request.app.state.db() as db:
+        session = db.get(SessionRecord, digest(token))
+        if not session or session.expires < time.time():
+            return False
+        user = db.get(User, session.user_id)
+        return bool(user and user.verified)
