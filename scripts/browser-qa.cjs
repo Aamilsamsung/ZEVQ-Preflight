@@ -16,8 +16,9 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  const services=[];
  if(process.env.QA_START_SERVICES==='1'){
  const {spawn}=require('child_process');
- services.push(spawn('.venv/bin/python',['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000'],{stdio:'ignore'}));
- services.push(spawn('.venv/bin/python',['-m','app.worker'],{stdio:'ignore'}));
+ const python=process.env.QA_PYTHON || (fs.existsSync('.venv/bin/python')?'.venv/bin/python':'python');
+ services.push(spawn(python,['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000'],{stdio:'ignore'}));
+ services.push(spawn(python,['-m','app.worker'],{stdio:'ignore'}));
  for(let attempt=0;attempt<60;attempt++){try{const r=await fetch(base+'/health');if(r.ok)break}catch{}await new Promise(r=>setTimeout(r,250))}
  }
  const browser=await chromium.launch(launch);
