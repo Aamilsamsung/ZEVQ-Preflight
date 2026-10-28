@@ -23,7 +23,7 @@ def compare_results(baseline, proposed):
             else:unmatched.extend(values)
         return indexed,unmatched
     before,old_unknown=index(baseline);after,new_unknown=index(proposed)
-    ambiguous={f.get('id') for f in old_unknown+new_unknown if f.get('id')}
+    ambiguous={f['id'] for f in old_unknown+new_unknown if isinstance(f.get('id'),str) and f['id']}
     # Never pair an ambiguous identifier with a unique finding from the other report.
     for fid in ambiguous:
         if fid in before:old_unknown.append(before.pop(fid))

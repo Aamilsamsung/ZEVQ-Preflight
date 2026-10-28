@@ -25,6 +25,12 @@ def test_ambiguous_and_missing_ids_never_imply_new_or_fixed():
     assert data['warnings']
 
 
+def test_malformed_legacy_identifier_is_unmatched():
+    data=compare_results(result([{'id':['legacy']}]),result([{'id':{'old':True}}]))
+    assert data['counts']['unmatched_baseline']==data['counts']['unmatched_proposed']==1
+    assert data['counts']['added']==data['counts']['not_observed']==0
+
+
 def test_engine_and_coverage_warnings():
     a=result([]);b=result([]);b.update(engine_version='2',coverage={'skipped':['large.py'],'route_removal_checks_complete':False})
     data=compare_results(a,b);assert len(data['warnings'])==3
