@@ -17,15 +17,16 @@ const record=(name,details='')=>results.push({name,status:'PASS',details});
  if(process.env.QA_START_SERVICES==='1'){
  const {spawn}=require('child_process');
  const python=process.env.QA_PYTHON || (fs.existsSync('.venv/bin/python')?'.venv/bin/python':'python');
- services.push(spawn(python,['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000'],{stdio:'ignore'}));
- services.push(spawn(python,['-m','app.worker'],{stdio:'ignore'}));
+ const apiLog=fs.openSync('artifacts/qa-api.log','w');const workerLog=fs.openSync('artifacts/qa-worker.log','w');
+ services.push(spawn(python,['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000'],{stdio:['ignore',apiLog,apiLog]}));
+ services.push(spawn(python,['-m','app.worker'],{stdio:['ignore',workerLog,workerLog]}));
  for(let attempt=0;attempt<60;attempt++){try{const r=await fetch(base+'/health');if(r.ok)break}catch{}await new Promise(r=>setTimeout(r,250))}
  }
  if(process.env.QA_PROXY_SERVER)launch.proxy={server:process.env.QA_PROXY_SERVER};
  const browser=await chromium.launch(launch);
  const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,...(process.env.QA_HTTP_PASSWORD?{httpCredentials:{username:process.env.QA_HTTP_USERNAME||'staging',password:process.env.QA_HTTP_PASSWORD,origin:new URL(base).origin}}:{})});
  const page=await context.newPage();
- const startScan=async()=>{await page.getByRole('button',{name:'Continue to Configuration'}).click();await page.getByRole('heading',{name:'Configuration',exact:true}).waitFor();await page.getByRole('button',{name:'Continue to Review'}).click();await page.getByRole('heading',{name:'Review your scan'}).waitFor();await page.getByRole('button',{name:'Start Scan',exact:false}).click()};
+ const startScan=async()=>{await page.getByRole('button',{name:'Continue to Configuration'}).click();await page.getByRole('heading',{name:'Configuration',exact:true}).waitFor();await page.getByRole('button',{name:'Continue to Review'}).click();await page.getByRole('heading',{name:'Review your scan'}).waitFor();assert.equal(await page.locator('.wizard-review .key-value').count(),await page.locator('#file').count()?3:4);assert.doesNotMatch(await page.locator('.wizard-review').innerText(),/\[object HTMLDivElement\]/);await page.getByRole('button',{name:'Start Scan',exact:false}).click()};
  page.on('pageerror',error=>errors.push(error.message));
  page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
  try {

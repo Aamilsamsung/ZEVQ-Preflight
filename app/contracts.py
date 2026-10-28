@@ -2,8 +2,12 @@
 import hashlib
 import json
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 METHODS = {"get", "post", "put", "patch", "delete", "options", "head", "trace"}
+
+
+def pointer_segment(value):
+    return str(value).replace("~", "~0").replace("/", "~1")
 
 
 def finding(rule, file, message, evidence, severity="high", confidence="high", line=None,
@@ -60,7 +64,7 @@ def _compare_openapi(base, head, filename="openapi.json"):
         annotations = {"title", "description", "default", "example", "examples", "deprecated", "externalDocs", "xml", "$id", "$schema", "$comment", "$defs", "definitions"}
         for key in sorted((a.keys() | b.keys()) - evaluated - annotations):
             if a.get(key) != b.get(key):
-                emit("OAS.KEYWORD_UNKNOWN", f"Changed schema keyword is not evaluated: {key}", path + "/" + key, classification="unknown")
+                emit("OAS.KEYWORD_UNKNOWN", f"Changed schema keyword is not evaluated: {key}", path + "/" + pointer_segment(key), classification="unknown")
         if a.get("type") != b.get("type"):
             emit("OAS.TYPE_CHANGED", "Schema type changed; compatibility requires review.", path, a.get("type"), b.get("type"), "potentially-breaking")
         ar, br = set(a.get("required", [])), set(b.get("required", []))
@@ -83,19 +87,19 @@ def _compare_openapi(base, head, filename="openapi.json"):
             emit("OAS.INVALID_PROPERTIES", "Invalid properties map.", path, classification="unknown")
             return
         for prop in sorted(ap.keys() & bp.keys()):
-            schema(ap[prop], bp[prop], path + "/properties/" + prop, direction, depth + 1)
+            schema(ap[prop], bp[prop], path + "/properties/" + pointer_segment(prop), direction, depth + 1)
         for prop in sorted(ap.keys() - bp.keys()):
             if direction == "response":
-                emit("OAS.PROPERTY_REMOVED", f"Response property removed: {prop}", path + "/properties/" + prop, "declared", "absent", "potentially-breaking")
+                emit("OAS.PROPERTY_REMOVED", f"Response property removed: {prop}", path + "/properties/" + pointer_segment(prop), "declared", "absent", "potentially-breaking")
             elif b.get("additionalProperties") is False:
-                emit("OAS.PROPERTY_REJECTED", f"Previously accepted request property rejected: {prop}", path + "/properties/" + prop)
+                emit("OAS.PROPERTY_REJECTED", f"Previously accepted request property rejected: {prop}", path + "/properties/" + pointer_segment(prop))
         if a.get("additionalProperties", True) != b.get("additionalProperties", True):
             emit("OAS.ADDITIONAL_PROPERTIES", "Additional-properties policy changed.", path, a.get("additionalProperties", True), b.get("additionalProperties", True), "potentially-breaking")
         if "items" in a or "items" in b:
             schema(a.get("items", {}), b.get("items", {}), path + "/items", direction, depth + 1)
         for key in ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "minLength", "maxLength", "minItems", "maxItems", "pattern", "format", "const", "readOnly", "writeOnly"):
             if a.get(key) != b.get(key):
-                emit("OAS.CONSTRAINT", f"{direction.title()} constraint changed: {key}", path + "/" + key, a.get(key), b.get(key), "potentially-breaking")
+                emit("OAS.CONSTRAINT", f"{direction.title()} constraint changed: {key}", path + "/" + pointer_segment(key), a.get(key), b.get(key), "potentially-breaking")
 
     def content(a, b, path, direction):
         for media in sorted(a.keys() - b.keys()):
@@ -104,16 +108,16 @@ def _compare_openapi(base, head, filename="openapi.json"):
             for media in sorted(b.keys() - a.keys()):
                 emit("OAS.RESPONSE_MEDIA_ADDED", f"New response media type: {media}", path, None, media, "potentially-breaking")
         for media in sorted(a.keys() & b.keys()):
-            schema(a[media].get("schema", {}), b[media].get("schema", {}), path + "/" + media + "/schema", direction)
+            schema(a[media].get("schema", {}), b[media].get("schema", {}), path + "/" + pointer_segment(media) + "/schema", direction)
 
     for path, old_path in sorted(base["paths"].items()):
         old_path = resolve(old_path, base)
         new_path = resolve(head["paths"].get(path, {}), head)
         if old_path is None or new_path is None:
-            emit("OAS.PATH_UNKNOWN", "Unresolved path reference.", path, classification="unknown")
+            emit("OAS.PATH_UNKNOWN", "Unresolved path reference.", "/paths/" + pointer_segment(path), classification="unknown")
             continue
         for method in sorted(METHODS & old_path.keys()):
-            pointer = f"/paths/{path}/{method}"
+            pointer = f"/paths/{pointer_segment(path)}/{method}"
             if method not in new_path:
                 emit("OAS.ENDPOINT_REMOVED", f"Removed endpoint: {method.upper()} {path}", pointer, "present", "absent")
                 continue
@@ -125,15 +129,19 @@ def _compare_openapi(base, head, filename="openapi.json"):
             if sec_a != sec_b:
                 emit("OAS.SECURITY", "Authentication requirements changed.", pointer + "/security", sec_a, sec_b, "potentially-breaking")
             def params(doc, path_item, op):
-                result = {}
-                for p in path_item.get("parameters", []) + op.get("parameters", []):
+                result, locations = {}, {}
+                inputs = [(p, f"/paths/{pointer_segment(path)}/parameters/{i}") for i, p in enumerate(path_item.get("parameters", []))]
+                inputs += [(p, pointer + f"/parameters/{i}") for i, p in enumerate(op.get("parameters", []))]
+                for p, location in inputs:
                     p = resolve(p, doc)
                     if p is None:
                         emit("OAS.PARAM_UNKNOWN", "Unresolved parameter reference.", pointer, classification="unknown")
                     elif "name" in p and "in" in p:
                         result[(p["in"], p["name"])] = p
-                return result
-            pa, pb = params(base, old_path, a), params(head, new_path, b)
+                        locations[(p["in"], p["name"])] = location
+                return result, locations
+            pa, locations_a = params(base, old_path, a)
+            pb, locations_b = params(head, new_path, b)
             for key in sorted(pb.keys() - pa.keys()):
                 if pb[key].get("required"):
                     emit("OAS.PARAM_REQUIRED", f"New required {key[0]} parameter: {key[1]}", pointer + "/parameters", None, key)
@@ -142,7 +150,7 @@ def _compare_openapi(base, head, filename="openapi.json"):
             for key in sorted(pa.keys() & pb.keys()):
                 if not pa[key].get("required") and pb[key].get("required"):
                     emit("OAS.PARAM_REQUIRED", f"Parameter became required: {key[1]}", pointer + "/parameters", False, True)
-                schema(pa[key].get("schema", {}), pb[key].get("schema", {}), pointer + "/parameters/" + "/".join(key), "request")
+                schema(pa[key].get("schema", {}), pb[key].get("schema", {}), locations_a[key] + "/schema", "request")
             ra, rb = resolve(a.get("requestBody", {}), base), resolve(b.get("requestBody", {}), head)
             if ra is None or rb is None:
                 emit("OAS.BODY_UNKNOWN", "Unresolved request-body reference.", pointer, classification="unknown")
@@ -160,13 +168,13 @@ def _compare_openapi(base, head, filename="openapi.json"):
                 if ra is None or rb is None:
                     emit("OAS.RESPONSE_UNKNOWN", "Unresolved response reference.", pointer, classification="unknown")
                 else:
-                    content(ra.get("content", {}), rb.get("content", {}), pointer + "/responses/" + code + "/content", "response")
+                    content(ra.get("content", {}), rb.get("content", {}), pointer + "/responses/" + pointer_segment(code) + "/content", "response")
     for path, item in sorted(head["paths"].items()):
         item = resolve(item, head)
         old = resolve(base["paths"].get(path, {}), base)
         if item is not None and old is not None:
             for method in sorted((METHODS & item.keys()) - old.keys()):
-                emit("OAS.ENDPOINT_ADDED", f"Added endpoint: {method.upper()} {path}", f"/paths/{path}/{method}", None, "present", "non-breaking")
+                emit("OAS.ENDPOINT_ADDED", f"Added endpoint: {method.upper()} {path}", f"/paths/{pointer_segment(path)}/{method}", None, "present", "non-breaking")
     return out
 
 

@@ -20,6 +20,7 @@ from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
+from .contracts import VERSION
 
 ROOT = Path(__file__).resolve().parent.parent
 WRITERS = {'owner', 'administrator', 'developer'}
@@ -100,7 +101,7 @@ def create_app(database_url=None, mode=None):
         yield
         app.state.engine.dispose()
 
-    app = FastAPI(title='ZEVQ Preflight', version='0.2.0', lifespan=lifespan, docs_url=None, redoc_url=None)
+    app = FastAPI(title='ZEVQ Preflight', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.engine = make_engine(db_url)
     app.state.db = factory(app.state.engine)
     app.state.mode = mode
@@ -144,6 +145,12 @@ def create_app(database_url=None, mode=None):
                 chunks.append(chunk)
             request._body = b''.join(chunks)
         response = await call_next(request)
+        return response
+
+    @app.middleware('http')
+    async def secure_response_headers(request, call_next):
+        # Registered last so even early authentication/validation responses pass here.
+        response = await call_next(request)
         response.headers.update({'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'", 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'})
         if mode == 'staging':
             response.headers['Strict-Transport-Security'] = 'max-age=31536000'
@@ -151,7 +158,7 @@ def create_app(database_url=None, mode=None):
 
     @app.get('/health')
     def health():
-        return {'status': 'ok', 'version': '0.2.0'}
+        return {'status': 'ok', 'version': VERSION}
 
     @app.get('/api/ready')
     def ready(request: Request):

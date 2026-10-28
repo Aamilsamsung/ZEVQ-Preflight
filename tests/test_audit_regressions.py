@@ -1,4 +1,4 @@
-"""Audit regressions: expected failures are open defects, never counted as passes."""
+"""Regressions for the independently verified staging defects."""
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
@@ -7,18 +7,23 @@ from app.db import Base, factory, make_engine
 from app.security import limit
 from app.contracts import compare_openapi
 
-@pytest.mark.xfail(strict=True,reason='AUDIT-02: staging boundary returns before security header middleware')
-def test_anonymous_denial_includes_security_headers(tmp_path):
+@pytest.mark.parametrize('method,path,options,status',[
+    ('GET','/api/auth/me',{},401),
+    ('GET','/app',{'follow_redirects':False},303),
+    ('POST','/api/auth/register',{},403),
+    ('POST','/api/auth/login',{'json':{},'headers':{'Origin':'https://untrusted.invalid'}},403),
+    ('POST','/api/auth/login',{'json':{}},422),
+])
+def test_anonymous_denial_includes_security_headers(tmp_path,method,path,options,status):
     app=create_app('sqlite:///'+str(tmp_path/'audit.db'),mode='staging')
     Base.metadata.create_all(app.state.engine)
     # No lifespan: exercise the staging middleware with a disposable database.
     client=TestClient(app)
-    response=client.get('/api/auth/me')
-    assert response.status_code==401
+    response=client.request(method,path,**options)
+    assert response.status_code==status
     for name in ['Content-Security-Policy','X-Content-Type-Options','X-Frame-Options','Strict-Transport-Security']:
         assert name in response.headers
 
-@pytest.mark.xfail(strict=True,reason='AUDIT-05: OpenAPI evidence paths are not RFC6901 escaped')
 def test_openapi_evidence_pointer_resolves_baseline():
     baseline={'openapi':'3.0.3','paths':{'/orders':{'get':{'responses':{'200':{'description':'OK'}}}}}}
     f=compare_openapi(baseline,{'openapi':'3.0.3','paths':{}})[0]
@@ -37,3 +42,16 @@ def test_database_rate_limit_exact_boundary(tmp_path):
     # A distinct account does not inherit the first account's counter.
     limit(db,'another-synthetic-key',3,900)
     engine.dispose()
+
+
+def test_nested_media_and_property_pointer_resolves():
+    import copy
+    schema={'type':'object','properties':{'a/b~c':{'type':'string'}},'additionalProperties':False}
+    baseline={'openapi':'3.0.3','paths':{'/x~y':{'post':{'requestBody':{'content':{'application/json':{'schema':schema}}},'responses':{}}}}}
+    head=copy.deepcopy(baseline)
+    head['paths']['/x~y']['post']['requestBody']['content']['application/json']['schema']['properties']={}
+    f=next(f for f in compare_openapi(baseline,head) if f['rule']=='OAS.PROPERTY_REJECTED')
+    target=baseline
+    for part in f['evidence']['pointer'].split('/')[1:]:
+        target=target[part.replace('~1','/').replace('~0','~')]
+    assert target=={'type':'string'}

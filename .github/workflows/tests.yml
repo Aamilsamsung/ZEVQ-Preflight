@@ -44,13 +44,14 @@ jobs:
           python -m pytest tests/test_api.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
       - name: Install browser QA tooling
         run: |
-          npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1
+          npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1 @axe-core/playwright@4.10.2
           "$RUNNER_TEMP/preflight-browser/node_modules/.bin/playwright" install --with-deps chromium
       - name: Real browser workflow against local API and worker
         run: |
           python -m alembic upgrade head
           python -m scripts.seed_local_qa
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" QA_START_SERVICES=1 node scripts/browser-qa.cjs
+          NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/independent_browser_checks.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -58,6 +59,7 @@ jobs:
           path: |
             artifacts/*.xml
             artifacts/browser-qa-results.json
+            artifacts/independent-audit/frontend-results.json
             artifacts/qa-desktop*.png
             artifacts/qa-mobile.png
             artifacts/qa-tablet.png
