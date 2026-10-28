@@ -23,6 +23,22 @@ await record('Password confirmation mismatch is actionable',async()=>{
  await page.locator('#current-password').fill(creds.password);await page.locator('#new-password').fill('synthetic-test-password-one');await page.locator('#confirm-password').fill('synthetic-test-password-two');await page.getByRole('button',{name:'Change password',exact:true}).click();await page.getByText('New passwords do not match.',{exact:true}).waitFor();
  assert.equal(await page.locator('#current-password').isVisible(),true)
 });
+await record('Finding decisions persist, expire explicitly and retain history',async()=>{
+ const fixture=JSON.parse(fs.readFileSync('artifacts/qa-review-scan.json'));
+ await page.goto('http://127.0.0.1:8011/app#scan/'+fixture.scan_id);
+ await page.getByRole('heading',{name:'Analysis report',exact:true}).waitFor();
+ const finding=page.locator('.finding').first();const risk=await page.locator('main').innerText();
+ for(const [status,reason] of [['acknowledged','Synthetic browser review acknowledged'],['suppressed','Synthetic browser suppression with expiry'],['open','Synthetic browser review reopened']]){
+  await finding.locator('.decision-summary').click();await finding.getByLabel('Decision',{exact:true}).selectOption(status);
+  await finding.getByLabel('Reason',{exact:true}).fill(reason);
+  if(status==='suppressed')assert.ok(await finding.getByLabel('Expiry (your local time)',{exact:true}).inputValue());
+  await Promise.all([page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/review')&&r.status()===200),finding.getByRole('button',{name:'Save decision',exact:true}).click()]);
+  await finding.locator('.review-reason').filter({hasText:reason}).waitFor();await page.reload();await finding.locator('.review-reason').filter({hasText:reason}).waitFor();
+ }
+ await finding.locator('.decision-summary').click();await finding.getByRole('button',{name:'Load decision history',exact:true}).click();await finding.getByRole('cell',{name:'Synthetic browser review acknowledged',exact:true}).waitFor();assert.equal(await finding.locator('tbody tr').count(),3);
+ assert.match(await page.locator('main').innerText(),/Original|original/);
+ axe.push({page:'finding-review',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});
+});
 for(const path of ['/app#dashboard','/app#settings','/app#new']){await page.goto('http://127.0.0.1:8011'+path);await page.locator('main h1').waitFor();axe.push({page:path,...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()})}
 await page.getByRole('tab',{name:'API / OpenAPI'}).click();const doc=JSON.stringify({openapi:'3.0.3',paths:{}});await page.locator('#baseline-contract').fill(doc);await page.locator('#proposed-contract').fill(doc);await page.getByRole('button',{name:'Continue to Configuration'}).click();await page.getByRole('button',{name:'Continue to Review'}).click();await record('Review renders four real summary rows',async()=>{assert.equal(await page.locator('.wizard-review .key-value').count(),4);assert.doesNotMatch(await page.locator('.wizard-review').innerText(),/\[object HTMLDivElement\]/)});
 await page.goto('http://127.0.0.1:8011/app#settings');await page.getByRole('button',{name:'Delete account',exact:true}).click();await record('Confirmation dialog has accessible name',async()=>{await page.getByRole('dialog',{name:'Permanently delete your account?',exact:true}).waitFor({timeout:1000})});axe.push({page:'confirmation-dialog',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});await page.getByRole('button',{name:'Cancel',exact:true}).click();

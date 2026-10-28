@@ -5,8 +5,9 @@ import secrets
 import zipfile
 from pathlib import Path
 from sqlalchemy import select
-from app.db import make_engine, factory, User, Organization, Membership
+from app.db import make_engine, factory, User, Organization, Membership, Scan
 from app.security import hasher
+from app.analyzer import analyze
 
 if os.getenv('DATABASE_URL') or os.getenv('PREFLIGHT_MODE', 'development') != 'development':
     raise SystemExit('QA seeding requires the default disposable local database and development mode')
@@ -38,7 +39,9 @@ with factory(make_engine())() as db:
         db.add(Membership(org_id=org_id, user_id=viewer.id, role='viewer'))
     else:
         membership.role = 'viewer'
-    db.commit()
+    scan = Scan(org_id=org_id, status='completed', result=json.dumps(analyze({'app.py':'def broken(\n'})))
+    db.add(scan); db.commit()
+    (out / 'qa-review-scan.json').write_text(json.dumps({'scan_id':scan.id}))
 viewer_credentials = out / 'qa-viewer-credentials.json'
 viewer_credentials.write_text(json.dumps({'email':'qa-viewer@example.test','password':viewer_password}))
 viewer_credentials.chmod(0o600)

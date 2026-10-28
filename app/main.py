@@ -10,17 +10,19 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException, UploadFile, File
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
-from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit
+from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
 from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 from .contracts import VERSION
+from .reviews import STATUSES, MAX_SUPPRESSION_SECONDS, decision_dict, annotate_scan
 
 ROOT = Path(__file__).resolve().parent.parent
 WRITERS = {'owner', 'administrator', 'developer'}
@@ -39,6 +41,13 @@ class PasswordChange(BaseModel):
 
 class RoleInput(BaseModel):
     role: str = Field(max_length=20)
+
+
+class ReviewInput(BaseModel):
+    status: str = Field(max_length=24)
+    reason: str = Field(min_length=10, max_length=2000)
+    expires_at: float | None = Field(default=None, allow_inf_nan=False)
+    expected_version: int = Field(ge=0)
 
 
 class OrgInput(BaseModel):
@@ -114,6 +123,11 @@ def create_app(database_url=None, mode=None):
     app.state.engine = make_engine(db_url)
     app.state.db = factory(app.state.engine)
     app.state.mode = mode
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request, error):
+        # Do not echo submitted credentials/source or non-finite input values.
+        return JSONResponse({'detail':[{'loc':list(e['loc']),'msg':e['msg'],'type':e['type']} for e in error.errors()]},status_code=422)
 
     @app.middleware('http')
     async def boundaries(request, call_next):
@@ -348,7 +362,7 @@ def create_app(database_url=None, mode=None):
         with app.state.db() as db:
             scan = scoped_scan(db, org_id, scan_id)
             if scan.status == 'queued': notify_worker()
-            return scan_dict(scan, True)
+            return annotate_scan(db,scan_dict(scan,True))
 
     @app.post('/api/orgs/{org_id}/scans/{scan_id}/cancel')
     def cancel(org_id: str, scan_id: str, request: Request):
@@ -366,14 +380,16 @@ def create_app(database_url=None, mode=None):
         with app.state.db() as db:
             scan = scoped_scan(db, org_id, scan_id)
             if scan.status != 'completed': raise HTTPException(409, 'Report is not ready')
-            data = scan_dict(scan, True)
+            data = annotate_scan(db,scan_dict(scan,True))
         if format == 'json':
             return Response(json.dumps(data, indent=2), media_type='application/json', headers={'Content-Disposition': f'attachment; filename="preflight-{scan_id}.json"'})
         if format != 'csv': raise HTTPException(422, 'Supported formats: json, csv')
         output = io.StringIO(); writer = csv.writer(output)
-        fields = ['id', 'severity', 'category', 'file', 'line', 'message', 'confidence', 'recommended_action']
+        fields = ['id', 'severity', 'category', 'file', 'line', 'message', 'confidence', 'recommended_action', 'review_status', 'review_reason', 'review_expires_at', 'review_version']
         writer.writerow(fields)
         for finding in data['result'].get('findings', []):
+            review=data['reviews'].get(finding.get('id'),{})
+            finding={**finding,'review_status':review.get('effective_status','open'),'review_reason':review.get('reason',''),'review_expires_at':review.get('expires_at') or '', 'review_version':review.get('version',0)}
             row = []
             for field in fields:
                 value = str(finding.get(field, ''))
@@ -381,6 +397,53 @@ def create_app(database_url=None, mode=None):
                 row.append(value)
             writer.writerow(row)
         return Response(output.getvalue(), media_type='text/csv', headers={'Content-Disposition': f'attachment; filename="preflight-{scan_id}.csv"'})
+
+    @app.put('/api/orgs/{org_id}/scans/{scan_id}/findings/{finding_id}/review')
+    def review_finding(org_id: str, scan_id: str, finding_id: str, data: ReviewInput, request: Request):
+        actor,_=member(request,org_id,WRITERS)
+        if data.status not in STATUSES:
+            raise HTTPException(422,'Unsupported review decision')
+        if data.status=='suppressed':
+            member(request,org_id,ADMINS)
+            now=time.time()
+            if data.expires_at is None or not now<data.expires_at<=now+MAX_SUPPRESSION_SECONDS:
+                raise HTTPException(422,'Suppression expiry must be in the future and within 90 days')
+        elif data.expires_at is not None:
+            raise HTTPException(422,'Expiry applies only to suppression decisions')
+        reason=data.reason.strip()
+        if len(reason)<10:
+            raise HTTPException(422,'Provide a review reason of at least 10 non-blank characters')
+        limit(app.state.db,'finding-review:'+actor.id,120,900)
+        with app.state.db() as db:
+            # Serialize decisions for this scan, including first-review creation.
+            scan=db.scalar(select(Scan).where(Scan.id==scan_id,Scan.org_id==org_id).with_for_update())
+            if not scan: raise HTTPException(404,'Scan not found')
+            if scan.status!='completed': raise HTTPException(409,'Only completed scans can be reviewed')
+            if not any(f.get('id')==finding_id for f in json.loads(scan.result or '{}').get('findings',[])):
+                raise HTTPException(404,'Finding not found in this scan')
+            current=db.get(FindingReview,(scan_id,finding_id))
+            if data.expected_version!=(current.version if current else 0):
+                raise HTTPException(409,'This decision changed. Reload the report before updating it.')
+            values=dict(version=data.expected_version+1,status=data.status,reason=reason,expires_at=data.expires_at,actor_id=actor.id,updated_at=time.time())
+            if current:
+                for key,value in values.items():setattr(current,key,value)
+            else:
+                current=FindingReview(scan_id=scan_id,finding_id=finding_id,**values);db.add(current)
+            db.add(FindingReviewEvent(scan_id=scan_id,finding_id=finding_id,**values))
+            event(db,org_id,actor.id,'finding.'+data.status+':'+finding_id[:64])
+            db.commit()
+            return decision_dict(current)
+
+    @app.get('/api/orgs/{org_id}/scans/{scan_id}/findings/{finding_id}/reviews')
+    def review_history(org_id: str, scan_id: str, finding_id: str, request: Request, offset: int=0):
+        member(request,org_id)
+        if offset<0:raise HTTPException(422,'Invalid offset')
+        with app.state.db() as db:
+            scan=scoped_scan(db,org_id,scan_id)
+            if not any(f.get('id')==finding_id for f in json.loads(scan.result or '{}').get('findings',[])):
+                raise HTTPException(404,'Finding not found in this scan')
+            rows=db.scalars(select(FindingReviewEvent).where(FindingReviewEvent.scan_id==scan_id,FindingReviewEvent.finding_id==finding_id).order_by(FindingReviewEvent.version.desc()).offset(offset).limit(100)).all()
+            return [decision_dict(row) for row in rows]
 
     @app.get('/api/orgs/{org_id}/dashboard')
     def dashboard(org_id: str, request: Request):

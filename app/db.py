@@ -103,3 +103,29 @@ def make_engine(url=None):
 
 def factory(engine):
     return sessionmaker(engine, expire_on_commit=False)
+
+
+class FindingReview(Base):
+    __tablename__ = 'finding_reviews'
+    scan_id: Mapped[str] = mapped_column(ForeignKey('scans.id', ondelete='CASCADE'), primary_key=True)
+    finding_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    version: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(24))
+    reason: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[float | None] = mapped_column(Float, nullable=True)
+    actor_id: Mapped[str] = mapped_column(String(36))
+    updated_at: Mapped[float] = mapped_column(Float)
+
+
+class FindingReviewEvent(Base):
+    __tablename__ = 'finding_review_events'
+    __table_args__ = (UniqueConstraint('scan_id', 'finding_id', 'version'),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    scan_id: Mapped[str] = mapped_column(ForeignKey('scans.id', ondelete='CASCADE'), index=True)
+    finding_id: Mapped[str] = mapped_column(String(128))
+    version: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(24))
+    reason: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[float | None] = mapped_column(Float, nullable=True)
+    actor_id: Mapped[str] = mapped_column(String(36))
+    updated_at: Mapped[float] = mapped_column(Float)
