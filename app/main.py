@@ -22,6 +22,7 @@ from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal,
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 from .contracts import VERSION
+from .comparisons import compare_results
 from .reviews import STATUSES, MAX_SUPPRESSION_SECONDS, decision_dict, annotate_scan
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -355,6 +356,28 @@ def create_app(database_url=None, mode=None):
             event(db, org_id, user.id, 'contract.queued'); db.commit()
             notify_worker()
             return scan_dict(scan, True)
+
+    @app.get('/api/orgs/{org_id}/comparisons')
+    def compare_scans(org_id: str, request: Request, baseline_id: str, proposed_id: str):
+        member(request,org_id)
+        with app.state.db() as db:
+            baseline=scoped_scan(db,org_id,baseline_id)
+            proposed=scoped_scan(db,org_id,proposed_id)
+            if baseline.id==proposed.id:raise HTTPException(422,'Choose two different scans')
+            if baseline.status!='completed' or proposed.status!='completed':
+                raise HTTPException(409,'Both scans must be completed')
+            if baseline.repository!=proposed.repository:
+                raise HTTPException(422,'Choose scans with the same source label')
+            old,new=json.loads(baseline.result or '{}'),json.loads(proposed.result or '{}')
+            data=compare_results(old,new)
+            for name,scan,result in [('baseline',baseline,old),('proposed',proposed,new)]:
+                data[name]={**scan_dict(scan),'engine_version':result.get('engine_version'),'risk_score':result.get('risk_score'),'coverage':result.get('coverage')}
+            if baseline.repository in ('Uploaded archive','OpenAPI contract'):
+                data['warnings'].append('Uploaded inputs have no verified shared source identity. Confirm these reports describe the same project and intended comparison.')
+            if (baseline.base_ref,baseline.head_ref)!=(proposed.base_ref,proposed.head_ref):
+                data['warnings'].append('Requested revision pairs differ. This compares stored findings, not the code between these scans.')
+            data['warnings'].append('Chronological order and equivalent test coverage are not guaranteed. Inspect source revisions and timestamps.')
+            return data
 
     @app.get('/api/orgs/{org_id}/scans/{scan_id}')
     def detail(org_id: str, scan_id: str, request: Request):

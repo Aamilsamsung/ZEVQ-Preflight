@@ -35,3 +35,9 @@ The New Scan route uses the second supplied dark reference: wider ink sidebar, m
 ### Shared theme rollout — 28 October 2026
 
 Applied the New Scan dark mint design system to all existing authenticated routes and public pages. Shared tokens cover the canvas, typography, mint controls, cards, inputs, badges, tables, evidence blocks, dialogs, errors and focus states. Dashboard charts, repositories, reports, history, team, audit and settings now share the same dark shell. Landing, product information, documentation, pricing, security, support, legal notices, sign-in and client error pages use matching colors and branding. The browser workflow checks public and additional workspace pages for horizontal overflow at 390, 768 and 1440 pixels, alongside the existing scan/report flows. No backend or entitlement behavior changed.
+
+### Review and comparison increments — 28 October 2026
+
+Implemented per-scan review decisions, administrator suppression with required expiry, optimistic version conflicts, organization-scoped decision history, original-evidence preservation and current review exports. Verified PostgreSQL migration0002 and synthetic restore with review history. See FINDING_REVIEWS.md and FINDING_REVIEW_RELEASE_2026-10-28.md for executed evidence and limitations.
+
+Implemented stored-report comparison with deterministic ID matching, changed-field evidence, unmatched legacy IDs, source/engine/coverage warnings, authenticated JSON download and a shared-theme report picker. Review status is never carried across scans; absent findings are never called fixed. See SCAN_COMPARISON.md. Release checks for this increment are recorded separately after execution. Full commercial roadmap and public-launch approval remain open.

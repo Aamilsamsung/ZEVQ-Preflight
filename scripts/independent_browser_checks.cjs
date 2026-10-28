@@ -39,6 +39,17 @@ await record('Finding decisions persist, expire explicitly and retain history',a
  assert.match(await page.locator('main').innerText(),/Original|original/);
  axe.push({page:'finding-review',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});
 });
+await record('Scan comparison selects real reports and preserves uncertainty',async()=>{
+ const fixture=JSON.parse(fs.readFileSync('artifacts/qa-comparison.json'));
+ await page.goto('http://127.0.0.1:8011/app#history');await page.getByLabel('Earlier report',{exact:true}).selectOption(fixture.baseline_id);await page.getByLabel('Later report',{exact:true}).selectOption(fixture.baseline_id);await page.getByRole('button',{name:'Compare findings',exact:true}).click();await page.getByText('Choose two different scans.',{exact:true}).waitFor();
+ await page.getByLabel('Later report',{exact:true}).selectOption(fixture.proposed_id);await page.getByRole('button',{name:'Compare findings',exact:true}).click();await page.getByRole('heading',{name:'Compare scan findings',exact:true}).waitFor();
+ await page.getByRole('heading',{name:'No longer observed findings',exact:true}).waitFor();assert.match(await page.locator('main').innerText(),/Not observed does not mean fixed/);
+ assert.equal(await page.getByRole('link',{name:'Review in original report',exact:true}).count(),1);
+ const download=await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name:'Download comparison JSON',exact:true}).click()]);const exported=JSON.parse(fs.readFileSync(await download[0].path()));assert.equal(exported.counts.not_observed,1);assert.equal(exported.counts.added,0);
+ await page.reload();await page.getByRole('heading',{name:'Compare scan findings',exact:true}).waitFor();
+ for(const width of [390,768,1440]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false)}
+ axe.push({page:'scan-comparison',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});
+});
 for(const path of ['/app#dashboard','/app#settings','/app#new']){await page.goto('http://127.0.0.1:8011'+path);await page.locator('main h1').waitFor();axe.push({page:path,...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()})}
 await page.getByRole('tab',{name:'API / OpenAPI'}).click();const doc=JSON.stringify({openapi:'3.0.3',paths:{}});await page.locator('#baseline-contract').fill(doc);await page.locator('#proposed-contract').fill(doc);await page.getByRole('button',{name:'Continue to Configuration'}).click();await page.getByRole('button',{name:'Continue to Review'}).click();await record('Review renders four real summary rows',async()=>{assert.equal(await page.locator('.wizard-review .key-value').count(),4);assert.doesNotMatch(await page.locator('.wizard-review').innerText(),/\[object HTMLDivElement\]/)});
 await page.goto('http://127.0.0.1:8011/app#settings');await page.getByRole('button',{name:'Delete account',exact:true}).click();await record('Confirmation dialog has accessible name',async()=>{await page.getByRole('dialog',{name:'Permanently delete your account?',exact:true}).waitFor({timeout:1000})});axe.push({page:'confirmation-dialog',...await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()});await page.getByRole('button',{name:'Cancel',exact:true}).click();

@@ -42,6 +42,9 @@ with factory(make_engine())() as db:
     scan = Scan(org_id=org_id, status='completed', result=json.dumps(analyze({'app.py':'def broken(\n'})))
     db.add(scan); db.commit()
     (out / 'qa-review-scan.json').write_text(json.dumps({'scan_id':scan.id}))
+    clean = Scan(org_id=org_id, status='completed', result=json.dumps(analyze({'app.py':'def valid():\n    return True\n'})))
+    db.add(clean); db.commit()
+    (out / 'qa-comparison.json').write_text(json.dumps({'baseline_id':scan.id,'proposed_id':clean.id}))
 viewer_credentials = out / 'qa-viewer-credentials.json'
 viewer_credentials.write_text(json.dumps({'email':'qa-viewer@example.test','password':viewer_password}))
 viewer_credentials.chmod(0o600)
