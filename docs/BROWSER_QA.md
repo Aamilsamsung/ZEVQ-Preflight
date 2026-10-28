@@ -2,7 +2,7 @@
 
 Local Chromium/Playwright QA executed against the actual FastAPI application, local database and separate static worker. No scan API responses were mocked.
 
-**32 checks passed, zero browser console errors/uncaught exceptions.** Results and screenshots are held under ignored `artifacts/` for local review. These checks are local; deployed browser QA remains BLOCKED by hosting.
+**32 checks passed, zero browser console errors/uncaught exceptions.** The same workflow also passed in GitHub Actions at application commit `4a06fa7f93e34b2acc8e45d61807daef8d79d625` ([run 40652078061](https://github.com/Aamilsamsung/ZEVQ-Preflight/actions/runs/40652078061)); screenshots and results are downloadable from its test-results artifact. Results and screenshots are held under ignored `artifacts/` for local review. These checks are local; deployed browser QA remains BLOCKED by hosting.
 
 Coverage: 12 public pages; sign-in; refresh persistence; repository connection; OpenAPI comparison that detects a removed endpoint; finding evidence/rule display; authenticated JSON and CSV downloads; ZIP processing through the worker; history/team/audit/settings views; data-control presence; mobile navigation; 390/768/1440-pixel dashboard layouts without document overflow; keyboard skip navigation; sign-out. Account/organization deletion controls were inspected but destructive clicks were not executed in this browser run; API tests cover their authorization behavior. Complete WCAG 2.2 AA conformance has not been assessed.
 

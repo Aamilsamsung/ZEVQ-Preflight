@@ -35,9 +35,9 @@ Live URL/deployed commit: **none**. No Preflight infrastructure was provisioned 
 - Original repository baseline: seven tests passed after dependency installation.
 - Latest local suite before final record: 95 tests passed, one Starlette/httpx test-client deprecation warning.
 - GitHub Actions run `40552949670` passed pinned installation, `pip check`, full regression suite, PostgreSQL 16 migration upgrade/downgrade/upgrade and PostgreSQL API tests at commit `384031f72e1ffefcffc28f0ff46ce7c18cb8ba7e`.
-- Later analyzer coverage fixes have local test evidence; the final branch's CI must pass separately before staging deployment.
-- 32 actual local Chromium checks passed, zero console errors/exceptions. See BROWSER_QA.md.
-- `pip-audit` checked 32 pinned dependencies: zero known vulnerabilities on 27 October 2026. This does not establish absence of vulnerabilities or certify security.
+- Application commit `4a06fa7f93e34b2acc8e45d61807daef8d79d625` passed the final 95-test suite, PostgreSQL migration/API checks and all 32 real Chromium checks in [Actions run 40652078061](https://github.com/Aamilsamsung/ZEVQ-Preflight/actions/runs/40652078061). Subsequent release-record edits are documentation only.
+- 32 actual Chromium checks passed locally and in GitHub Actions, zero console errors/exceptions. See BROWSER_QA.md.
+- `pip-audit` checked 33 pinned dependencies: zero known vulnerabilities on 28 October 2026. This does not establish absence of vulnerabilities or certify security.
 - Real GitHub archive retrieval at baseline SHA: seven supported files processed in 11.118 seconds, static result only. Network/provider timings are environment-dependent.
 - Synthetic local CPU-only test, ten runs of 400 small Python files/signature changes: median 22.02 ms, maximum 51.41 ms, 400 findings. Excludes network, uploads, queue and database. No production throughput claim.
 - Render Blueprint validated against Render's public JSON schema. No platform apply/deployment validation or live QA performed.
@@ -51,7 +51,7 @@ Live URL/deployed commit: **none**. No Preflight infrastructure was provisioned 
 | Unknown/skipped inputs disclosed | PASS | Coverage records and regression tests |
 | Session/CSRF/role/tenant boundaries | PASS | Automated API tests; not independent certification |
 | Durable PostgreSQL schema/API | PASS | CI PostgreSQL 16 and migration cycle at foundation commit |
-| Final branch CI | NOT TESTED | Must verify latest head after publishing changes |
+| Final application CI | PASS | Application commit 4a06fa7; Actions run 40652078061 |
 | Browser core flow/mobile/tablet/desktop | PASS | 32 local checks |
 | WCAG 2.2 AA full assessment | NOT TESTED | Keyboard/overflow checks are partial |
 | Hosted restricted staging | BLOCKED | Additional free DB rejected; dedicated DB/worker funding or supplied infrastructure needed |
