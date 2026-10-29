@@ -9,7 +9,7 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request, HTTPException, UploadFile, File
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
-from . import retention, alerts
+from . import retention, alerts, email_recovery, operations
 from .db import RetentionPolicy, CleanupRun
 from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
@@ -40,6 +40,18 @@ class Login(BaseModel):
 
 class PasswordChange(BaseModel):
     current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=14, max_length=256)
+
+
+class EmailRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=254)
+
+
+class EmailConfirm(BaseModel):
+    token: str = Field(min_length=1, max_length=128)
+
+
+class EmailReset(EmailConfirm):
     new_password: str = Field(min_length=14, max_length=256)
 
 
@@ -132,9 +144,11 @@ def create_app(database_url=None, mode=None):
         # Schema is managed by Alembic, never implicitly migrated by a web process.
         yield
         app.state.engine.dispose()
+        app.state.health_engine.dispose()
 
     app = FastAPI(title='ZEVQ Preflight', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.engine = make_engine(db_url)
+    app.state.health_engine = make_engine(db_url, health=True)
     instrument_engine(app.state.engine)
     app.state.db = factory(app.state.engine)
     app.state.mode = mode
@@ -154,7 +168,7 @@ def create_app(database_url=None, mode=None):
     @app.middleware('http')
     async def boundaries(request, call_next):
         path = request.url.path
-        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register') or path.startswith('/static/')
+        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register', '/forgot-password', '/reset-password', '/verify-email', '/api/auth/email/status', '/api/auth/email/request-reset', '/api/auth/email/request-verification', '/api/auth/email/reset', '/api/auth/email/verify', '/api/operations/monitor') or path.startswith('/static/')
         if mode == 'staging' and not public_access:
             expected = 'staging:' + os.getenv('STAGING_PASSWORD', '')
             supplied = request.headers.get('authorization', '')
@@ -205,7 +219,18 @@ def create_app(database_url=None, mode=None):
 
     @app.get('/health')
     def health():
-        return {'status': 'ok', 'version': VERSION}
+        try:
+            with app.state.health_engine.connect() as conn:
+                if conn.dialect.name == 'postgresql':
+                    conn.execute(text("SET LOCAL statement_timeout = '1500ms'"))
+                conn.execute(text('SELECT 1'))
+        except Exception:
+            return JSONResponse({'status': 'unavailable'}, status_code=503)
+        return {'status': 'ok', 'version': VERSION, 'database': 'reachable'}
+
+    @app.get('/api/operations/monitor')
+    def monitor(request: Request):
+        return operations.monitor_status(request)
 
     @app.get('/api/ready')
     def ready(request: Request):
@@ -213,6 +238,45 @@ def create_app(database_url=None, mode=None):
         with app.state.engine.connect() as conn:
             conn.execute(text('SELECT 1'))
         return {'database': 'reachable', 'execution': 'disabled', 'registration': 'disabled', 'billing': 'disabled'}
+
+    @app.get('/api/auth/email/status')
+    def email_status():
+        return {'delivery_enabled': email_recovery.configuration() is not None, 'registration': 'disabled'}
+
+    def request_email(data, request, background, purpose):
+        config = email_recovery.configuration()
+        if config is None:
+            raise HTTPException(503, 'Email delivery is not configured. Contact support for verified operator recovery.')
+        email = data.email.strip().lower()
+        limit(app.state.db, 'email-ip:' + (request.client.host if request.client else 'unknown'), 10, 900)
+        limit(app.state.db, 'email-recipient:' + email, 3, 900)
+        background.add_task(email_recovery.dispatch, app.state.db, config, email, purpose)
+        return JSONResponse(email_recovery.GENERIC, status_code=202)
+
+    @app.post('/api/auth/email/request-reset')
+    def request_reset(data: EmailRequest, request: Request, background: BackgroundTasks):
+        return request_email(data, request, background, 'reset')
+
+    @app.post('/api/auth/email/request-verification')
+    def request_verification(data: EmailRequest, request: Request, background: BackgroundTasks):
+        return request_email(data, request, background, 'verify')
+
+    def confirm_email(data, request, purpose):
+        if email_recovery.configuration() is None:
+            raise HTTPException(503, 'Email delivery is not configured. Contact support.')
+        limit(app.state.db, 'email-confirm-ip:' + (request.client.host if request.client else 'unknown'), 20, 900)
+        email_recovery.consume(app.state.db, data.token, purpose, getattr(data, 'new_password', None))
+        response = JSONResponse({'ok': True, 'sign_in_required': True})
+        response.delete_cookie('preflight_session', path='/')
+        return response
+
+    @app.post('/api/auth/email/reset')
+    def reset_email(data: EmailReset, request: Request):
+        return confirm_email(data, request, 'reset')
+
+    @app.post('/api/auth/email/verify')
+    def verify_email(data: EmailConfirm, request: Request):
+        return confirm_email(data, request, 'verify')
 
     @app.post('/api/auth/register')
     def register():
@@ -260,6 +324,8 @@ def create_app(database_url=None, mode=None):
                 raise HTTPException(403, 'Current password is incorrect')
             if password_ok(current.password_hash, data.new_password):
                 raise HTTPException(422, 'Choose a different new password')
+            from .db import EmailToken
+            db.execute(delete(EmailToken).where(EmailToken.user_id == user.id))
             current.password_hash = hasher.hash(data.new_password)
             db.execute(delete(SessionRecord).where(SessionRecord.user_id == user.id))
             for org_id in db.scalars(select(Membership.org_id).where(Membership.user_id == user.id)):
@@ -639,7 +705,7 @@ def create_app(database_url=None, mode=None):
     app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')
     @app.get('/{path:path}', include_in_schema=False)
     def page(path: str):
-        if path not in ('', 'login', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
+        if path not in ('', 'login', 'forgot-password', 'reset-password', 'verify-email', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
             if path.startswith('api/'):
                 return JSONResponse({'detail': 'Endpoint not found'}, status_code=404)
             return FileResponse(ROOT / 'static/index.html', status_code=404)

@@ -43,7 +43,7 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
-          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_retention.py tests/test_alerts.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
+          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_email_recovery.py tests/test_operations.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_retention.py tests/test_alerts.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
       - name: Synthetic PostgreSQL backup and restore drill
         env:
           DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test
@@ -60,6 +60,8 @@ jobs:
         run: |
           git worktree add --detach "$RUNNER_TEMP/preflight-rollback" 9e78cde832e0d9213aae6450c5fb7d80f90ff6f4
           PREFLIGHT_ROLLBACK_SOURCE="$RUNNER_TEMP/preflight-rollback" PREFLIGHT_RESTORE_MANIFEST="$GITHUB_WORKSPACE/artifacts/restore-manifest.json" PREFLIGHT_ROLLBACK_SUMMARY="$GITHUB_WORKSPACE/artifacts/rollback-results.json" PYTHONPATH="$RUNNER_TEMP/preflight-rollback" python "$GITHUB_WORKSPACE/scripts/rollback_compatibility_check.py"
+      - name: Deterministic external monitoring checks
+        run: node scripts/test_external_monitor.cjs
       - name: Install browser QA tooling
         run: |
           npm install --prefix "$RUNNER_TEMP/preflight-browser" playwright@1.62.1 @axe-core/playwright@4.10.2
@@ -72,6 +74,7 @@ jobs:
           node --check scripts/hosted_scan_journeys.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" QA_START_SERVICES=1 node scripts/browser-qa.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/independent_browser_checks.cjs
+          NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/recovery_browser_qa.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -82,6 +85,7 @@ jobs:
             artifacts/rollback-results.json
             artifacts/browser-qa-results.json
             artifacts/independent-audit/frontend-results.json
+            artifacts/recovery-browser-results.json
             artifacts/qa-desktop*.png
             artifacts/qa-mobile.png
             artifacts/qa-tablet.png

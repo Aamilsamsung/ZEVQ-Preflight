@@ -86,14 +86,14 @@ class RateBucket(Base):
     expires: Mapped[float] = mapped_column(Float)
 
 
-def make_engine(url=None):
+def make_engine(url=None, *, health=False):
     url = url or os.getenv('DATABASE_URL', 'sqlite:///./preflight.db')
     if url.startswith('postgres://'):
         url = url.replace('postgres://', 'postgresql+psycopg://', 1)
     elif url.startswith('postgresql://'):
         url = url.replace('postgresql://', 'postgresql+psycopg://', 1)
-    options = {'pool_size': 2, 'max_overflow': 2, 'pool_recycle': 300} if not url.startswith('sqlite') else {}
-    engine = create_engine(url, hide_parameters=True, pool_pre_ping=True, connect_args={'check_same_thread': False} if url.startswith('sqlite') else {'connect_timeout': 15, 'prepare_threshold': None}, **options)
+    options = {'pool_size': 1 if health else 2, 'max_overflow': 0 if health else 2, 'pool_timeout': 0.5 if health else 30, 'pool_recycle': 300} if not url.startswith('sqlite') else {}
+    engine = create_engine(url, hide_parameters=True, pool_pre_ping=True, connect_args={'check_same_thread': False} if url.startswith('sqlite') else {'connect_timeout': 2 if health else 15, 'prepare_threshold': None}, **options)
     if url.startswith('sqlite'):
         @event.listens_for(engine, 'connect')
         def foreign_keys(dbapi, _):
@@ -153,3 +153,12 @@ class CleanupRun(Base):
     deleted_count: Mapped[int]=mapped_column(Integer,default=0)
     preserved_count: Mapped[int]=mapped_column(Integer,default=0)
     reason: Mapped[str]=mapped_column(Text,default='')
+
+
+class EmailToken(Base):
+    __tablename__ = 'email_tokens'
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    purpose: Mapped[str] = mapped_column(String(12))
+    expires: Mapped[float] = mapped_column(Float)
+    consumed_at: Mapped[float | None] = mapped_column(Float, nullable=True)

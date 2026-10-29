@@ -1,0 +1,25 @@
+name: Staging availability monitor
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: staging-availability-monitor
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: vars.PREFLIGHT_MONITOR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        env:
+          PREFLIGHT_MONITOR_ENABLED: ${{ vars.PREFLIGHT_MONITOR_ENABLED }}
+          PREFLIGHT_MONITOR_TOKEN: ${{ secrets.PREFLIGHT_MONITOR_TOKEN }}
+        with:
+          script: |
+            await require('./scripts/external_monitor.cjs').run(github, context)
