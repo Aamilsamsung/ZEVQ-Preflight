@@ -1,7 +1,7 @@
 # Current release gates — 29 October 2026
 
-The authoritative current assessment is [PRIVATE_BETA_FINAL_ACCEPTANCE.md](../PRIVATE_BETA_FINAL_ACCEPTANCE.md). Application5e0e211 is live; migration0003 is verified. Verdict: **NOT READY FOR CONTROLLED PRIVATE BETA**.
+Current candidate assessment: [PRIVATE_BETA_RELEASE_CANDIDATE.md](../PRIVATE_BETA_RELEASE_CANDIDATE.md). Verdict: **NOT READY FOR CONTROLLED PRIVATE BETA**.
 
-Passed:three hosted scan sources,JSON/CSV/history,62 hosted workspace checks,37 public checks,27 workspace axe states,CI164 Python/65 PostgreSQL/56 browser checks,and isolated restore/previous-source compatibility. Manual retention defaults disabled;in-app alerts implemented.
+Live:5e0e211 / dep-dbh4jk6c6qcc73cihja0 / schema0003. Candidate:f8619a5 / draft PR3 / additive0004 not deployed. CI40804324589 passed186 Python,87 PostgreSQL,63 browser and8 monitor checks plus restore/fallback-worker scripts. Email recovery and monitoring implementations are disabled pending real configuration and receipt tests.
 
-Blocked/incomplete:provider HTTP health-check configuration,external availability alerts,hosted recovery/rollback rehearsal,email recovery/private GitHub integration. Full manual accessibility and controlled cold-start/resource assessment are not tested. Public signup,payments and untrusted execution remain disabled. See the acceptance matrix for evidence and exact remaining actions.
+Hosted recovery copy data matches on11 tables;restored application/worker behavior is blocked by runner DNS. Provider healthCheckPath remains empty. Candidate deployment,external alert receipt,email receipt/private integration,manual accessibility and controlled reliability measurements remain incomplete. See [blockers](../REMAINING_BLOCKERS.md) and [QA evidence](../FINAL_SECURITY_AND_QA_REPORT.md). Older acceptance reports are historical checkpoints. Public signup,payments and untrusted execution stay disabled.

@@ -2,6 +2,7 @@
 
 | Priority | Owner | Evidence | Resolution criteria |
 |---|---|---|---|
+| P1 Candidate deployment | Hosting owner / reviewer | Candidate f8619a5 passed CI40804324589;live remains5e0e211;connector cannot select a commit | Review PR3;Render Manual Deploy → Deploy a specific commit → f8619a5e6fb83ab8fcc4b4b094c8a3d2501bb7c7;verify schema0004 and hosted workflows;do not merge unreviewed branches |
 | P1 HTTP health configuration | Hosting owner | Actual healthCheckPath empty; connector lacks update operation | Render Settings → Health Checks → `/health` → Save; provider read-back, deployment persistence and safe failure test |
 | P1 Hosted recovery | Release operator | Isolated snapshot branch br-orange-water-b36lbess and queryable child br-mute-bread-b3znuqmn at parentLSN0/1DC1868 created; aggregate rows verified; runner DNS blocked | Use a securely connected runner to verify restored application/session/worker/tenant data; do not redirect staging or overwrite parent |
 | P1 External alert receipt | Owner + release engineer | Opt-in workflow and aggregate endpoint implemented; no schedule or delivery activated | Secure token configuration, reviewed workflow placement, controlled incident, actual received notification and recovery |

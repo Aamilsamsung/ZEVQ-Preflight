@@ -1,0 +1,17 @@
+{
+  "candidate": "f8619a5e6fb83ab8fcc4b4b094c8a3d2501bb7c7",
+  "run": 40804324589,
+  "job": 123219506461,
+  "status": "completed",
+  "conclusion": "success",
+  "python_passed": 186,
+  "python_skipped": 4,
+  "postgres_passed": 87,
+  "browser_main_passed": 37,
+  "browser_supplemental_passed": 19,
+  "browser_recovery_passed": 7,
+  "monitor_deterministic_checks": 8,
+  "restore_helper": "PASS",
+  "fallback_application_and_static_worker": "PASS",
+  "scope": "Disposable CI databases and local browser; not hosted candidate acceptance"
+}

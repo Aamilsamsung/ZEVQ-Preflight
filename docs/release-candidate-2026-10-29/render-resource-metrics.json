@@ -1,0 +1,113 @@
+{
+  "resourceId": "srv-dbgr4v0n74is73d798e0",
+  "timeRange": {
+    "start": "2026-10-29T01:00:00Z",
+    "end": "2026-10-29T01:55:00Z"
+  },
+  "metrics": [
+    {
+      "type": "memory_usage",
+      "data": [
+        {
+          "labels": [
+            {
+              "field": "service",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            },
+            {
+              "field": "resource",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            },
+            {
+              "field": "instance",
+              "value": "srv-dbgr4v0n74is73d798e0-v9fqn"
+            }
+          ],
+          "unit": "bytes",
+          "values": [
+            {
+              "timestamp": "2026-10-29T01:40:00Z",
+              "value": 138477570
+            },
+            {
+              "timestamp": "2026-10-29T01:45:00Z",
+              "value": 138469380
+            },
+            {
+              "timestamp": "2026-10-29T01:50:00Z",
+              "value": 138473470
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "memory_limit",
+      "data": [
+        {
+          "labels": [
+            {
+              "field": "service",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            },
+            {
+              "field": "resource",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            },
+            {
+              "field": "instance",
+              "value": "srv-dbgr4v0n74is73d798e0-v9fqn"
+            }
+          ],
+          "unit": "bytes",
+          "values": [
+            {
+              "timestamp": "2026-10-29T01:40:00Z",
+              "value": 536870900
+            },
+            {
+              "timestamp": "2026-10-29T01:45:00Z",
+              "value": 536870900
+            },
+            {
+              "timestamp": "2026-10-29T01:50:00Z",
+              "value": 536870900
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "cpu_usage",
+      "data": [
+        {
+          "labels": [
+            {
+              "field": "instance",
+              "value": "srv-dbgr4v0n74is73d798e0-v9fqn"
+            },
+            {
+              "field": "service",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            },
+            {
+              "field": "resource",
+              "value": "srv-dbgr4v0n74is73d798e0"
+            }
+          ],
+          "unit": "cpu",
+          "values": [
+            {
+              "timestamp": "2026-10-29T01:45:00Z",
+              "value": 0.00192767
+            },
+            {
+              "timestamp": "2026-10-29T01:50:00Z",
+              "value": 0.0018880833
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
