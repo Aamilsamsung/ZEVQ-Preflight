@@ -1,8 +1,12 @@
 """Fixed GitHub origins only. Streams are bounded before archive parsing."""
 import re
+import logging
 from urllib.parse import urlparse, quote
 import httpx
 from .analyzer import MAX_BYTES, read_zip
+
+# HTTPX INFO messages include full redirect URLs, which can be signed credentials.
+logging.getLogger('httpx').setLevel(logging.WARNING)
 
 REF = re.compile(r'[A-Za-z0-9._/-]{1,120}')
 NAME = re.compile(r'[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}/[A-Za-z0-9_.-]{1,100}')
@@ -50,20 +54,37 @@ async def diagnose_404(client, original_url, redirected):
         return f'GitHub {stage} returned HTTP 404; repository/revision diagnostics were inconclusive due to a network error. Missing/private access is not established.'
 
 
-async def download(repo, branch):
+async def download(repo, branch, token=None):
+    try:
+        return await _download(repo, branch, token)
+    except (httpx.HTTPError, httpx.InvalidURL):
+        # HTTPX may parse a malformed Location before returning the response.
+        # Its exception can contain signed URLs or credentials; never echo it.
+        raise ValueError('GitHub network or archive response unavailable; retry later.') from None
+
+
+async def _download(repo, branch, token=None):
     url = archive_url(repo, branch)
     original_url=url
     async with httpx.AsyncClient(follow_redirects=False, timeout=httpx.Timeout(25), headers={'Accept-Encoding': 'identity', 'User-Agent': 'ZEVQ-Preflight/0.2'}) as client:
         for attempt in range(2):
-            async with client.stream('GET', url) as response:
+            async with client.stream('GET', url, headers={'Authorization':'Bearer '+token} if token and urlparse(url).hostname=='api.github.com' else {}) as response:
                 if response.status_code in (301, 302, 303, 307, 308) and attempt == 0:
                     url = response.headers.get('location', '')
-                    p = urlparse(url)
-                    if p.scheme != 'https' or p.hostname != 'codeload.github.com' or p.port is not None or p.username or p.password:
+                    try:
+                        p = urlparse(url)
+                        safe = p.scheme == 'https' and p.hostname == 'codeload.github.com' and p.port is None and not p.username and not p.password
+                    except ValueError:
+                        safe = False
+                    if not safe:
                         raise ValueError('Unexpected archive redirect')
                     continue
                 if response.status_code != 200:
-                    message=await diagnose_404(client,original_url,attempt>0) if response.status_code==404 else http_failure(response)
+                    if token:
+                        from .private_github import failure
+                        message=failure(response)
+                    else:
+                        message=await diagnose_404(client,original_url,attempt>0) if response.status_code==404 else http_failure(response)
                     raise ValueError(message)
                 data = bytearray()
                 async for chunk in response.aiter_bytes(chunk_size=65536):

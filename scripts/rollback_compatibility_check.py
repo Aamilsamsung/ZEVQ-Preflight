@@ -12,7 +12,7 @@ from sqlalchemy import text
 assert Path(previous.__file__).resolve().is_relative_to(source),'Rollback must load the previous application, not the current checkout'
 data=json.loads(Path(os.environ['PREFLIGHT_RESTORE_MANIFEST']).read_text());application=previous.create_app(url,mode='development')
 with application.state.engine.connect() as conn:
- assert conn.execute(text('SELECT version_num FROM alembic_version')).scalar_one()=='0003'
+ assert conn.execute(text('SELECT version_num FROM alembic_version')).scalar_one()=='0005'
 with TestClient(application) as client:
  client.cookies.set('preflight_session','ci-only-restored-session-token')
  assert client.get('/api/auth/me').json()['email']=='restore-owner@example.test'
@@ -22,8 +22,22 @@ with TestClient(application) as client:
  client.cookies.clear()
  assert client.post('/api/auth/login',json={'email':'restore-other@example.test','password':'ci-only-restore-password-strong'}).status_code==200
  assert client.get(f'/api/orgs/{data["org_id"]}/scans/{data["scan_id"]}/report').status_code==404
+from app.db import Scan
+from app.worker import claim, execute
+with application.state.db() as db:
+ queued=Scan(org_id=data['org_id'],status='queued',created_at=-1,payload=json.dumps({'contracts':{'baseline':{'openapi':'3.0.3','paths':{}},'proposed':{'openapi':'3.0.3','paths':{}}}}));db.add(queued);db.commit();queued_id=queued.id
+job=claim(application.state.db);assert job and job[0]==queued_id;execute(application.state.db,*job)
+with application.state.db() as db:
+ completed=db.get(Scan,queued_id);assert completed.status=='completed' and json.loads(completed.result)['simulation']['status']=='not-executed'
+# Older workers do not support private payloads: verify they fail closed rather
+# than treating private input as public or publishing a fabricated result.
+with application.state.db() as db:
+ private_job=Scan(org_id=data['org_id'],status='queued',created_at=-2,payload=json.dumps({'private_repository_id':'ci-synthetic-unavailable','credential_version':1}));db.add(private_job);db.commit();private_id=private_job.id
+job=claim(application.state.db);assert job and job[0]==private_id;execute(application.state.db,*job)
+with application.state.db() as db:
+ failed=db.get(Scan,private_id);assert failed.status=='failed' and failed.result is None and failed.payload is None
 with application.state.engine.connect() as conn:
- assert conn.execute(text('SELECT version_num FROM alembic_version')).scalar_one()=='0003'
+ assert conn.execute(text('SELECT version_num FROM alembic_version')).scalar_one()=='0005'
  assert conn.execute(text('SELECT count(*) FROM retention_policies')).scalar_one()>0
-Path(os.environ['PREFLIGHT_ROLLBACK_SUMMARY']).write_text(json.dumps({'previous_commit':expected,'current_schema':'0003','restored_session':True,'report_and_reviews':True,'history':True,'tenant_isolation':True,'schema_and_retention_preserved':True,'scope':'Previous application against a restored disposable PostgreSQL16 CI database; not a hosted service rollback'},indent=2))
+Path(os.environ['PREFLIGHT_ROLLBACK_SUMMARY']).write_text(json.dumps({'previous_commit':expected,'current_schema':'0005','fallback_private_payload_fails_closed':True,'fallback_static_worker':True,'restored_session':True,'report_and_reviews':True,'history':True,'tenant_isolation':True,'schema_and_retention_preserved':True,'scope':'Previous application against a restored disposable PostgreSQL16 CI database; not a hosted service rollback'},indent=2))
 print('Rollback compatibility passed: previous source, existing session, report/reviews/history, tenant isolation and additive schema preservation')

@@ -1,0 +1,24 @@
+{
+  "commit": "d52feadf19ef7d3608124544c71012361c4e39d6",
+  "run": 40851366795,
+  "job": 123371378467,
+  "conclusion": "success",
+  "python": {
+    "passed": 207,
+    "skipped": 4
+  },
+  "postgres": {
+    "passed": 108
+  },
+  "browser": {
+    "main": 37,
+    "supplemental": 19,
+    "recovery": 7,
+    "private_source": 4
+  },
+  "monitor_checks": 8,
+  "restore": "PASS",
+  "fallback_static_worker": "PASS",
+  "fallback_private_payload": "fails closed;unsupported",
+  "scope": "Disposable CI DB/local browsers and mock private provider;no real private authorization"
+}

@@ -9,18 +9,18 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request, HTTPException, UploadFile, File
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
-from . import retention, alerts
-from .db import RetentionPolicy, CleanupRun
+from . import retention, alerts, email_recovery, operations, private_github
+from .db import RetentionPolicy, CleanupRun, RepositoryCredential
 from .job_signal import notify_worker
-from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
+from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session, constant_equal
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 from .contracts import VERSION
@@ -40,6 +40,18 @@ class Login(BaseModel):
 
 class PasswordChange(BaseModel):
     current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=14, max_length=256)
+
+
+class EmailRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=254)
+
+
+class EmailConfirm(BaseModel):
+    token: str = Field(min_length=1, max_length=128)
+
+
+class EmailReset(EmailConfirm):
     new_password: str = Field(min_length=14, max_length=256)
 
 
@@ -70,6 +82,11 @@ class OrgInput(BaseModel):
 
 class RepoInput(BaseModel):
     full_name: str = Field(min_length=3, max_length=210)
+
+
+class PrivateRepoInput(BaseModel):
+    full_name: str = Field(min_length=3, max_length=210)
+    token: SecretStr = Field(min_length=30, max_length=256)
 
 
 class ScanInput(BaseModel):
@@ -132,9 +149,11 @@ def create_app(database_url=None, mode=None):
         # Schema is managed by Alembic, never implicitly migrated by a web process.
         yield
         app.state.engine.dispose()
+        app.state.health_engine.dispose()
 
     app = FastAPI(title='ZEVQ Preflight', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.engine = make_engine(db_url)
+    app.state.health_engine = make_engine(db_url, health=True)
     instrument_engine(app.state.engine)
     app.state.db = factory(app.state.engine)
     app.state.mode = mode
@@ -154,7 +173,7 @@ def create_app(database_url=None, mode=None):
     @app.middleware('http')
     async def boundaries(request, call_next):
         path = request.url.path
-        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register') or path.startswith('/static/')
+        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register', '/forgot-password', '/reset-password', '/verify-email', '/api/auth/email/status', '/api/auth/email/request-reset', '/api/auth/email/request-verification', '/api/auth/email/reset', '/api/auth/email/verify', '/api/operations/monitor') or path.startswith('/static/')
         if mode == 'staging' and not public_access:
             expected = 'staging:' + os.getenv('STAGING_PASSWORD', '')
             supplied = request.headers.get('authorization', '')
@@ -162,7 +181,7 @@ def create_app(database_url=None, mode=None):
                 decoded = base64.b64decode(supplied.split(' ', 1)[1], validate=True).decode() if supplied.startswith('Basic ') else ''
             except (ValueError, UnicodeError):
                 decoded = ''
-            if not secrets.compare_digest(decoded, expected):
+            if not constant_equal(decoded, expected):
                 try:
                     authenticated = has_active_session(request)
                 except Exception:
@@ -205,7 +224,18 @@ def create_app(database_url=None, mode=None):
 
     @app.get('/health')
     def health():
-        return {'status': 'ok', 'version': VERSION}
+        try:
+            with app.state.health_engine.connect() as conn:
+                if conn.dialect.name == 'postgresql':
+                    conn.execute(text("SET LOCAL statement_timeout = '1500ms'"))
+                conn.execute(text('SELECT 1'))
+        except Exception:
+            return JSONResponse({'status': 'unavailable'}, status_code=503)
+        return {'status': 'ok', 'version': VERSION, 'database': 'reachable'}
+
+    @app.get('/api/operations/monitor')
+    def monitor(request: Request):
+        return operations.monitor_status(request)
 
     @app.get('/api/ready')
     def ready(request: Request):
@@ -213,6 +243,45 @@ def create_app(database_url=None, mode=None):
         with app.state.engine.connect() as conn:
             conn.execute(text('SELECT 1'))
         return {'database': 'reachable', 'execution': 'disabled', 'registration': 'disabled', 'billing': 'disabled'}
+
+    @app.get('/api/auth/email/status')
+    def email_status():
+        return {'delivery_enabled': email_recovery.configuration() is not None, 'registration': 'disabled'}
+
+    def request_email(data, request, background, purpose):
+        config = email_recovery.configuration()
+        if config is None:
+            raise HTTPException(503, 'Email delivery is not configured. Contact support for verified operator recovery.')
+        email = data.email.strip().lower()
+        limit(app.state.db, 'email-ip:' + (request.client.host if request.client else 'unknown'), 10, 900)
+        limit(app.state.db, 'email-recipient:' + email, 3, 900)
+        background.add_task(email_recovery.dispatch, app.state.db, config, email, purpose)
+        return JSONResponse(email_recovery.GENERIC, status_code=202)
+
+    @app.post('/api/auth/email/request-reset')
+    def request_reset(data: EmailRequest, request: Request, background: BackgroundTasks):
+        return request_email(data, request, background, 'reset')
+
+    @app.post('/api/auth/email/request-verification')
+    def request_verification(data: EmailRequest, request: Request, background: BackgroundTasks):
+        return request_email(data, request, background, 'verify')
+
+    def confirm_email(data, request, purpose):
+        if email_recovery.configuration() is None:
+            raise HTTPException(503, 'Email delivery is not configured. Contact support.')
+        limit(app.state.db, 'email-confirm-ip:' + (request.client.host if request.client else 'unknown'), 20, 900)
+        email_recovery.consume(app.state.db, data.token, purpose, getattr(data, 'new_password', None))
+        response = JSONResponse({'ok': True, 'sign_in_required': True})
+        response.delete_cookie('preflight_session', path='/')
+        return response
+
+    @app.post('/api/auth/email/reset')
+    def reset_email(data: EmailReset, request: Request):
+        return confirm_email(data, request, 'reset')
+
+    @app.post('/api/auth/email/verify')
+    def verify_email(data: EmailConfirm, request: Request):
+        return confirm_email(data, request, 'verify')
 
     @app.post('/api/auth/register')
     def register():
@@ -260,6 +329,8 @@ def create_app(database_url=None, mode=None):
                 raise HTTPException(403, 'Current password is incorrect')
             if password_ok(current.password_hash, data.new_password):
                 raise HTTPException(422, 'Choose a different new password')
+            from .db import EmailToken
+            db.execute(delete(EmailToken).where(EmailToken.user_id == user.id))
             current.password_hash = hasher.hash(data.new_password)
             db.execute(delete(SessionRecord).where(SessionRecord.user_id == user.id))
             for org_id in db.scalars(select(Membership.org_id).where(Membership.user_id == user.id)):
@@ -332,7 +403,64 @@ def create_app(database_url=None, mode=None):
     def repos(org_id: str, request: Request):
         member(request, org_id)
         with app.state.db() as db:
-            return [{'id': r.id, 'full_name': r.full_name} for r in db.scalars(select(Repository).where(Repository.org_id == org_id).limit(100))]
+            return [{'id': r.id, 'full_name': r.full_name, 'source_kind': r.source_kind, 'credential_connected': bool(db.get(RepositoryCredential,r.id)) if r.source_kind=='private' else False} for r in db.scalars(select(Repository).where(Repository.org_id == org_id).limit(100))]
+
+    @app.get('/api/orgs/{org_id}/private-github/status')
+    def private_status(org_id: str, request: Request):
+        member(request,org_id)
+        return {'enabled': private_github.cipher() is not None, 'model':'repository-specific fine-grained token; GitHub App/OAuth unavailable'}
+
+    @app.post('/api/orgs/{org_id}/private-github/repos', status_code=201)
+    async def connect_private(org_id: str, data: PrivateRepoInput, request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        limit(app.state.db,'private-connect:'+actor.id,5,900)
+        name=data.full_name.strip();token=data.token.get_secret_value()
+        if not NAME.fullmatch(name):raise HTTPException(422,'Repository must be owner/name')
+        if len(token)>256:raise HTTPException(422,'Invalid credential length')
+        try:
+            private_github.require_enabled()
+            # Validate credential format before any network call.
+            private_github.validate_token(token)
+            await private_github.verify(token,name)
+        except ValueError as error:raise HTTPException(422,str(error)) from None
+        with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            repo=db.scalar(select(Repository).where(Repository.org_id==org_id,Repository.full_name==name))
+            if repo and repo.source_kind!='private':raise HTTPException(409,'Disconnect the public entry before adding private access.')
+            if not repo:
+                if db.scalar(select(func.count()).select_from(Repository).where(Repository.org_id==org_id))>=20:raise HTTPException(429,'Staging repository limit reached')
+                repo=Repository(org_id=org_id,full_name=name,source_kind='private');db.add(repo);db.flush()
+            row=db.get(RepositoryCredential,repo.id)
+            version=row.version+1 if row else 1
+            encrypted=private_github.seal(repo,token,version)
+            private_github.cancel_jobs(db,org_id,repo.id)
+            if row:row.ciphertext=encrypted;row.version=version
+            else:db.add(RepositoryCredential(repo_id=repo.id,org_id=org_id,ciphertext=encrypted,version=version))
+            event(db,org_id,actor.id,'github.private_connected');db.commit()
+            return {'id':repo.id,'full_name':repo.full_name,'source_kind':'private','credential_connected':True}
+
+    @app.get('/api/orgs/{org_id}/repos/{repo_id}/revisions/{kind}')
+    async def private_revisions(org_id: str,repo_id: str,kind: str,request: Request,ref: str='',page: int=1):
+        actor,_=member(request,org_id);limit(app.state.db,'private-revisions:'+actor.id,30,900)
+        with app.state.db() as db:
+            repo=db.get(Repository,repo_id)
+            if not repo or repo.org_id!=org_id:raise HTTPException(404,'Repository not found')
+            try:repo,token,_=private_github.credential(db,org_id,repo_id)
+            except ValueError as error:raise HTTPException(409,str(error)) from None
+        try:return await private_github.revisions(token,repo.full_name,kind,ref,page)
+        except ValueError as error:raise HTTPException(422,str(error)) from None
+
+    @app.delete('/api/orgs/{org_id}/repos/{repo_id}/credential')
+    def disconnect_private(org_id: str,repo_id: str,request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            repo=db.get(Repository,repo_id)
+            if not repo or repo.org_id!=org_id or repo.source_kind!='private':raise HTTPException(404,'Private repository not found')
+            private_github.cancel_jobs(db,org_id,repo_id)
+            db.execute(delete(RepositoryCredential).where(RepositoryCredential.repo_id==repo_id,RepositoryCredential.org_id==org_id))
+            event(db,org_id,actor.id,'github.private_disconnected');db.commit()
+        return {'ok':True,'provider_revocation_required':True}
 
     @app.post('/api/orgs/{org_id}/repos', status_code=201)
     def add_repo(org_id: str, data: RepoInput, request: Request):
@@ -354,6 +482,8 @@ def create_app(database_url=None, mode=None):
     def remove_repo(org_id: str, repo_id: str, request: Request):
         user, _ = member(request, org_id, ADMINS)
         with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            private_github.cancel_jobs(db,org_id,repo_id)
             result = db.execute(delete(Repository).where(Repository.id == repo_id, Repository.org_id == org_id))
             if not result.rowcount: raise HTTPException(404, 'Repository not found')
             event(db, org_id, user.id, 'repository.disconnected'); db.commit()
@@ -386,7 +516,12 @@ def create_app(database_url=None, mode=None):
                         raise HTTPException(409, 'Idempotency key already used for different inputs')
                     return scan_dict(existing, True)
             admit(db, org_id)
-            scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key)
+            payload=None
+            if repo.source_kind=='private':
+                try:_,_,version=private_github.credential(db,org_id,repo.id)
+                except ValueError as error:raise HTTPException(409,str(error)) from None
+                payload=json.dumps({'private_repository_id':repo.id,'credential_version':version})
+            scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key,payload=payload)
             db.add(scan); event(db, org_id, user.id, 'scan.queued'); db.commit()
             notify_worker()
             return scan_dict(scan, True)
@@ -639,7 +774,7 @@ def create_app(database_url=None, mode=None):
     app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')
     @app.get('/{path:path}', include_in_schema=False)
     def page(path: str):
-        if path not in ('', 'login', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
+        if path not in ('', 'login', 'forgot-password', 'reset-password', 'verify-email', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
             if path.startswith('api/'):
                 return JSONResponse({'detail': 'Endpoint not found'}, status_code=404)
             return FileResponse(ROOT / 'static/index.html', status_code=404)

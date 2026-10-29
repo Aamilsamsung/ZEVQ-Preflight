@@ -13,6 +13,12 @@ hasher = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=2)
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
 
 
+def constant_equal(left, right):
+    # HTTP values may contain non-ASCII text; compare_digest(str,str) raises for
+    # these inputs. Compare bytes so malformed credentials fail closed.
+    return secrets.compare_digest(left.encode('utf-8'), right.encode('utf-8'))
+
+
 def digest(value):
     return hashlib.sha256(value.encode()).hexdigest()
 
@@ -64,7 +70,7 @@ def principal(request: Request):
     # Authentication reuse must never bypass the endpoint's mutation checks.
     if request.method not in ('GET','HEAD','OPTIONS'):
         supplied=request.headers.get('X-CSRF-Token','')
-        if not secrets.compare_digest(supplied,session.csrf):raise HTTPException(403,'Invalid CSRF token')
+        if not constant_equal(supplied,session.csrf):raise HTTPException(403,'Invalid CSRF token')
     return user,session
 
 

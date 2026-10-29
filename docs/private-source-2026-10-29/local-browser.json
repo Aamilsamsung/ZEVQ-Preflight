@@ -1,0 +1,26 @@
+{
+  "scope": "Local real pages; explicitly mocked enabled private API, no real private authorization or scan",
+  "results": [
+    {
+      "feature": "Disabled private access exposes no credential form",
+      "status": "PASS"
+    },
+    {
+      "feature": "Owner private-connection UI clears transient credential",
+      "status": "PASS"
+    },
+    {
+      "feature": "Private branch/commit selection fills immutable scan inputs",
+      "status": "PASS"
+    },
+    {
+      "feature": "Mobile private revision controls automated accessibility",
+      "status": "PASS"
+    }
+  ],
+  "axe_incomplete": [
+    "aria-prohibited-attr",
+    "color-contrast"
+  ],
+  "errors": []
+}
