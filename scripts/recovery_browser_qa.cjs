@@ -2,7 +2,7 @@
  * This verifies UI behavior, not real email delivery or hosted acceptance.
  */
 const fs=require('fs'),assert=require('node:assert/strict'),{spawn}=require('child_process'),{chromium}=require('playwright');
-(async()=>{let browser;const child=spawn(process.env.QA_PYTHON||'.venv/bin/python',['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8013'],{stdio:'ignore'});const results=[];
+(async()=>{let browser;const child=spawn(process.env.QA_PYTHON||(fs.existsSync('.venv/bin/python')?'.venv/bin/python':'python'),['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8013'],{stdio:'ignore'});const results=[];
 try{for(let i=0;i<80;i++){try{if((await fetch('http://127.0.0.1:8013/health')).ok)break}catch{}await new Promise(r=>setTimeout(r,100))}
 let launch={headless:true};if(process.env.QA_CHROMIUM_MODULE){const binary=(await import(process.env.QA_CHROMIUM_MODULE)).default;launch={...launch,executablePath:await binary.executablePath(),args:binary.args.filter(a=>a!=='--disable-web-security'&&a!=='--single-process'&&!a.startsWith('--ignore-certificate-errors'))}}
 browser=await chromium.launch(launch);const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
