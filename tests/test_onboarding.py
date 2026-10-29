@@ -130,7 +130,7 @@ def test_production_mode_fails_closed_without_postgres_and_rejects_unknown_mode(
 def test_production_mode_secure_cookies_and_public_marketing_only(env,monkeypatch):
     from app.main import create_app
     app,_,_=env
-    production=create_app(str(app.state.engine.url),mode='production')
+    production=create_app(app.state.engine.url.render_as_string(hide_password=False),mode='production')
     # Startup PostgreSQL validation is tested separately; this disposable SQLite
     # fixture exercises HTTPS middleware/cookie behavior without a live host.
     client=TestClient(production,base_url='https://testserver',follow_redirects=False)
