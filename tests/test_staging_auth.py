@@ -70,3 +70,10 @@ def test_staging_session_expiry_still_blocks_private_data(staging):
         db.commit()
     assert client.get('/api/auth/me').status_code == 401
     assert client.get('/app').status_code == 303
+
+
+def test_unicode_basic_credentials_are_rejected_without_server_error(staging):
+    import base64
+    _,client=staging
+    value=base64.b64encode('staging:é'.encode()).decode()
+    assert client.get('/api/auth/me',headers={'Authorization':'Basic '+value}).status_code==401

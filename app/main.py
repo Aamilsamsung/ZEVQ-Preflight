@@ -20,7 +20,7 @@ from .db import Base, make_engine, factory, User, Organization, Membership, Sess
 from . import retention, alerts, email_recovery, operations
 from .db import RetentionPolicy, CleanupRun
 from .job_signal import notify_worker
-from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session
+from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session, constant_equal
 from .github import NAME, valid_ref, archive_url, download
 from .analyzer import read_zip, MAX_BYTES
 from .contracts import VERSION
@@ -176,7 +176,7 @@ def create_app(database_url=None, mode=None):
                 decoded = base64.b64decode(supplied.split(' ', 1)[1], validate=True).decode() if supplied.startswith('Basic ') else ''
             except (ValueError, UnicodeError):
                 decoded = ''
-            if not secrets.compare_digest(decoded, expected):
+            if not constant_equal(decoded, expected):
                 try:
                     authenticated = has_active_session(request)
                 except Exception:

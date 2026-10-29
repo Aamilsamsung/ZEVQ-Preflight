@@ -140,3 +140,20 @@ def test_parallel_reset_consumes_token_once(env,delivery):
         try:mail.consume(app.state.db,token,'reset','parallel-secure-password-123');return 200
         except HTTPException as exc:return exc.status_code
     with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(consume,range(2)))==[200,400]
+
+
+def test_non_ascii_csrf_rejected_without_server_error(env):
+    _,c,_=env;login(c)
+    assert c.post('/api/auth/logout',headers={b'X-CSRF-Token':b'\xff'}).status_code==403
+
+
+def test_operator_can_provision_pending_email_account(env,monkeypatch):
+    import sys
+    from app import manage
+    app,c,_=env
+    monkeypatch.setattr(manage,'make_engine',lambda:app.state.engine)
+    monkeypatch.setattr(manage.getpass,'getpass',lambda prompt:'provisioned-secure-password')
+    monkeypatch.setattr(sys,'argv',['manage','create-user','--email','pending-operator@example.test','--identity-verified','--require-email-verification'])
+    manage.main()
+    assert c.post('/api/auth/login',json={'email':'pending-operator@example.test','password':'provisioned-secure-password'}).status_code==401
+    with app.state.db() as db:assert db.scalar(select(User).where(User.email=='pending-operator@example.test')).verified==0

@@ -33,3 +33,8 @@ def test_monitor_signals_are_aggregate_without_source_or_identity(env,monkeypatc
     r=c.get('/api/operations/monitor',headers=headers)
     assert all(r.json()['signals'].values()) and r.json()['status']=='degraded'
     assert org not in r.text and 'private-source' not in r.text
+
+
+def test_non_ascii_monitor_header_is_rejected_without_500(env,monkeypatch):
+    _,c,_=env;monkeypatch.setenv('PREFLIGHT_MONITOR_TOKEN','synthetic-monitor-token-32-characters')
+    assert c.get('/api/operations/monitor',headers={b'Authorization':b'Bearer \xff'}).status_code==404

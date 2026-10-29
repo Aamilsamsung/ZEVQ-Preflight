@@ -1,16 +1,16 @@
 """Minimal global operational health for an explicitly authorized external monitor."""
 import os
-import secrets
 import time
 from fastapi import HTTPException
 from sqlalchemy import select, func
 from .db import Scan
+from .security import constant_equal
 
 
 def monitor_status(request):
     expected = os.getenv('PREFLIGHT_MONITOR_TOKEN', '')
     supplied = request.headers.get('authorization', '')
-    if len(expected) < 32 or not secrets.compare_digest(supplied, 'Bearer ' + expected):
+    if len(expected) < 32 or not constant_equal(supplied, 'Bearer ' + expected):
         raise HTTPException(404, 'Endpoint not found')
     now = time.time()
     try:
