@@ -97,3 +97,8 @@ See [final acceptance](../PRIVATE_BETA_FINAL_ACCEPTANCE.md) for current evidence
 ## Recovery candidate — 29 October 2026
 
 Candidate f8619a5 adds gated TLS email verification/recovery,hashed single-use tokens,pending-email provisioning,database-aware health and opt-in external monitor hooks;malformed credential comparisons fail closed. CI40804324589 passed. These changes are NOT deployed:staging stays5e0e211/schema0003. See [candidate](../PRIVATE_BETA_RELEASE_CANDIDATE.md),[integration configuration](EMAIL_AND_EXTERNAL_MONITORING.md),[recovery runbook](../RECOVERY_AND_ROLLBACK_RUNBOOK.md) and [remaining blockers](../REMAINING_BLOCKERS.md). No public launch or narrowed-scope approval is assumed.
+
+
+## Private-source candidate — 29 October 2026
+
+Candidate d52fead adds disabled-by-default per-repository fine-grained GitHub credentials,Fernet org/repository/version binding,owner controls,revision selection,immutable private static fetch and disconnect cancellation. CI40851366795 passed207 Python,108 PostgreSQL,67 browser and8 monitor checks plus recovery helpers. Migration0005 is not live;staging remains5e0e211/schema0003. Real private authorization,hosted acceptance,email/alert receipt and recovery remain blocked. Setup and limitations:[PRIVATE_GITHUB.md](PRIVATE_GITHUB.md). No GitHub App/OAuth or provider PAT revocation is claimed.

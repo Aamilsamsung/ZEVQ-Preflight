@@ -1,25 +1,26 @@
 # Final security and QA report
 
-29 October 2026, Asia/Calcutta. Candidate **f8619a5e6fb83ab8fcc4b4b094c8a3d2501bb7c7** is verified in CI, not deployed. Live remains **5e0e211fe10045d6fbb4ee8c6b3c0b31cd706c70**, Render dep-dbh4jk6c6qcc73cihja0, schema0003. Candidate migration0004 is additive and tested in disposable databases only.
+29 October 2026, Asia/Calcutta. Candidate **d52feadf19ef7d3608124544c71012361c4e39d6** is verified in CI, not deployed. Live remains **5e0e211fe10045d6fbb4ee8c6b3c0b31cd706c70**, Render dep-dbh4jk6c6qcc73cihja0, schema0003. Candidate migrations0004/0005 are additive and tested in disposable databases only.
 
 ## Executed tests
 
-GitHub Actions run **40804324589**, job **123219506461**, completed successfully. Logs were retrieved and inspected, not inferred from a green badge alone.
+GitHub Actions run **40851366795**, job **123371378467**, completed successfully. Logs were retrieved and inspected, not inferred from a green badge alone.
 
 | Suite | Executed result | Evidence |
 |---|---|---|
-| General Python |186 passed,4 skipped |Final CI log;43.06seconds |
-| PostgreSQL boundaries/concurrency |87 passed |Final CI log;42.40seconds; includes parallel reset-token consumption |
-| Main real local browser |37 passed,zero failures/errors |Final CI and separate isolated local run |
-| Supplemental browser |19 passed |Final CI and separate isolated local run |
+| General Python |207 passed,4 skipped |Final CI log;49.80seconds |
+| PostgreSQL boundaries/concurrency |108 passed |Final CI log;50.58seconds; includes parallel reset-token consumption |
+| Main real local browser |37 passed,zero failures/errors |Final CI;earlier isolated local core runs are historical |
+| Supplemental browser |19 passed |Final CI;earlier isolated local core runs are historical |
 | Recovery screens |7 passed |Real local rendering and disabled backend; enabled email API responses explicitly mocked; zero axe violations in tested mobile reset success state |
+| Private-source screens |4 passed |Local mobile owner connection,token clearing,branch/commit selection and axe;enabled private APIs explicitly mocked |
 | External monitoring |8 deterministic checks passed |Fixed-target, failure/degraded handling, three-probe threshold, duplicate suppression and recovery; real inbox delivery NOT TESTED |
 | Backup/restore helper |PASS |Actual disposable PostgreSQL16 pg_dump/pg_restore, preserved session, restored queued static job, report/reviews/history/retention and isolation |
-| Previous-source helper |PASS |Exact9e78cde source, restored session/report/history/isolation and fallback static worker on schema0004 |
-| Dependency advisories |34 dependencies,zero known vulnerabilities,zero skips |Fresh pip-audit execution; requirements unchanged |
+| Previous-source helper |PASS |Exact9e78cde source, restored session/report/history/isolation and fallback static worker on schema0005 |
+| Dependency advisories |35 dependencies,zero known vulnerabilities,zero skips |Fresh pip-audit execution;cryptography50.0.2 added to the locked requirements |
 | Bounded local static batch |3 completed,expected finding in each |Two threads,three controlled OpenAPI inputs; static inspection only |
 
-**344 reported test/check cases passed across CI suites, plus two recovery helper runs.** Four skips in the general suite are PostgreSQL-only cases covered by the separate87-test PostgreSQL run. Suite cases overlap in requirements; this is not344 unique product features. The separate local batch and repeated local test runs are not inflated into the CI total. No final CI failures remain.
+**390 reported test/check cases passed across CI suites, plus two recovery helper runs.** Four skips in the general suite are PostgreSQL-only cases covered by the separate108-test PostgreSQL run. Suite cases overlap in requirements; this is not390 unique product features. The separate local batch and repeated local test runs are not inflated into the CI total. No final CI failures remain.
 
 Earlier runs failed during development:the recovery screen exposed a global history-name collision; a harness used a nonexistent `.venv` path on CI; malformed credential regression tests reproduced TypeError crashes. Each was fixed and the applicable suite rerun. A local browser run against an old repeatedly seeded fixture hit the real20-scan quota; it was rerun against a fresh isolated local database and passed37/37. No quota was raised or data deleted to hide that result.
 
@@ -39,17 +40,17 @@ Earlier runs failed during development:the recovery screen exposed a global hist
 | External alerting |Operator receives incident/recovery |Workflow/endpoint fixtures pass;no deployed schedule or received notification | BLOCKED |High;configure/review and verify actual receipt |
 | Hosted copy integrity |Records copied without live overwrite |All11 table count/content fingerprints match schema0003 | PASS narrow scope |Not restored authentication/worker proof |
 | Hosted recovery/failover |Application and workers verified on restored target |Runner DNS prevents application connection | BLOCKED |High;complete isolated hosted rehearsal |
-| Private GitHub |Authorized private scan and revoke |No customer-facing integration implemented;no private fixture scan | FAIL |Engineering plus secure authorization required |
-| Fresh hosted full acceptance |Tested candidate equals deployed commit |Candidate f8619a5 differs from live5e0e211 | BLOCKED |Deploy exact verified candidate after review,then rerun hosted suites |
+| Private GitHub |Authorized private scan and revoke |Repository-scoped encrypted fine-grained model implemented;21 provider/tenant/security tests pass;no real private fixture scan | BLOCKED |Enable only after secure configuration;verify authorized private repository end-to-end;GitHub App/OAuth unavailable |
+| Fresh hosted full acceptance |Tested candidate equals deployed commit |Candidate d52fead differs from live5e0e211 | BLOCKED |Deploy exact verified candidate after review,then rerun hosted suites |
 | Complete manual accessibility |Keyboard/contrast/assistive technology |Automated coverage passes;full manual assessment unperformed | NOT TESTED |Medium;retain explicit incomplete assessment |
 | Controlled idle cold start |Defined idle interval and app-ready duration |One30-second public request timed out;cloud browser later showed Render wake-up,then login after reload | NOT TESTED as benchmark |Medium;do not invent cold-start latency or always-on behavior |
 | Public launch / billing |Disabled pending approval |Remain disabled | PASS guard |No release approval implied |
 
 ## Browser and accessibility coverage limits
 
-Current CI covers local main workflows and supplemental mobile/table/keyboard behavior; the new recovery state is tested at390×844. Its enabled-provider responses are mocked; API/token behavior is separately tested against the real backend. This is not an executed real-email journey.
+Current CI also covers four private-source UI checks with mocked provider APIs,including credential clearing and immutable revision selection. These do not establish real private authorization. Current CI covers local main workflows and supplemental mobile/table/keyboard behavior; the new recovery state is tested at390×844. Its enabled-provider responses are mocked; API/token behavior is separately tested against the real backend. This is not an executed real-email journey.
 
-Historical hosted suites on the still-live5e0e211 passed62 workspace checks,37 informational-page checks and three actual OpenAPI/GitHub/ZIP submissions with JSON/CSV/history. Those were not rerun against f8619a5 because it is not deployed. This session's independent cloud browser displayed the provider wake-up page,then the actual5e sign-in page after one reload. No user password was entered into that browser.
+Historical hosted suites on the still-live5e0e211 passed62 workspace checks,37 informational-page checks and three actual OpenAPI/GitHub/ZIP submissions with JSON/CSV/history. Those were not rerun against d52fead because it is not deployed. An earlier29October independent cloud browser displayed the provider wake-up page,then the actual5e sign-in page after one reload. No user password was entered into that browser.
 
 Existing automated axe coverage is not a WCAG2.2AA certificate. Incomplete automated rules include contrast and certain ARIA/link checks;manual screen-reader,full contrast and physical-touch-device assessment remain incomplete. Existing visual identity was preserved.
 
@@ -68,3 +69,14 @@ Earlier hosted20-sample warm medians remain historical:report265.5ms and review-
 No customer source executed,no TLS bypass,no production restore,no live cleanup,no public registration,no payment activation,and no private connector credentials reused. Locked dependency audit is limited to known advisories;FastAPI TestClient deprecation warnings remain. Email dispatch is an after-response task,not a durable retry outbox;process interruption requires requesting another link. SMTP submission is not proof of receipt. Idle-worker heartbeat and full API error-rate monitoring remain incomplete.
 
 **NOT READY FOR CONTROLLED PRIVATE BETA**. Neither the full planned scope nor a reduced scope has all mandatory operational gates verified. Restricted-scope approval was not requested as a substitute for fixing monitoring/recovery. See remaining blockers for exact next actions.
+
+
+## Private integration security evidence
+
+The21 private-source tests cover default-disabled configuration,role/CSRF/tenant boundaries,encrypted storage/export exclusion,swapped-ciphertext rejection,actual static Python analysis through fixture GitHub responses,immutable revision evidence,metadata bounds,disconnect/rotation and late-publication prevention,key-loss failure,classic/oversized-token rejection,rate-limit termination,provider-body suppression and safe redirects. Bearer credentials are sent only to api.github.com and not codeload.github.com. HTTPX request logging is suppressed because signed archive URLs may themselves be credentials.
+
+An adversarial malformed-Location test exposed an HTTPX exception containing a synthetic token;the downloader now converts transport/URL exceptions to a generic error without raw URLs. Invalid commit-object shapes and nonstandard hash lengths no longer become recorded immutable revisions. The report UI displays resolved private commit hashes with mobile-safe wrapping.
+
+Only the named repository is used by the application. A provider token's complete grant set cannot be introspected here;operators must verify selected-repository/Contents-read-only settings. Application disconnect removes encrypted access and cancels scans but cannot revoke a PAT at GitHub;provider revocation is a separate owner action. An in-flight request can finish,but cannot publish a cancelled job. Key rotation is manual reconnect;there is no GitHub App installation or OAuth lifecycle.
+
+The legacy fallback static worker passes its supported restored-job test at schema0005 and is explicitly tested to fail closed on an unsupported private payload without publishing a report. It cannot process private jobs. Drain/cancel those jobs before an approved rollback. This remains CI evidence,not a hosted rollback.

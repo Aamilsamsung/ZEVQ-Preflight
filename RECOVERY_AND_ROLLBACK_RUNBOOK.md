@@ -1,6 +1,6 @@
 # Recovery and rollback runbook
 
-29 October 2026. Live deployment remains5e0e211 / dep-dbh4jk6c6qcc73cihja0 / schema0003. Candidate f8619a5 includes additive0004; it has not been deployed.
+29 October 2026. Live deployment remains5e0e211 / dep-dbh4jk6c6qcc73cihja0 / schema0003. Candidate d52fead includes additive0004/0005; it has not been deployed.
 
 ## Executed hosted preparation
 
@@ -22,17 +22,20 @@ RPO/RTO:the provider reported a source point21seconds before snapshot creation. 
 2. Confirm project, branch, endpoint and `preflight` database identity against the IDs above. Stop if they differ. Use a separate process and bind any test API only to loopback or restricted staging access.
 3. Record schema and count fingerprints before changes. Verify the copied synthetic owner/viewer/outsider accounts only. Test existing synthetic sessions, login, report JSON/CSV, scan history, review history, retention policy/preview and audit access. An outsider must receive404 for the other tenant's report.
 4. Confirm no unrelated active jobs exist on the copy. Submit and execute a known static OpenAPI fixture; verify queued/running/completed states and simulation `not-executed`. Do not import source or execute customer tests. Record queue/execution timing. Distinguish a newly queued job on the restored target from a job already queued at the recovery point.
-5. On a separately restored copy, validate the new additive migration0004 before any application promotion. Preserve existing rows and runtime grants. Do not downgrade, restore over or truncate the live database.
-6. Load exact fallback source `9e78cde832e0d9213aae6450c5fb7d80f90ff6f4` in another process. Verify session/report/history/tenant behavior and execute its own synthetic static job. Do not run its migration downgrade command. Current CI already passes these checks against restored schema0004; hosted behavior remains to be exercised.
+5. On a separately restored copy, validate the new additive migrations0004/0005 before any application promotion. Preserve existing rows and runtime grants. Do not downgrade, restore over or truncate the live database.
+6. Load exact fallback source `9e78cde832e0d9213aae6450c5fb7d80f90ff6f4` in another process. Verify session/report/history/tenant behavior and execute its own synthetic static job. Do not run its migration downgrade command. Current CI already passes these checks against restored schema0005; hosted behavior remains to be exercised.
 7. Preserve a sanitized result summary and measured application-ready time. A real live-service rollback remains a separate consequential action requiring explicit authorization; none was performed here.
 8. Once evidence is accepted and removal authorized, delete only the two rehearsal branches in child-first order. Never delete/reset/default-switch the live branch. Copied sessions and credentials deserve the same access protection as the source while copies exist.
 
 ## CI recovery evidence
 
-The pipeline runs actual pg_dump/pg_restore into `preflight_restore` on disposable local PostgreSQL16. It checks table counts, an existing synthetic session, password login, reports, reviews/history, retention policy/preview, tenant isolation and a restored queued static job. A separate process imports the exact fallback source and now also executes its static worker successfully against additive schema0004. The helpers require CI, localhost and the exact disposable database name. They are deliberately not commands to run against Neon.
+The pipeline runs actual pg_dump/pg_restore into `preflight_restore` on disposable local PostgreSQL16. It checks table counts, an existing synthetic session, password login, reports, reviews/history, retention policy/preview, tenant isolation and a restored queued static job. A separate process imports the exact fallback source and now also executes its static worker successfully against additive schema0005. The helpers require CI, localhost and the exact disposable database name. They are deliberately not commands to run against Neon.
 
 See final QA report for latest run ID. Success here is not a hosted restore or an independent backup strategy. The isolated Neon copies share the same provider/account failure domain. Long-term independent backup automation and restore drills remain incomplete.
 
 ## Deployment rollback procedure (not executed)
 
 Verify a safe backup and previous-source compatibility first; freeze unrelated writes only through an explicitly approved maintenance procedure. In Render, select the retained successful deployment for rollback or deploy an approved exact fallback commit. Confirm the artifact is retained and current service settings remain correct. Do not assume deployment rollback reverses SQL migrations, job side effects, secrets or external writes. Inspect `/health`, saved provider health path, authenticated tenant flows and worker completion after traffic moves. Record the resulting deployment/commit and retain schema changes unless an independently approved database recovery is needed.
+
+
+Private credentials additionally require the original host encryption key,kept separately from database backups and never put into this report. Older fallback code does not support private payloads:current CI verifies a safe failed state without report publication at schema0005. Drain/cancel private jobs before an approved rollback;do not call that failure a successful private scan. Existing hosted snapshot branches remain schema0003 and have not been migrated.
