@@ -49,6 +49,7 @@ class Repository(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     org_id: Mapped[str] = mapped_column(ForeignKey('organizations.id', ondelete='CASCADE'), index=True)
     full_name: Mapped[str] = mapped_column(String(210))
+    source_kind: Mapped[str] = mapped_column(String(12), default='public', server_default='public')
 
 
 class Scan(Base):
@@ -162,3 +163,11 @@ class EmailToken(Base):
     purpose: Mapped[str] = mapped_column(String(12))
     expires: Mapped[float] = mapped_column(Float)
     consumed_at: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+
+class RepositoryCredential(Base):
+    __tablename__ = 'repository_credentials'
+    repo_id: Mapped[str] = mapped_column(ForeignKey('repositories.id', ondelete='CASCADE'), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey('organizations.id', ondelete='CASCADE'), index=True)
+    ciphertext: Mapped[str] = mapped_column(Text)
+    version: Mapped[int] = mapped_column(Integer)

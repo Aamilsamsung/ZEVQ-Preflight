@@ -45,9 +45,12 @@ def claim(db_factory):
         return (scan.id, lease) if updated.rowcount else None
 
 
-async def calculate(scan):
+async def calculate(scan, db_factory=None):
     if scan.payload:
         payload = json.loads(scan.payload)
+        if 'private_repository_id' in payload:
+            from .private_github import calculate as private_calculate
+            return await private_calculate(db_factory,scan)
         if 'contracts' in payload:
             pair = payload['contracts']; findings = compare_openapi(pair['baseline'], pair['proposed'])
             result = analyze({})
@@ -76,7 +79,7 @@ def execute(db_factory, scan_id, lease):
         if not scan or scan.status != 'running' or scan.lease != lease: return
         queue_wait_ms=round(max(0,time.time()-scan.created_at)*1000,2)
     try:
-        result = asyncio.run(asyncio.wait_for(calculate(scan), timeout=90))
+        result = asyncio.run(asyncio.wait_for(calculate(scan,db_factory), timeout=90))
         result['duration_ms'] = round((time.monotonic() - started) * 1000, 2)
         values = dict(status='completed', result=json.dumps(result), error=None)
     except Exception as exc:

@@ -13,12 +13,12 @@ from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Backgroun
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
-from . import retention, alerts, email_recovery, operations
-from .db import RetentionPolicy, CleanupRun
+from . import retention, alerts, email_recovery, operations, private_github
+from .db import RetentionPolicy, CleanupRun, RepositoryCredential
 from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session, constant_equal
 from .github import NAME, valid_ref, archive_url, download
@@ -82,6 +82,11 @@ class OrgInput(BaseModel):
 
 class RepoInput(BaseModel):
     full_name: str = Field(min_length=3, max_length=210)
+
+
+class PrivateRepoInput(BaseModel):
+    full_name: str = Field(min_length=3, max_length=210)
+    token: SecretStr = Field(min_length=30, max_length=256)
 
 
 class ScanInput(BaseModel):
@@ -398,7 +403,64 @@ def create_app(database_url=None, mode=None):
     def repos(org_id: str, request: Request):
         member(request, org_id)
         with app.state.db() as db:
-            return [{'id': r.id, 'full_name': r.full_name} for r in db.scalars(select(Repository).where(Repository.org_id == org_id).limit(100))]
+            return [{'id': r.id, 'full_name': r.full_name, 'source_kind': r.source_kind, 'credential_connected': bool(db.get(RepositoryCredential,r.id)) if r.source_kind=='private' else False} for r in db.scalars(select(Repository).where(Repository.org_id == org_id).limit(100))]
+
+    @app.get('/api/orgs/{org_id}/private-github/status')
+    def private_status(org_id: str, request: Request):
+        member(request,org_id)
+        return {'enabled': private_github.cipher() is not None, 'model':'repository-specific fine-grained token; GitHub App/OAuth unavailable'}
+
+    @app.post('/api/orgs/{org_id}/private-github/repos', status_code=201)
+    async def connect_private(org_id: str, data: PrivateRepoInput, request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        limit(app.state.db,'private-connect:'+actor.id,5,900)
+        name=data.full_name.strip();token=data.token.get_secret_value()
+        if not NAME.fullmatch(name):raise HTTPException(422,'Repository must be owner/name')
+        if len(token)>256:raise HTTPException(422,'Invalid credential length')
+        try:
+            private_github.require_enabled()
+            # Validate credential format before any network call.
+            private_github.validate_token(token)
+            await private_github.verify(token,name)
+        except ValueError as error:raise HTTPException(422,str(error)) from None
+        with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            repo=db.scalar(select(Repository).where(Repository.org_id==org_id,Repository.full_name==name))
+            if repo and repo.source_kind!='private':raise HTTPException(409,'Disconnect the public entry before adding private access.')
+            if not repo:
+                if db.scalar(select(func.count()).select_from(Repository).where(Repository.org_id==org_id))>=20:raise HTTPException(429,'Staging repository limit reached')
+                repo=Repository(org_id=org_id,full_name=name,source_kind='private');db.add(repo);db.flush()
+            row=db.get(RepositoryCredential,repo.id)
+            version=row.version+1 if row else 1
+            encrypted=private_github.seal(repo,token,version)
+            private_github.cancel_jobs(db,org_id,repo.id)
+            if row:row.ciphertext=encrypted;row.version=version
+            else:db.add(RepositoryCredential(repo_id=repo.id,org_id=org_id,ciphertext=encrypted,version=version))
+            event(db,org_id,actor.id,'github.private_connected');db.commit()
+            return {'id':repo.id,'full_name':repo.full_name,'source_kind':'private','credential_connected':True}
+
+    @app.get('/api/orgs/{org_id}/repos/{repo_id}/revisions/{kind}')
+    async def private_revisions(org_id: str,repo_id: str,kind: str,request: Request,ref: str='',page: int=1):
+        actor,_=member(request,org_id);limit(app.state.db,'private-revisions:'+actor.id,30,900)
+        with app.state.db() as db:
+            repo=db.get(Repository,repo_id)
+            if not repo or repo.org_id!=org_id:raise HTTPException(404,'Repository not found')
+            try:repo,token,_=private_github.credential(db,org_id,repo_id)
+            except ValueError as error:raise HTTPException(409,str(error)) from None
+        try:return await private_github.revisions(token,repo.full_name,kind,ref,page)
+        except ValueError as error:raise HTTPException(422,str(error)) from None
+
+    @app.delete('/api/orgs/{org_id}/repos/{repo_id}/credential')
+    def disconnect_private(org_id: str,repo_id: str,request: Request):
+        actor,_=member(request,org_id,{'owner'})
+        with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            repo=db.get(Repository,repo_id)
+            if not repo or repo.org_id!=org_id or repo.source_kind!='private':raise HTTPException(404,'Private repository not found')
+            private_github.cancel_jobs(db,org_id,repo_id)
+            db.execute(delete(RepositoryCredential).where(RepositoryCredential.repo_id==repo_id,RepositoryCredential.org_id==org_id))
+            event(db,org_id,actor.id,'github.private_disconnected');db.commit()
+        return {'ok':True,'provider_revocation_required':True}
 
     @app.post('/api/orgs/{org_id}/repos', status_code=201)
     def add_repo(org_id: str, data: RepoInput, request: Request):
@@ -420,6 +482,8 @@ def create_app(database_url=None, mode=None):
     def remove_repo(org_id: str, repo_id: str, request: Request):
         user, _ = member(request, org_id, ADMINS)
         with app.state.db() as db:
+            db.scalar(select(Organization).where(Organization.id==org_id).with_for_update())
+            private_github.cancel_jobs(db,org_id,repo_id)
             result = db.execute(delete(Repository).where(Repository.id == repo_id, Repository.org_id == org_id))
             if not result.rowcount: raise HTTPException(404, 'Repository not found')
             event(db, org_id, user.id, 'repository.disconnected'); db.commit()
@@ -452,7 +516,12 @@ def create_app(database_url=None, mode=None):
                         raise HTTPException(409, 'Idempotency key already used for different inputs')
                     return scan_dict(existing, True)
             admit(db, org_id)
-            scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key)
+            payload=None
+            if repo.source_kind=='private':
+                try:_,_,version=private_github.credential(db,org_id,repo.id)
+                except ValueError as error:raise HTTPException(409,str(error)) from None
+                payload=json.dumps({'private_repository_id':repo.id,'credential_version':version})
+            scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key,payload=payload)
             db.add(scan); event(db, org_id, user.id, 'scan.queued'); db.commit()
             notify_worker()
             return scan_dict(scan, True)

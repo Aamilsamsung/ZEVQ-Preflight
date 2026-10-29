@@ -43,7 +43,7 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
-          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_email_recovery.py tests/test_operations.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_retention.py tests/test_alerts.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
+          python -m pytest tests/test_api.py tests/test_account_controls.py tests/test_email_recovery.py tests/test_private_github.py tests/test_operations.py tests/test_finding_reviews.py tests/test_comparisons.py tests/test_observability.py tests/test_retention.py tests/test_alerts.py tests/test_postgres_bootstrap.py -q --junitxml=artifacts/postgres.xml
       - name: Synthetic PostgreSQL backup and restore drill
         env:
           DATABASE_URL: postgresql+psycopg://preflight:ci-only-password@localhost:5432/preflight_test
@@ -75,6 +75,7 @@ jobs:
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" QA_START_SERVICES=1 node scripts/browser-qa.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/independent_browser_checks.cjs
           NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/recovery_browser_qa.cjs
+          NODE_PATH="$RUNNER_TEMP/preflight-browser/node_modules" node scripts/private_github_browser_qa.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -86,6 +87,7 @@ jobs:
             artifacts/browser-qa-results.json
             artifacts/independent-audit/frontend-results.json
             artifacts/recovery-browser-results.json
+            artifacts/private-github-browser-results.json
             artifacts/qa-desktop*.png
             artifacts/qa-mobile.png
             artifacts/qa-tablet.png
