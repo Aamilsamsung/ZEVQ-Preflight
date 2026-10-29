@@ -14,7 +14,7 @@ from email.message import EmailMessage
 from urllib.parse import urlsplit
 from fastapi import HTTPException
 from sqlalchemy import select, delete, update
-from .db import EmailToken, User, SessionRecord, Membership, Audit
+from .db import EmailToken, User, SessionRecord, Membership, Audit, AccountEvent
 from .security import digest, hasher
 
 GENERIC = {'message': 'If an eligible provisioned account exists, an email will be sent. Check your inbox or contact support.'}
@@ -43,6 +43,7 @@ def configuration():
 
 
 def audit(db, user_id, action):
+    db.add(AccountEvent(user_id=user_id,action=action))
     for org_id in db.scalars(select(Membership.org_id).where(Membership.user_id == user_id)):
         db.add(Audit(org_id=org_id, actor_id=user_id, action=action))
 
@@ -114,7 +115,14 @@ def consume(factory, token, purpose, password=None):
             user.password_hash = hasher.hash(password)
             db.execute(delete(SessionRecord).where(SessionRecord.user_id == user.id))
         else:
+            if user.registration_pending and not password:
+                raise HTTPException(422, 'Choose a password of at least 14 characters to finish registration.')
+            if password:
+                if not 14 <= len(password) <= 256:raise HTTPException(422,'Password must be 14–256 characters')
+                user.password_hash=hasher.hash(password)
+                db.execute(delete(SessionRecord).where(SessionRecord.user_id==user.id))
             user.verified = 1
+            user.registration_pending = 0
         # All links for this identity are invalidated atomically with the change.
         db.execute(update(EmailToken).where(EmailToken.user_id == user.id, EmailToken.consumed_at.is_(None)).values(consumed_at=now))
         audit(db, user.id, 'account.password_reset_email' if purpose == 'reset' else 'account.email_verified')

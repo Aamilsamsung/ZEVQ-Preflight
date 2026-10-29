@@ -13,12 +13,13 @@ from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Backgroun
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field, SecretStr
 from sqlalchemy import select, delete, func, text
 from sqlalchemy.exc import IntegrityError
 from .db import Base, make_engine, factory, User, Organization, Membership, SessionRecord, Repository, Scan, Audit, FindingReview, FindingReviewEvent
-from . import retention, alerts, email_recovery, operations, private_github
-from .db import RetentionPolicy, CleanupRun, RepositoryCredential
+from . import retention, alerts, email_recovery, operations, private_github, onboarding
+from .db import RetentionPolicy, CleanupRun, RepositoryCredential, AccountEvent
 from .job_signal import notify_worker
 from .security import hasher, DUMMY_HASH, password_ok, digest, limit, principal, member, has_active_session, constant_equal
 from .github import NAME, valid_ref, archive_url, download
@@ -49,6 +50,16 @@ class EmailRequest(BaseModel):
 
 class EmailConfirm(BaseModel):
     token: str = Field(min_length=1, max_length=128)
+
+
+class EmailVerification(EmailConfirm):
+    new_password: str | None = Field(default=None,min_length=14,max_length=256)
+
+
+class Registration(BaseModel):
+    email: str = Field(min_length=3,max_length=254)
+    accepted_terms: bool = Field(strict=True)
+    legal_version: str = Field(max_length=32)
 
 
 class EmailReset(EmailConfirm):
@@ -127,21 +138,27 @@ def scoped_scan(db, org_id, scan_id):
     return scan
 
 
-def admit(db, org_id):
+def admit(db, org_id, actor_id=None):
     # Serialize admission per tenant on PostgreSQL to avoid quota/concurrency races.
     db.scalar(select(Organization).where(Organization.id == org_id).with_for_update())
     active = db.scalar(select(func.count()).select_from(Scan).where(Scan.org_id == org_id, Scan.status.in_(['queued', 'running'])))
     usage = db.scalar(select(func.count()).select_from(Scan).where(Scan.org_id == org_id, Scan.created_at > time.time() - 86400))
+    if actor_id:
+        db.scalar(select(User).where(User.id==actor_id).with_for_update())
+        account_usage=db.scalar(select(func.count()).select_from(Scan).where(Scan.created_by==actor_id,Scan.created_at>time.time()-86400))
+        if account_usage>=20:raise HTTPException(429,'Account quota: 20 scans per rolling day across organizations')
     if active >= 3 or usage >= 20:
         raise HTTPException(429, 'Staging quota: 3 pending scans and 20 scans per rolling day')
 
 
 def create_app(database_url=None, mode=None):
     mode = mode or os.getenv('PREFLIGHT_MODE', 'development')
+    if mode not in ('development','staging','production'):
+        raise ValueError('Unsupported application mode')
     db_url = database_url or os.getenv('DATABASE_URL', 'sqlite:///./preflight.db')
     @asynccontextmanager
     async def lifespan(app):
-        if mode == 'staging':
+        if mode in ('staging','production'):
             if not db_url.startswith(('postgres://', 'postgresql')):
                 raise RuntimeError('Staging requires a PostgreSQL DATABASE_URL')
             if len(os.getenv('STAGING_PASSWORD', '')) < 24:
@@ -162,7 +179,7 @@ def create_app(database_url=None, mode=None):
     async def unexpected_error(request, error):
         reference=request.scope.get('preflight_request_id','unavailable')
         headers={'X-Request-ID':reference,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; frame-ancestors 'none'"}
-        if mode=='staging':headers['Strict-Transport-Security']='max-age=31536000'
+        if mode in ('staging','production'):headers['Strict-Transport-Security']='max-age=31536000'
         return JSONResponse({'detail':'Service temporarily unavailable. Retry or contact support with reference '+reference},status_code=500,headers=headers)
 
     @app.exception_handler(RequestValidationError)
@@ -173,8 +190,9 @@ def create_app(database_url=None, mode=None):
     @app.middleware('http')
     async def boundaries(request, call_next):
         path = request.url.path
-        public_access = path in ('/health', '/login', '/api/auth/login', '/api/auth/register', '/forgot-password', '/reset-password', '/verify-email', '/api/auth/email/status', '/api/auth/email/request-reset', '/api/auth/email/request-verification', '/api/auth/email/reset', '/api/auth/email/verify', '/api/operations/monitor') or path.startswith('/static/')
-        if mode == 'staging' and not public_access:
+        public_access = path in ('/health', '/login', '/register', '/api/auth/login', '/api/auth/register', '/forgot-password', '/reset-password', '/verify-email', '/api/auth/email/status', '/api/auth/email/request-reset', '/api/auth/email/request-verification', '/api/auth/email/reset', '/api/auth/email/verify', '/api/operations/monitor') or path.startswith('/static/')
+        public_marketing=path in ('/','/features','/how-it-works','/use-cases','/docs','/faq','/security','/pricing','/contact','/privacy','/terms') and os.getenv('PREFLIGHT_PUBLIC_ACCESS_ENABLED')=='1'
+        if mode in ('staging','production') and not public_access and not public_marketing:
             expected = 'staging:' + os.getenv('STAGING_PASSWORD', '')
             supplied = request.headers.get('authorization', '')
             try:
@@ -190,13 +208,14 @@ def create_app(database_url=None, mode=None):
                     if request.method in ('GET', 'HEAD') and not path.startswith('/api/'):
                         return RedirectResponse('/login', status_code=303, headers={'Cache-Control':'no-store'})
                     return JSONResponse({'detail': 'Sign in required'}, status_code=401, headers={'Cache-Control':'no-store'})
+        body_limit=16384 if path.startswith('/api/auth/') else MAX_BYTES*2+100_000
         if request.method not in ('GET', 'HEAD', 'OPTIONS'):
             origin = request.headers.get('origin')
             expected_origin = os.getenv('PUBLIC_ORIGIN', str(request.base_url).rstrip('/'))
             if origin and origin.rstrip('/') != expected_origin:
                 return JSONResponse({'detail': 'Cross-origin mutation rejected'}, status_code=403)
             try:
-                if int(request.headers.get('content-length', '0')) > MAX_BYTES * 2 + 100_000:
+                if int(request.headers.get('content-length', '0')) > body_limit:
                     return JSONResponse({'detail': 'Request too large'}, status_code=413)
             except ValueError:
                 return JSONResponse({'detail': 'Invalid Content-Length'}, status_code=400)
@@ -204,7 +223,7 @@ def create_app(database_url=None, mode=None):
             chunks, total = [], 0
             async for chunk in request.stream():
                 total += len(chunk)
-                if total > MAX_BYTES * 2 + 100_000:
+                if total > body_limit:
                     return JSONResponse({'detail': 'Request too large'}, status_code=413)
                 chunks.append(chunk)
             request._body = b''.join(chunks)
@@ -216,7 +235,7 @@ def create_app(database_url=None, mode=None):
         # Registered last so even early authentication/validation responses pass here.
         response = await call_next(request)
         response.headers.update({'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'", 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'})
-        if mode == 'staging':
+        if mode in ('staging','production'):
             response.headers['Strict-Transport-Security'] = 'max-age=31536000'
         return response
 
@@ -242,11 +261,11 @@ def create_app(database_url=None, mode=None):
         principal(request)
         with app.state.engine.connect() as conn:
             conn.execute(text('SELECT 1'))
-        return {'database': 'reachable', 'execution': 'disabled', 'registration': 'disabled', 'billing': 'disabled'}
+        return {'database': 'reachable', 'execution': 'disabled', 'registration': 'enabled' if onboarding.available() else 'disabled', 'billing': 'disabled'}
 
     @app.get('/api/auth/email/status')
     def email_status():
-        return {'delivery_enabled': email_recovery.configuration() is not None, 'registration': 'disabled'}
+        return {'delivery_enabled': email_recovery.configuration() is not None, 'registration': 'enabled' if onboarding.available() else 'disabled','legal_version':onboarding.LEGAL_VERSION}
 
     def request_email(data, request, background, purpose):
         config = email_recovery.configuration()
@@ -280,12 +299,29 @@ def create_app(database_url=None, mode=None):
         return confirm_email(data, request, 'reset')
 
     @app.post('/api/auth/email/verify')
-    def verify_email(data: EmailConfirm, request: Request):
+    def verify_email(data: EmailVerification, request: Request):
         return confirm_email(data, request, 'verify')
 
     @app.post('/api/auth/register')
-    def register():
-        raise HTTPException(403, 'Public registration is disabled pending launch approval. Contact zevqlabs@gmail.com.')
+    async def register(request: Request, background: BackgroundTasks):
+        if not onboarding.available():
+            raise HTTPException(403, 'Public registration is disabled pending verified email delivery and release approval. Contact zevqlabs@gmail.com.')
+        if mode in ('staging','production') and os.getenv('PREFLIGHT_PUBLIC_ACCESS_ENABLED')!='1':
+            # Allows a protected operator acceptance test before public launch.
+            supplied=request.headers.get('authorization','')
+            try:decoded=base64.b64decode(supplied.split(' ',1)[1],validate=True).decode() if supplied.startswith('Basic ') else ''
+            except (ValueError,UnicodeError):decoded=''
+            if not constant_equal(decoded,'staging:'+os.getenv('STAGING_PASSWORD','')):raise HTTPException(403,'Protected onboarding test requires operator authorization')
+        limit(app.state.db,'register-ip:'+(request.client.host if request.client else 'unknown'),5,3600)
+        try:
+            data=Registration.model_validate(await request.json())
+            email=onboarding.normalize_email(data.email)
+        except Exception:raise HTTPException(422,'Enter a valid email address and accept the current terms and privacy notice.') from None
+        if data.accepted_terms is not True or data.legal_version!=onboarding.LEGAL_VERSION:raise HTTPException(422,'Accept the current terms and privacy notice to register.')
+        limit(app.state.db,'email-recipient:'+email,3,900)
+        await run_in_threadpool(onboarding.provision,app.state.db,email)
+        background.add_task(email_recovery.dispatch,app.state.db,email_recovery.configuration(),email,'verify')
+        return JSONResponse(onboarding.GENERIC,status_code=202)
 
     @app.post('/api/auth/login')
     def login(data: Login, request: Request):
@@ -301,7 +337,7 @@ def create_app(database_url=None, mode=None):
             db.add(SessionRecord(token_hash=digest(token), user_id=user.id, csrf=csrf, expires=time.time() + 7 * 86400))
             db.commit()
         response = JSONResponse({'csrf_token': csrf})
-        response.set_cookie('preflight_session', token, httponly=True, secure=mode == 'staging', samesite='strict', max_age=7 * 86400, path='/')
+        response.set_cookie('preflight_session', token, httponly=True, secure=mode in ('staging','production'), samesite='strict', max_age=7 * 86400, path='/')
         return response
 
     @app.get('/api/auth/me')
@@ -515,13 +551,13 @@ def create_app(database_url=None, mode=None):
                     if (existing.repository, existing.base_ref, existing.head_ref) != (repo.full_name, data.base_ref, data.head_ref):
                         raise HTTPException(409, 'Idempotency key already used for different inputs')
                     return scan_dict(existing, True)
-            admit(db, org_id)
+            admit(db, org_id, user.id)
             payload=None
             if repo.source_kind=='private':
                 try:_,_,version=private_github.credential(db,org_id,repo.id)
                 except ValueError as error:raise HTTPException(409,str(error)) from None
                 payload=json.dumps({'private_repository_id':repo.id,'credential_version':version})
-            scan = Scan(org_id=org_id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key,payload=payload)
+            scan = Scan(org_id=org_id, created_by=user.id, repository=repo.full_name, base_ref=data.base_ref, head_ref=data.head_ref, idempotency_key=key,payload=payload)
             db.add(scan); event(db, org_id, user.id, 'scan.queued'); db.commit()
             notify_worker()
             return scan_dict(scan, True)
@@ -535,8 +571,8 @@ def create_app(database_url=None, mode=None):
         except ValueError as exc: raise HTTPException(422, str(exc))
         payload = {'files': files, 'baseline': old, 'skipped': getattr(files, 'skipped', []), 'baseline_skipped': getattr(old, 'skipped', [])}
         with app.state.db() as db:
-            admit(db, org_id)
-            scan = Scan(org_id=org_id, payload=json.dumps(payload)); db.add(scan)
+            admit(db, org_id, user.id)
+            scan = Scan(org_id=org_id, created_by=user.id, payload=json.dumps(payload)); db.add(scan)
             event(db, org_id, user.id, 'scan.uploaded'); db.commit()
             notify_worker()
             return scan_dict(scan, True)
@@ -550,8 +586,8 @@ def create_app(database_url=None, mode=None):
             if not str(spec.get('openapi', '')).startswith('3.') or not isinstance(spec.get('paths'), dict):
                 raise HTTPException(422, 'Provide OpenAPI 3.x documents with paths objects')
         with app.state.db() as db:
-            admit(db, org_id)
-            scan = Scan(org_id=org_id, repository='OpenAPI contract', payload=payload); db.add(scan)
+            admit(db, org_id, user.id)
+            scan = Scan(org_id=org_id, created_by=user.id, repository='OpenAPI contract', payload=payload); db.add(scan)
             event(db, org_id, user.id, 'contract.queued'); db.commit()
             notify_worker()
             return scan_dict(scan, True)
@@ -747,7 +783,8 @@ def create_app(database_url=None, mode=None):
         user, _ = principal(request)
         with app.state.db() as db:
             memberships = [{'org_id': m.org_id, 'role': m.role} for m in db.scalars(select(Membership).where(Membership.user_id == user.id))]
-        return {'id': user.id, 'email': user.email, 'memberships': memberships}
+            events=[{'action':e.action,'created_at':e.created_at} for e in db.scalars(select(AccountEvent).where(AccountEvent.user_id==user.id).order_by(AccountEvent.created_at.desc()).limit(1000))]
+        return {'id': user.id, 'email': user.email, 'memberships': memberships,'account_events':events,'account_events_limit':1000}
 
     @app.delete('/api/auth/account')
     def delete_account(request: Request):
@@ -774,7 +811,7 @@ def create_app(database_url=None, mode=None):
     app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')
     @app.get('/{path:path}', include_in_schema=False)
     def page(path: str):
-        if path not in ('', 'login', 'forgot-password', 'reset-password', 'verify-email', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
+        if path not in ('', 'login', 'register', 'forgot-password', 'reset-password', 'verify-email', 'app', 'docs', 'security', 'pricing', 'contact', 'privacy', 'terms', 'features', 'how-it-works', 'use-cases', 'faq'):
             if path.startswith('api/'):
                 return JSONResponse({'detail': 'Endpoint not found'}, status_code=404)
             return FileResponse(ROOT / 'static/index.html', status_code=404)

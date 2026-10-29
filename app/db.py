@@ -20,6 +20,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True)
     password_hash: Mapped[str] = mapped_column(Text)
     verified: Mapped[int] = mapped_column(Integer, default=0)
+    registration_pending: Mapped[int] = mapped_column(Integer, default=0, server_default='0')
 
 
 class Organization(Base):
@@ -58,6 +59,7 @@ class Scan(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     org_id: Mapped[str] = mapped_column(ForeignKey('organizations.id', ondelete='CASCADE'), index=True)
     repository: Mapped[str] = mapped_column(String(210), default='Uploaded archive')
+    created_by: Mapped[str | None] = mapped_column(ForeignKey('users.id',ondelete='SET NULL'),nullable=True,index=True)
     base_ref: Mapped[str] = mapped_column(String(120), default='')
     head_ref: Mapped[str] = mapped_column(String(120), default='')
     status: Mapped[str] = mapped_column(String(20), default='queued', index=True)
@@ -171,3 +173,11 @@ class RepositoryCredential(Base):
     org_id: Mapped[str] = mapped_column(ForeignKey('organizations.id', ondelete='CASCADE'), index=True)
     ciphertext: Mapped[str] = mapped_column(Text)
     version: Mapped[int] = mapped_column(Integer)
+
+
+class AccountEvent(Base):
+    __tablename__ = 'account_events'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    user_id: Mapped[str] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    action: Mapped[str] = mapped_column(String(100))
+    created_at: Mapped[float] = mapped_column(Float, default=time.time)

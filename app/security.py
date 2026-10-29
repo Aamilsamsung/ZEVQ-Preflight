@@ -2,6 +2,7 @@
 import hashlib
 import secrets
 import time
+import threading
 from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError, InvalidHashError
 from fastapi import HTTPException, Request
@@ -9,7 +10,24 @@ from sqlalchemy import select, delete, update
 from sqlalchemy.exc import IntegrityError
 from .db import SessionRecord, User, Membership, RateBucket
 
-hasher = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=2)
+class BoundedPasswordHasher:
+    """Keep the existing Argon2 strength, bound simultaneous 64MiB operations."""
+    def __init__(self, inner=None, timeout=1):
+        self.inner=inner or PasswordHasher(time_cost=3,memory_cost=65536,parallelism=2)
+        self.slots=threading.BoundedSemaphore(2)
+        self.timeout=timeout
+
+    def _call(self,method,*args):
+        if not self.slots.acquire(timeout=self.timeout):
+            raise HTTPException(503,'Authentication is busy. Please retry shortly.',headers={'Retry-After':'2'})
+        try:return getattr(self.inner,method)(*args)
+        finally:self.slots.release()
+
+    def hash(self,password):return self._call('hash',password)
+    def verify(self,encoded,password):return self._call('verify',encoded,password)
+
+
+hasher = BoundedPasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
 
 
