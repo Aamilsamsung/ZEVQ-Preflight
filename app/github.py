@@ -55,6 +55,15 @@ async def diagnose_404(client, original_url, redirected):
 
 
 async def download(repo, branch, token=None):
+    try:
+        return await _download(repo, branch, token)
+    except (httpx.HTTPError, httpx.InvalidURL):
+        # HTTPX may parse a malformed Location before returning the response.
+        # Its exception can contain signed URLs or credentials; never echo it.
+        raise ValueError('GitHub network or archive response unavailable; retry later.') from None
+
+
+async def _download(repo, branch, token=None):
     url = archive_url(repo, branch)
     original_url=url
     async with httpx.AsyncClient(follow_redirects=False, timeout=httpx.Timeout(25), headers={'Accept-Encoding': 'identity', 'User-Agent': 'ZEVQ-Preflight/0.2'}) as client:
@@ -62,8 +71,12 @@ async def download(repo, branch, token=None):
             async with client.stream('GET', url, headers={'Authorization':'Bearer '+token} if token and urlparse(url).hostname=='api.github.com' else {}) as response:
                 if response.status_code in (301, 302, 303, 307, 308) and attempt == 0:
                     url = response.headers.get('location', '')
-                    p = urlparse(url)
-                    if p.scheme != 'https' or p.hostname != 'codeload.github.com' or p.port is not None or p.username or p.password:
+                    try:
+                        p = urlparse(url)
+                        safe = p.scheme == 'https' and p.hostname == 'codeload.github.com' and p.port is None and not p.username and not p.password
+                    except ValueError:
+                        safe = False
+                    if not safe:
                         raise ValueError('Unexpected archive redirect')
                     continue
                 if response.status_code != 200:

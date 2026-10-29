@@ -85,3 +85,5 @@ input,select,textarea{background:#1b2b36;border-color:#344c5a;color:#edf5fb;bord
 .review-box{margin-top:18px;padding:16px;border:1px solid #2c4752;border-radius:9px;background:#0b20274d}.review-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.finding .review-box .review-reason{white-space:pre-wrap;font-size:12px;margin:12px 0;overflow-wrap:anywhere}.review-box textarea{min-height:90px;font-family:inherit}.review-box form{max-width:680px}.review-box .hint{line-height:1.6}.review-box .decision-summary{padding:6px 0}.layout.scan-theme .badge.review-open{background:#203444;color:#b9d7ec}.layout.scan-theme .badge.review-acknowledged{background:#093d30;color:#73f2c7}.layout.scan-theme .badge.review-false-positive,.layout.scan-theme .badge.review-suppressed{background:#3b321b;color:#f4d18a}.review-box select{min-width:0}.review-box .table-wrap{margin-top:16px}@media(max-width:760px){.review-box{padding:12px}.review-status{gap:8px}}
 
 .comparison-workspace>.panel{margin-top:20px}.comparison-workspace>.actions{margin-bottom:20px}
+
+.hash-value{overflow-wrap:anywhere}

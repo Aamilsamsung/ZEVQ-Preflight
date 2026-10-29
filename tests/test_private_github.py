@@ -164,3 +164,16 @@ def test_private_archive_rejects_untrusted_redirect(env,provider,monkeypatch):
     from httpx._client import AsyncClient
     monkeypatch.setattr(httpx,'AsyncClient',lambda **kw:AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(302,headers={'location':'https://evil.test/source?secret='+TOKEN})),**kw))
     with pytest.raises(ValueError,match='Unexpected archive redirect'):asyncio.run(github.download('https://github.com/o/private','main',token=TOKEN))
+
+
+def test_malformed_redirect_port_cannot_expose_credential(env,provider,monkeypatch):
+    from httpx._client import AsyncClient
+    monkeypatch.setattr(httpx,'AsyncClient',lambda **kw:AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(302,headers={'location':'https://codeload.github.com:'+TOKEN+'/x'})),**kw))
+    with pytest.raises(ValueError,match='GitHub network or archive response') as error:asyncio.run(github.download('https://github.com/o/private','main',token=TOKEN))
+    assert TOKEN not in str(error.value)
+
+
+def test_invalid_revision_shapes_do_not_claim_immutable_shas(provider,monkeypatch):
+    from httpx._client import AsyncClient
+    monkeypatch.setattr(httpx,'AsyncClient',lambda **kw:AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(200,json=[{'name':'bad','commit':'invalid'},{'name':'wrong-length','commit':{'sha':'a'*41}}])),**kw))
+    data=asyncio.run(private.revisions(TOKEN,'o/private','branches'));assert data['items']==[]

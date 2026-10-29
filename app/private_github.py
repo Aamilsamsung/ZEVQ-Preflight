@@ -93,8 +93,9 @@ async def revisions(token,name,kind,ref='',page=1):
     result=[]
     for row in rows[:50]:
         if not isinstance(row,dict):continue
-        sha=row.get('sha') if kind=='commits' else (row.get('commit') or {}).get('sha')
-        if isinstance(sha,str) and re.fullmatch(r'[a-fA-F0-9]{40,64}',sha):
+        commit=row.get('commit')
+        sha=row.get('sha') if kind=='commits' else commit.get('sha') if isinstance(commit,dict) else None
+        if isinstance(sha,str) and re.fullmatch(r'[a-fA-F0-9]{40}(?:[a-fA-F0-9]{24})?',sha):
             result.append({'sha':sha,**({'name':str(row.get('name',''))[:120]} if kind=='branches' else {})})
     return {'items':result,'page':page,'possibly_more':len(rows)>=50}
 
@@ -109,7 +110,7 @@ async def calculate(db_factory,scan):
         if not ref:continue
         record=await api(token,name,'/commits/'+quote(valid_ref(ref),safe=''))
         sha=record.get('sha') if isinstance(record,dict) else None
-        if not isinstance(sha,str) or not re.fullmatch(r'[a-fA-F0-9]{40,64}',sha):raise ValueError('GitHub did not resolve an immutable revision')
+        if not isinstance(sha,str) or not re.fullmatch(r'[a-fA-F0-9]{40}(?:[a-fA-F0-9]{24})?',sha):raise ValueError('GitHub did not resolve an immutable revision')
         resolved[label]=sha
     files=await download('https://github.com/'+name,resolved['head'],token=token)
     old=await download('https://github.com/'+name,resolved['base'],token=token) if 'base' in resolved else None
