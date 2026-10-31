@@ -1,0 +1,42 @@
+name: Synthetic incident and recovery notification drill
+on:
+  push:
+    branches: [implementation/public-onboarding-20261029]
+    paths:
+      - .github/workflows/notification-drill.yml
+      - scripts/notification_drill.cjs
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: preflight-notification-drill
+  cancel-in-progress: false
+jobs:
+  notification-drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deterministic safety checks
+        run: node scripts/test_notification_drill.cjs
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            fs.mkdirSync('artifacts/notification-drill', { recursive: true });
+            try {
+              const result = await require('./scripts/notification_drill.cjs').drill(github, context);
+              fs.writeFileSync('artifacts/notification-drill/results.json', JSON.stringify(result, null, 2));
+              console.log(JSON.stringify(result));
+            } catch (e) {
+              fs.writeFileSync('artifacts/notification-drill/results.json', JSON.stringify({ status: 'BLOCKED OR FAILED', evidence: e.message }));
+              core.setFailed(e.message);
+            }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: notification-drill-results
+          path: artifacts/notification-drill/results.json
