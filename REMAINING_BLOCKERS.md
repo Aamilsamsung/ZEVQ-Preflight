@@ -1,14 +1,21 @@
-# Remaining blockers — 29 October 2026
+# Remaining public-beta blockers — 1 November 2026 IST
 
-| Priority | Owner | Evidence | Resolution criteria |
-|---|---|---|---|
-| P1 Candidate deployment | Hosting owner / reviewer | Candidate d52fead passed CI40851366795;live remains5e0e211;connector cannot select a commit | Review PR3;Render Manual Deploy → Deploy a specific commit → d52feadf19ef7d3608124544c71012361c4e39d6;verify schema0005 and hosted workflows;do not merge unreviewed branches |
-| P1 HTTP health configuration | Hosting owner | Actual healthCheckPath empty; connector lacks update operation | Render Settings → Health Checks → `/health` → Save; provider read-back, deployment persistence and safe failure test |
-| P1 Hosted recovery | Release operator | Isolated snapshot branch br-orange-water-b36lbess and queryable child br-mute-bread-b3znuqmn at parentLSN0/1DC1868 created; aggregate rows verified; runner DNS blocked | Use a securely connected runner to verify restored application/session/worker/tenant data; do not redirect staging or overwrite parent |
-| P1 External alert receipt | Owner + release engineer | Opt-in workflow and aggregate endpoint implemented; no schedule or delivery activated | Secure token configuration, reviewed workflow placement, controlled incident, actual received notification and recovery |
-| P1 Email recovery delivery | Owner + release engineer | TLS-only SMTP integration and tests implemented; provider unavailable | Connect approved free SMTP provider via host secrets; verify inbox receipt, ownership verification and reset end-to-end |
-| P1 Private GitHub | Integration owner + engineer | Repository-specific fine-grained credential model implemented and fixture-tested;real private scan unverified | Deploy candidate0005;securely configure host encryption key/enable flag;connect an authorized private fixture through the owner form and verify scans/isolation/disconnect/provider revocation;GitHub App/OAuth remain unavailable |
-| P2 Accessibility | QA | Automated checks passed previously; manual assistive technology/contrast assessment incomplete | Manual keyboard, contrast, screen-reader/device matrix |
-| P2 Performance | SRE | Prior warm samples available; first public health request this session timed out at30seconds | Controlled idle cold-start and bounded load/resource evidence; distinguish proxy wait and service latency |
+Verified 2026-10-31T18:31:02Z (1 November 2026, 00:01:02 IST).
+Deployed commit e612f03dda7cd10d139ec4b95472ce978d5bf14c; application code matches CI candidate d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070. Render deployment dep-dbj34r7b9u1s73cu1qqg LIVE; release branch implementation/secure-preflight; development branch implementation/public-onboarding-20261029; https://zevq-preflight-staging.onrender.com; Neon schema0006. Documentation commit is the Git commit containing this report.
 
-Full planned beta is not ready. Restricted evaluation has NOT been approved and cannot waive monitoring or recovery. Email delivery, external monitoring and public registration remain disabled. Do not switch launch scope silently.
+No unexpected concurrent activity observed through2026-10-31T18:31:02Z. No evidence that the old Work session is terminated;recheck before writes.
+
+## Completed;do not repeat without changes
+Correct candidate deployed;live schema0006;isolated migration/data preservation rehearsal;fresh224local tests(5skipped),8monitor checks and55actual hostedAPIchecks. Baseline existing records preserved before isolated synthetic QA provisioning.
+
+## Unfinished
+- Render HTTP healthCheckPath is blank. Set /health on the existing service and read it back; endpoint itself returns200/database reachable. Connector has no service-settings update capability.
+- Actual email delivery is disabled and unverified. Configure approved TLS SMTP sender through host secrets; prove received verification/resend/reset messages,expiry,password setup and revocation. Never paste secrets in chat.
+- Private GitHub requires actual owner-authorized repository-restricted credential acceptance;fixture tests are not real authorization. GitHub App/OAuth remain unavailable.
+- Actual external incident/recovery notification receipt is unverified. The monitoring schedule exists only on a non-default branch; main remains the original MVP. Do not claim scheduling or blindly replace main.
+- Hosted browser/manual keyboard/responsive acceptance is blocked by environment:CUA cannot start due read-only sessions mount;local Chromium fails with socket Operation not permitted. Existing CI local-browser evidence is valid but is not current hosted browser acceptance.
+- Isolated hosted restored-application journey is unverified because this runner cannot resolve Neon endpoints. Exact generated PostgreSQL migration DDL and record/constraint checks passed on the hosted snapshot;CI synthetic restore and rollback-app tests passed.
+- Owner approval of current Terms/Privacy draft and public support/retention readiness remains required. No new legal approval is inferred.
+
+
+Optional or deferred:manual assistive-technology coverage,controlled cold-start/capacity measurements,invitation UX and broad polish. Do not silently weaken mandatory release gates. Use existing Free resources only;no billing activation.
