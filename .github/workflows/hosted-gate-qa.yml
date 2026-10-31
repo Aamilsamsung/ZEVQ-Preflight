@@ -1,0 +1,35 @@
+name: Hosted anonymous browser acceptance
+on:
+  push:
+    branches: [implementation/public-onboarding-20261029]
+    paths:
+      - .github/workflows/hosted-gate-qa.yml
+      - scripts/hosted_gate_qa.cjs
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hosted-anonymous-browser
+  cancel-in-progress: false
+jobs:
+  hosted-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/hosted-browser" playwright@1.62.1 @axe-core/playwright@4.10.2
+          "$RUNNER_TEMP/hosted-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Verify actual hosted anonymous pages
+        env:
+          NODE_PATH: ${{ runner.temp }}/hosted-browser/node_modules
+        run: node scripts/hosted_gate_qa.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-anonymous-browser-results
+          path: artifacts/hosted-gate/results.json

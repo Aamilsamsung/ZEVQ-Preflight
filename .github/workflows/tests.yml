@@ -1,7 +1,17 @@
 name: Tests
 on:
   push:
+    paths-ignore:
+      - '**/*.md'
+      - docs/**
+      - .github/workflows/hosted-gate-qa.yml
+      - scripts/hosted_gate_qa.cjs
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - docs/**
+      - .github/workflows/hosted-gate-qa.yml
+      - scripts/hosted_gate_qa.cjs
 permissions:
   contents: read
 jobs:
