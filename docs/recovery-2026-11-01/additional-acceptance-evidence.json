@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-10-31T18:56:27Z",
+  "application_commit": "e612f03dda7cd10d139ec4b95472ce978d5bf14c",
+  "hosted_browser": {
+    "run_id": 41230780595,
+    "job_id": 124624366608,
+    "artifact_id": 13053716933,
+    "passed": 19,
+    "failed": 0,
+    "blocked": 0,
+    "scope": "Anonymous pages only"
+  },
+  "notification_drill": {
+    "run_id": 41231200409,
+    "job_id": 124625606531,
+    "issue_number": 6,
+    "state": "closed",
+    "recovery_comments": 1,
+    "safety_tests_passed": 4,
+    "inbox_receipt": "NOT VERIFIED",
+    "initial_failed_run": 41231059090,
+    "initial_issue": 5,
+    "initial_issue_closed_as": "incomplete synthetic test"
+  },
+  "hosted_recovery": {
+    "run_id": 41231594461,
+    "job_id": 124626767145,
+    "status": "BLOCKED before database connection",
+    "prerequisite": "PREFLIGHT_RECOVERY_DATABASE_URL Actions secret",
+    "local_safety_tests_passed": 7
+  },
+  "public_launch": "NOT READY"
+}

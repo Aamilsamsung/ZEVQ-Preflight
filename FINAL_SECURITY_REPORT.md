@@ -1,19 +1,20 @@
-# Focused security verification — incomplete production acceptance
+# Focused security and acceptance status
 
-Verified 2026-10-31T18:31:02Z (1 November 2026, 00:01:02 IST).
-Deployed commit e612f03dda7cd10d139ec4b95472ce978d5bf14c; application code matches CI candidate d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070. Render deployment dep-dbj34r7b9u1s73cu1qqg LIVE; release branch implementation/secure-preflight; development branch implementation/public-onboarding-20261029; https://zevq-preflight-staging.onrender.com; Neon schema0006. Documentation commit is the Git commit containing this report.
+Evidence reconciled 2026-10-31T18:56:27Z (1November2026 IST).
+Existing staging https://zevq-preflight-staging.onrender.com;Render dep-dbj34r7b9u1s73cu1qqg LIVE at e612f03dda7cd10d139ec4b95472ce978d5bf14c;release branch implementation/secure-preflight,development implementation/public-onboarding-20261029;Neon0006;Free infrastructure;autoDeployoff. Application code unchanged since accepted candidate. Documentation SHA is this file's containing commit.
 
-Confirmed on actual hosted APIs:tenant isolation and role restrictions,missing-CSRF/foreign-origin rejection,Secure/HttpOnly/SameSite session cookies,session revocation on logout,archive traversal rejection,protected report export,review-version conflicts and cross-tenant review denial. No customer code executed;only synthetic source/contracts and this owner's public repository inspected. Credentials remain in a local ignored0600fixture;no plaintext passwords,tokens,database URLs or private source are committed.
+Executed hostedAPIchecks confirm scoped tenant/role enforcement,CSRF/origin rejection,secure session cookie attributes,logout replay denial,archive traversal rejection,controlled exports,review versions and comparison boundaries. Actual anonymous browser pages had zero automated axe violations. No source execution,paid upgrade,force push,live schema downgrade or customer-data deletion occurred.
 
-Candidate protections include mailbox-first gated registration,bounded Argon2 work,auth body limits,account/org quotas,hashed single-use email tokens,encrypted scoped private credentials and data-safe additive migration. Fresh local tests224pass/5skip;liveAPI55pass/0fail. Those checks are limited evidence,not a comprehensive penetration test. No fresh dependency-advisory database audit was run during recovery;older audit files remain historical evidence.
+New recovery runner refuses live/unknown endpoints,enforces verify-fullTLS,fingerprints original business rows,and checks remote source head before each mutating phase. It never imports destructive pytest DBfixtures or runs migrations. Seven targeted safety tests passed. Notificationdrill checks remotehead before each issue mutation and uses distinct synthetic titles;four safety tests plus actual issue/comment/closure transport passed. Initial drill failure was diagnosed and preserved.
 
-Remaining critical release gates:
-- Render HTTP healthCheckPath is blank. Set /health on the existing service and read it back; endpoint itself returns200/database reachable. Connector has no service-settings update capability.
-- Actual email delivery is disabled and unverified. Configure approved TLS SMTP sender through host secrets; prove received verification/resend/reset messages,expiry,password setup and revocation. Never paste secrets in chat.
-- Private GitHub requires actual owner-authorized repository-restricted credential acceptance;fixture tests are not real authorization. GitHub App/OAuth remain unavailable.
-- Actual external incident/recovery notification receipt is unverified. The monitoring schedule exists only on a non-default branch; main remains the original MVP. Do not claim scheduling or blindly replace main.
-- Hosted browser/manual keyboard/responsive acceptance is blocked by environment:CUA cannot start due read-only sessions mount;local Chromium fails with socket Operation not permitted. Existing CI local-browser evidence is valid but is not current hosted browser acceptance.
-- Isolated hosted restored-application journey is unverified because this runner cannot resolve Neon endpoints. Exact generated PostgreSQL migration DDL and record/constraint checks passed on the hosted snapshot;CI synthetic restore and rollback-app tests passed.
-- Owner approval of current Terms/Privacy draft and public support/retention readiness remains required. No new legal approval is inferred.
+Credentials and private connection strings were not committed or printed. Actual inboxreceipt,privateprovider authorization,SMTPflows,authenticatedbrowser,hostedrestored-app acceptance and refreshed vulnerability-advisory review remain incomplete. No comprehensive production penetration test or compliance claim.
 
-Concurrency was checked repeatedly via branch heads,CI,deployment history,Neon operations and aggregate active connections. No unexplained activity was observed;termination of the old Work session cannot be proven. Future writes must use expected-head/SHA checks and stop on unexplained changes. No force push,live schema downgrade,customer data deletion,paid upgrade or public-launch flag activation occurred.
+1. Render healthCheckPath remains blank on provider re-read. Owner must save /health in existing service settings;connector cannot edit this setting.
+2. SMTP sender/secrets and actual verification/resend/reset inbox journeys remain unavailable. Keep public registration/access disabled.
+3. Real private GitHub authorization/scans/disconnect/provider revocation require a repository-restricted credential entered through the SaaS owner form;ChatGPT connector access is not a customer credential.
+4. Incident/recovery GitHub transport passed,but no matching email was observed in the connected inbox. Owner notification preferences/subscription and a new deliberate receipt drill required. Recurring schedule remains off default branch/opt-in;worker monitor token unavailable.
+5. Authenticated hosted workspace/mobile/keyboard/accessibility journeys still need secure QA credentials or interactive browser access. Anonymous hosted browser checks are completed and must not be repeated without changes.
+6. Isolated recovery application runner is prepared but cannot connect until Actions secret PREFLIGHT_RECOVERY_DATABASE_URL is configured for br-orange-boat-b3dljf23. Its first run stopped at missing-secret prerequisite before any DB connection. Existing generated-DDL snapshot and syntheticCI recovery checks remain valid,not a completed restored-app journey.
+7. Owner legal approval of exact draft and public support/retention readiness remain required. Read LEGAL_DRAFT_FOR_OWNER_REVIEW.md and OWNER_SETUP_ACTIONS.md.
+
+Concurrency checks consistently matched expected heads;old Work termination cannot be proven. Continue guarded reference updates and stop on unexplained activity.

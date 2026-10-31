@@ -1,26 +1,20 @@
-# Staging deployment verification
+# Verified staging;public launch blocked
 
-Verified 2026-10-31T18:31:02Z (1 November 2026, 00:01:02 IST).
-Deployed commit e612f03dda7cd10d139ec4b95472ce978d5bf14c; application code matches CI candidate d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070. Render deployment dep-dbj34r7b9u1s73cu1qqg LIVE; release branch implementation/secure-preflight; development branch implementation/public-onboarding-20261029; https://zevq-preflight-staging.onrender.com; Neon schema0006. Documentation commit is the Git commit containing this report.
+Evidence reconciled 2026-10-31T18:56:27Z (1November2026 IST).
+Existing staging https://zevq-preflight-staging.onrender.com;Render dep-dbj34r7b9u1s73cu1qqg LIVE at e612f03dda7cd10d139ec4b95472ce978d5bf14c;release branch implementation/secure-preflight,development implementation/public-onboarding-20261029;Neon0006;Free infrastructure;autoDeployoff. Application code unchanged since accepted candidate. Documentation SHA is this file's containing commit.
 
-## Deployment evidence
-- Existing workspace tea-dak1mgafngtc73ftfekg confirmed by user's execution attachment.
-- Existing Free service srv-dbgr4v0n74is73d798e0,autoDeploy off,start python -m app.serve.
-- Reviewed candidate is a direct descendant of93ec40a. Existing configured release branch fast-forwarded with expected_sha93ec40a and force=false to e612f03. No replacement infrastructure or unreviewed branch merge.
-- Exactly one manual deployment triggered:dep-dbj34r7b9u1s73cu1qqg;started2026-10-31T18:24:44Z,finished2026-10-31T18:26:03Z,statusLIVE. Provider commit matches e612f03.
-- /health returned statusok,version0.2.1,database reachable. /api/auth/email/status returned delivery_enabledfalse,registrationdisabled,legal_version2026-10-29.
-- Schema0006 verified after startup;baseline records preserved before synthetic QA data.55fresh hostedAPIchecks passed.
+Exactly one application deployment was triggered during recovery;provider confirms e612f03,finished2026-10-31T18:26:03Z. /health returnedok/database reachable;schema0006andpreQA baseline4users/28scans/4organizations/3reviews/9sessions preserved. Subsequent labeled syntheticQAfixtures/scans are documented in Checkpoint4.
 
-## Recovery
-Isolated Neon snapshot br-orange-boat-b3dljf23,parentLSN0/1F36F00,rehearsed exact0006PostgreSQL DDL and verified constraints/data. Prior0005predeploy/recovery branches retained. Candidate CI tested restored synthetic data and older-app compatibility. Do not downgrade or reset live data as application rollback. Previous live application:93ec40a / dep-dbhk5hajnfac73a7dao0;actual hosted rollback remains untested.
+Testing/tooling commits after deployment require no application redeploy. Actual hosted API55pass and anonymousbrowser19pass. Notification transport verified with real GitHubissue6/recoverycomment/closure;no real outage induced.
 
-## Remaining
-- Render HTTP healthCheckPath is blank. Set /health on the existing service and read it back; endpoint itself returns200/database reachable. Connector has no service-settings update capability.
-- Actual email delivery is disabled and unverified. Configure approved TLS SMTP sender through host secrets; prove received verification/resend/reset messages,expiry,password setup and revocation. Never paste secrets in chat.
-- Private GitHub requires actual owner-authorized repository-restricted credential acceptance;fixture tests are not real authorization. GitHub App/OAuth remain unavailable.
-- Actual external incident/recovery notification receipt is unverified. The monitoring schedule exists only on a non-default branch; main remains the original MVP. Do not claim scheduling or blindly replace main.
-- Hosted browser/manual keyboard/responsive acceptance is blocked by environment:CUA cannot start due read-only sessions mount;local Chromium fails with socket Operation not permitted. Existing CI local-browser evidence is valid but is not current hosted browser acceptance.
-- Isolated hosted restored-application journey is unverified because this runner cannot resolve Neon endpoints. Exact generated PostgreSQL migration DDL and record/constraint checks passed on the hosted snapshot;CI synthetic restore and rollback-app tests passed.
-- Owner approval of current Terms/Privacy draft and public support/retention readiness remains required. No new legal approval is inferred.
+Provider healthCheckPath is still blank and must be configured. Registration/email remain disabled. No second deploy queued or newer unexpected deployment detected. All mutations used recovered public-onboarding with checked expectedheads;configured secure-preflight was advanced only to reviewed additive application candidate before the single deploy.
 
-No public launch declared. Keep public access/registration disabled until mandatory acceptance and owner approvals pass.
+Recovery snapshot br-orange-boat-b3dljf23 retains originaldata and0006rehearsal. New allowlisted app runner waits for an Actions secret;do not confuse prepared runner or syntheticCIrestore with completed hosted app restore. Application rollback must preserve schema0006;do not drop live data.
+
+1. Render healthCheckPath remains blank on provider re-read. Owner must save /health in existing service settings;connector cannot edit this setting.
+2. SMTP sender/secrets and actual verification/resend/reset inbox journeys remain unavailable. Keep public registration/access disabled.
+3. Real private GitHub authorization/scans/disconnect/provider revocation require a repository-restricted credential entered through the SaaS owner form;ChatGPT connector access is not a customer credential.
+4. Incident/recovery GitHub transport passed,but no matching email was observed in the connected inbox. Owner notification preferences/subscription and a new deliberate receipt drill required. Recurring schedule remains off default branch/opt-in;worker monitor token unavailable.
+5. Authenticated hosted workspace/mobile/keyboard/accessibility journeys still need secure QA credentials or interactive browser access. Anonymous hosted browser checks are completed and must not be repeated without changes.
+6. Isolated recovery application runner is prepared but cannot connect until Actions secret PREFLIGHT_RECOVERY_DATABASE_URL is configured for br-orange-boat-b3dljf23. Its first run stopped at missing-secret prerequisite before any DB connection. Existing generated-DDL snapshot and syntheticCI recovery checks remain valid,not a completed restored-app journey.
+7. Owner legal approval of exact draft and public support/retention readiness remain required. Read LEGAL_DRAFT_FOR_OWNER_REVIEW.md and OWNER_SETUP_ACTIONS.md.

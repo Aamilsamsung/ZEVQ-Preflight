@@ -1,23 +1,22 @@
-# Production QA — NOT READY — BLOCKERS REMAIN
+# NOT READY — BLOCKERS REMAIN
 
-Verified 2026-10-31T18:31:02Z (1 November 2026, 00:01:02 IST).
-Deployed commit e612f03dda7cd10d139ec4b95472ce978d5bf14c; application code matches CI candidate d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070. Render deployment dep-dbj34r7b9u1s73cu1qqg LIVE; release branch implementation/secure-preflight; development branch implementation/public-onboarding-20261029; https://zevq-preflight-staging.onrender.com; Neon schema0006. Documentation commit is the Git commit containing this report.
+Evidence reconciled 2026-10-31T18:56:27Z (1November2026 IST).
+Existing staging https://zevq-preflight-staging.onrender.com;Render dep-dbj34r7b9u1s73cu1qqg LIVE at e612f03dda7cd10d139ec4b95472ce978d5bf14c;release branch implementation/secure-preflight,development implementation/public-onboarding-20261029;Neon0006;Free infrastructure;autoDeployoff. Application code unchanged since accepted candidate. Documentation SHA is this file's containing commit.
 
-## Executed verification
-- Fresh local regression:224passed,5skipped,4warnings;pip check clean;8 deterministic monitor checks;JS syntax/Python compilation passed.
-- Candidate CI40883465251 and40883454863 successful. Inspected job123480834266 confirms PostgreSQL migrations/API tests,synthetic backup/restore,old-app compatibility and real local browser workflows.
-- Fresh actual hosted API acceptance:55checks passed,0failed. Breakdown:isolation/roles23,finding reviews13,ZIP/session/security/export9,comparisons8,public GitHub/idempotency2. Evidence:docs/recovery-2026-10-31/hosted-api-evidence.json.
-- API checks cover real sign-in,persistent authenticated calls,Secure/HttpOnly/SameSite cookies,CSRF/origin denials,tenant boundaries,viewer restrictions,static OpenAPI/ZIP/public GitHub jobs,findings/reviews/history,JSON/CSV exports,comparison uncertainty and logout replay denial.
-- Synthetic provisioned QA users were used. This does NOT prove public signup,email receipt,private repository authorization,visual rendering or browser interaction.
-- Deployment startup migrated0005→0006. Pre-test baseline users4/scans28/organizations4/reviews3/sessions9 preserved;all4existing accounts pending0. Thereafter three clearly labeled synthetic users,two QA organizations and bounded synthetic scans/reviews were added for acceptance;do not misidentify these as customer growth.
+## Verified
+- Actual hosted API:55passed/0failed (Checkpoint4;no repetition).
+- Actual hosted anonymous Chromium:19passed/0failed/0blocked at390/768/1440px,5pages,zero axe violations;keyboard focus,overflow,registration gate,redirect,reducedmotion,JS runtime. Run41230780595/job124624366608/artifact13053716933;tooling7b44f4b.
+- Notification safety:4deterministic checks passed. Corrected actual GitHub transport run41231200409/job124625606531 succeeded:syntheticissue6,one recoverycomment,closed after real healthyprobe. Inboxreceipt NOT VERIFIED. First run41231059090 failed due index lag;issue5 closed as incomplete. Fixb9480e3 reads exact returned issueID;one diagnosed correction,no blind retry.
+- Recovery runner safety:7new local tests passed,0failed;explicit snapshot endpoint only,verifiedTLS,original-row fingerprints unchanged by synthetic additions and detection of original-row edits. Actual hosted application test BLOCKED by missing secret;not counted as pass. Initial fingerprint fixture lacked Alembic table;fixed only disposable fixture and reran targeted7tests successfully.
+- Earlier local224passed/5skipped,pipcheck clean,8monitor checks;schema0006andbaseline customer data preserved. ExistingCI on7b44f4b and b9480e3 passed;newer1b084e4CI currentlyinprogress at browser tooling installation. Do not restart passing suites.
 
-## Pending acceptance
-- Render HTTP healthCheckPath is blank. Set /health on the existing service and read it back; endpoint itself returns200/database reachable. Connector has no service-settings update capability.
-- Actual email delivery is disabled and unverified. Configure approved TLS SMTP sender through host secrets; prove received verification/resend/reset messages,expiry,password setup and revocation. Never paste secrets in chat.
-- Private GitHub requires actual owner-authorized repository-restricted credential acceptance;fixture tests are not real authorization. GitHub App/OAuth remain unavailable.
-- Actual external incident/recovery notification receipt is unverified. The monitoring schedule exists only on a non-default branch; main remains the original MVP. Do not claim scheduling or blindly replace main.
-- Hosted browser/manual keyboard/responsive acceptance is blocked by environment:CUA cannot start due read-only sessions mount;local Chromium fails with socket Operation not permitted. Existing CI local-browser evidence is valid but is not current hosted browser acceptance.
-- Isolated hosted restored-application journey is unverified because this runner cannot resolve Neon endpoints. Exact generated PostgreSQL migration DDL and record/constraint checks passed on the hosted snapshot;CI synthetic restore and rollback-app tests passed.
-- Owner approval of current Terms/Privacy draft and public support/retention readiness remains required. No new legal approval is inferred.
+## Mandatory remaining acceptance
+1. Render healthCheckPath remains blank on provider re-read. Owner must save /health in existing service settings;connector cannot edit this setting.
+2. SMTP sender/secrets and actual verification/resend/reset inbox journeys remain unavailable. Keep public registration/access disabled.
+3. Real private GitHub authorization/scans/disconnect/provider revocation require a repository-restricted credential entered through the SaaS owner form;ChatGPT connector access is not a customer credential.
+4. Incident/recovery GitHub transport passed,but no matching email was observed in the connected inbox. Owner notification preferences/subscription and a new deliberate receipt drill required. Recurring schedule remains off default branch/opt-in;worker monitor token unavailable.
+5. Authenticated hosted workspace/mobile/keyboard/accessibility journeys still need secure QA credentials or interactive browser access. Anonymous hosted browser checks are completed and must not be repeated without changes.
+6. Isolated recovery application runner is prepared but cannot connect until Actions secret PREFLIGHT_RECOVERY_DATABASE_URL is configured for br-orange-boat-b3dljf23. Its first run stopped at missing-secret prerequisite before any DB connection. Existing generated-DDL snapshot and syntheticCI recovery checks remain valid,not a completed restored-app journey.
+7. Owner legal approval of exact draft and public support/retention readiness remain required. Read LEGAL_DRAFT_FOR_OWNER_REVIEW.md and OWNER_SETUP_ACTIONS.md.
 
-No critical/high defect was observed in the executed subset;this is not a complete production security or reliability attestation. No claim of public readiness.
+Anonymous browser and provisioned-account API checks do not prove real public email onboarding,private authorization,authenticated browser rendering or inbox delivery. No public launch claimed.

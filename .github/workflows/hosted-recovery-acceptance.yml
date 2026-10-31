@@ -6,6 +6,7 @@ on:
       - .github/workflows/hosted-recovery-acceptance.yml
       - scripts/hosted_recovery_acceptance.py
       - tests/test_recovery_runner_guard.py
+      - RECOVERY_RUN_REQUEST.md
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,7 +32,7 @@ jobs:
           from scripts.hosted_recovery_acceptance import snapshot_url
           value = os.getenv('PREFLIGHT_RECOVERY_DATABASE_URL', '')
           if not value:
-              raise SystemExit('OWNER ACTION: add PREFLIGHT_RECOVERY_DATABASE_URL as an Actions secret for snapshot branch br-orange-boat-b3dljf23; never use staging or paste it into chat. Then rerun this failed job.')
+              raise SystemExit('OWNER ACTION: add PREFLIGHT_RECOVERY_DATABASE_URL as an Actions secret for snapshot branch br-orange-boat-b3dljf23; never use staging or paste it into chat. Then tell Work to create a fresh RECOVERY_RUN_REQUEST.md at the current branch head.')
           snapshot_url(value)
           PY
       - name: Install locked application dependencies
