@@ -7,7 +7,8 @@ const { drill } = require('./notification_drill.cjs');
   const github = { rest: {
     repos: { getBranch: async () => { guards++; return { data: { commit: { sha: 'expected' } } }; } },
     issues: {
-      listForRepo: async () => ({ data: rows.filter(i => i.state === 'open') }),
+      listForRepo: async () => ({ data: [] }), // deliberately stale index
+      get: async args => { assert.equal(args.issue_number, 1); return { data: rows[0] }; },
       create: async args => { mutations++; assert.match(args.title, /SYNTHETIC DRILL/); assert.match(args.body, /no production outage/); const data = { ...args, number: 1, html_url: 'https://example.test/drill', state: 'open' }; rows.push(data); return { data }; },
       createComment: async args => { mutations++; assert.match(args.body, /SYNTHETIC TEST RECOVERY/); return { data: {} }; },
       update: async args => { mutations++; rows[0].state = args.state; return { data: rows[0] }; }

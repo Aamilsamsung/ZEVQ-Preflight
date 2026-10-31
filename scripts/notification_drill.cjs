@@ -18,6 +18,13 @@ async function drill(github, context, { healthProbe = probe } = {}) {
   const issues = github.rest.issues;
   const wrapper = { rest: { issues: {
     listForRepo: async args => {
+      // A just-created issue can lag in list/search indexes. Read its actual
+      // returned ID, rather than treating an empty index as recovery evidence.
+      if (report.issue) {
+        const response = await issues.get({ ...context.repo, issue_number: report.issue.number });
+        assert.equal(response.data.title, title);
+        return { data: response.data.state === 'open' ? [{ ...response.data, title: canonical }] : [] };
+      }
       const response = await issues.listForRepo(args);
       return { ...response, data: response.data.filter(i => i.title === title).map(i => ({ ...i, title: canonical })) };
     },
