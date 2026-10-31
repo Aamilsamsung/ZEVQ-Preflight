@@ -1,0 +1,50 @@
+name: Isolated hosted recovery application acceptance
+on:
+  push:
+    branches: [implementation/public-onboarding-20261029]
+    paths:
+      - .github/workflows/hosted-recovery-acceptance.yml
+      - scripts/hosted_recovery_acceptance.py
+      - tests/test_recovery_runner_guard.py
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: isolated-hosted-recovery-acceptance
+  cancel-in-progress: false
+jobs:
+  recovery-application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Check secure owner prerequisite
+        env:
+          PREFLIGHT_RECOVERY_DATABASE_URL: ${{ secrets.PREFLIGHT_RECOVERY_DATABASE_URL }}
+        run: |
+          python - <<'PY'
+          import os
+          from scripts.hosted_recovery_acceptance import snapshot_url
+          value = os.getenv('PREFLIGHT_RECOVERY_DATABASE_URL', '')
+          if not value:
+              raise SystemExit('OWNER ACTION: add PREFLIGHT_RECOVERY_DATABASE_URL as an Actions secret for snapshot branch br-orange-boat-b3dljf23; never use staging or paste it into chat. Then rerun this failed job.')
+          snapshot_url(value)
+          PY
+      - name: Install locked application dependencies
+        run: pip install -r requirements.txt
+      - name: Test endpoint safety guards
+        run: python -m pytest tests/test_recovery_runner_guard.py -q
+      - name: Exercise application against isolated hosted snapshot
+        env:
+          PREFLIGHT_RECOVERY_DATABASE_URL: ${{ secrets.PREFLIGHT_RECOVERY_DATABASE_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m scripts.hosted_recovery_acceptance
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-recovery-application-results
+          path: artifacts/hosted-recovery/results.json
