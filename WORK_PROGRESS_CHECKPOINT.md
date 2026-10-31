@@ -1,14 +1,12 @@
-# ZEVQ PREFLIGHT — CHECKPOINT 1
+# ZEVQ PREFLIGHT — CHECKPOINT 2
 
-Time: 2026-10-31 23:52 IST (18:22 UTC).
-Deadline: 48 hours from attached execution instruction received on31October2026 around23:50IST; target2November2026 around23:50IST. No unattended execution is promised.
-
-Milestone: Render workspace confirmed by user attachment; live state reconciled. Neon migration rehearsal branch prepared.
-Changes: Work checkpoint added; no customer data modified. Isolated Neon branch migration-0006-validation-20261031 (br-orange-boat-b3dljf23), parent staging at LSN0/1F36F00, Free project confirmed free_v3. Compute ep-dark-king-b3w2usjz fixed0.25CU with immediate suspend.
-Git code candidate: d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070; recovered documentation through21dd2f7. This checkpoint's commit is the Git commit containing this file.
-Tests: fresh224passed/5skipped,8monitor checks;existing candidate CI40883465251 and40883454863 success. No tests repeated without changes.
-Deployment: dep-dbhk5hajnfac73a7dao0 LIVE,commit93ec40a,branch implementation/secure-preflight,autoDeploy off,Free,start python -m app.serve. Actual healthCheckPath is blank. Live schema0005 verified.
-Baseline row counts: users4,scans28,organizations4,finding_reviews3,sessions9. Do not delete records or use production data in test suites.
-Blockers: Render connector cannot change service branch/health path or select commit. Interactive browser unavailable:kernel cannot start due read-only session mount. Runner cannot resolve Neon endpoint;health request previously timed out. Email sender credentials,real scoped private authorization,notification receipt and legal approval remain unverified.
-Next: execute migration0006 generated PostgreSQL DDL transactionally on isolated branch,verify records and constraints,then resolve deployment configuration through supported access. Live remains0005 until rehearsal and compatibility evidence pass.
-Estimated remaining effort: database/code verification hours;public release timing depends on browser/provider access and actual mail/legal/integration prerequisites. Overall AT RISK.
+Time:2026-10-31 23:55IST (18:25UTC).
+Milestone: isolated hosted migration0006 rehearsal passed;live database unchanged at0005.
+Changes: generated exact PostgreSQL upgrade DDL from migration0006,executed transaction on isolated snapshot,and verified unchanged baseline records and new FK/PK constraints. Evidence:docs/MIGRATION_0006_REHEARSAL_2026-10-31.md.
+Git code candidate:d2ae4d7603e8ea9cb8ec6e8c27e12609cff5a070;checkpoint1 commit96c0e38. This checkpoint's SHA is its containing Git commit.
+Tests: schema0006;users4,scans28,organizations4,reviews3,sessions9 preserved;4 existing accounts pending0;28 historical scans unattributed;3 expected constraints confirmed. Earlier fresh224passed/5skipped,8monitor checks;candidate CI40883465251 and40883454863 successful.
+Deployment:dep-dbhk5hajnfac73a7dao0 LIVE at93ec40a on secure-preflight,Free,autoDeploy off. Actual healthCheckPath blank.
+Blockers: Render tool cannot change branch/health path. Browser failed twice because session mount is read-only;do not loop. Direct runner Neon DNS unavailable. Mail delivery,private-repo authorization,external notification receipt,legal approval and hosted restored-app acceptance remain unverified.
+Next: finish candidate diff review,fast-forward existing configured release branch with expected-head guard to the verified additive candidate (no force or stale deployment),trigger one safe staging deploy with launch flags unchanged,verify terminal deploy status/schema/data. If review reveals issues,fix before deployment. Maintain public registration disabled.
+Estimated remaining effort:staging rollout and acceptance hours;public release remains dependent on real integrations and browser access. Overall AT RISK.
+Deadline:2November2026 approximately23:50IST,48hours from user execution attachment. Work continues only while execution is active.
