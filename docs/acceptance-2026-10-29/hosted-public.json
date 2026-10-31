@@ -1,0 +1,563 @@
+{
+  "base": "https://zevq-preflight-staging.onrender.com",
+  "results": [
+    {
+      "feature": "/",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/features",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/features",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/features",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/how-it-works",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/how-it-works",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/how-it-works",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/use-cases",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/use-cases",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/use-cases",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/docs",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/docs",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/docs",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/faq",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/faq",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/faq",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/security",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/security",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/security",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/pricing",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/pricing",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/pricing",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/contact",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/contact",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/contact",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/privacy",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/privacy",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/privacy",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/terms",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/terms",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/terms",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/login",
+      "width": 390,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/login",
+      "width": 768,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "/login",
+      "width": 1440,
+      "status": "PASS",
+      "http": 200,
+      "axe_violations": 0
+    },
+    {
+      "feature": "Custom404",
+      "status": "PASS",
+      "http": 404
+    }
+  ],
+  "accessibility": [
+    {
+      "path": "/",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "path": "/",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "path": "/features",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/features",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/features",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/how-it-works",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/how-it-works",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/how-it-works",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/use-cases",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/use-cases",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/use-cases",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/docs",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/docs",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/docs",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/faq",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/faq",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/faq",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/security",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/security",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/security",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/pricing",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/pricing",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/pricing",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/contact",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/contact",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/contact",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/terms",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/terms",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/terms",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/login",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "path": "/login",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "path": "/login",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    }
+  ],
+  "errors": [],
+  "scope": "Actual hosted informational pages at three widths; authenticated staging gate, no messages/payments or new scans"
+}

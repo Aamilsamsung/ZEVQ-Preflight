@@ -1,0 +1,1172 @@
+{
+  "phase": "after",
+  "scope": "20 sequential report/save pairs on the same synthetic finding and reused HTTPS client; no load test or guaranteed cold-start equivalence",
+  "rows": [
+    {
+      "operation": "login",
+      "seconds": 8.686,
+      "client_trace": [
+        {
+          "phase": "connection.connect_tcp",
+          "ms": 0.835
+        },
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.209
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.032
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 7026.692
+        },
+        {
+          "phase": "proxy.start_tls",
+          "ms": 3.076
+        },
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.193
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.051
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 1651.856
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.212
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.018
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 0,
+      "seconds": 0.295,
+      "server_timing": "app;dur=29.23, db;dur=10.60, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.136
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.018
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 293.344
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.089
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 0,
+      "seconds": 0.341,
+      "server_timing": "app;dur=94.78, db;dur=28.57, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.214
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.039
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 339.461
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.164
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 1,
+      "seconds": 0.282,
+      "server_timing": "app;dur=22.36, db;dur=10.19, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.319
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.082
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 279.91
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.164
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 1,
+      "seconds": 0.298,
+      "server_timing": "app;dur=47.97, db;dur=22.93, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.137
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.257
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 296.967
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.078
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 2,
+      "seconds": 0.26,
+      "server_timing": "app;dur=23.23, db;dur=10.30, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.13
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.02
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 259.042
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.103
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.02
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 2,
+      "seconds": 0.305,
+      "server_timing": "app;dur=54.02, db;dur=23.21, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.14
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.034
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 304.158
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.061
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 3,
+      "seconds": 0.265,
+      "server_timing": "app;dur=25.42, db;dur=10.62, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.13
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.02
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 263.535
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.143
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 3,
+      "seconds": 0.319,
+      "server_timing": "app;dur=51.11, db;dur=25.18, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.138
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.033
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 317.99
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.136
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 4,
+      "seconds": 0.259,
+      "server_timing": "app;dur=27.46, db;dur=11.34, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.123
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.022
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 256.922
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.113
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 4,
+      "seconds": 0.295,
+      "server_timing": "app;dur=45.60, db;dur=21.56, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.131
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.105
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 293.651
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.065
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 5,
+      "seconds": 0.284,
+      "server_timing": "app;dur=28.45, db;dur=10.97, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.132
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.019
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 282.204
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.163
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 5,
+      "seconds": 0.335,
+      "server_timing": "app;dur=54.88, db;dur=24.16, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.258
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.057
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 292.236
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 41.393
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.013
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 6,
+      "seconds": 0.271,
+      "server_timing": "app;dur=23.79, db;dur=10.83, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.23
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.024
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 270.005
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.088
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 6,
+      "seconds": 0.309,
+      "server_timing": "app;dur=48.38, db;dur=22.32, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.146
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.038
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 307.346
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.316
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 7,
+      "seconds": 0.258,
+      "server_timing": "app;dur=22.73, db;dur=9.80, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.151
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.02
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 256.462
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.085
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 7,
+      "seconds": 0.301,
+      "server_timing": "app;dur=44.04, db;dur=22.07, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.156
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.04
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 299.866
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.083
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 8,
+      "seconds": 0.264,
+      "server_timing": "app;dur=22.63, db;dur=9.90, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.16
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.02
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 262.294
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.09
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 8,
+      "seconds": 0.279,
+      "server_timing": "app;dur=46.52, db;dur=22.09, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.192
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.046
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 278.263
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.08
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 9,
+      "seconds": 0.256,
+      "server_timing": "app;dur=22.95, db;dur=10.00, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.242
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.029
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 254.402
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.099
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 9,
+      "seconds": 0.302,
+      "server_timing": "app;dur=47.24, db;dur=22.82, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.22
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.279
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 300.964
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.068
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 10,
+      "seconds": 0.266,
+      "server_timing": "app;dur=27.93, db;dur=11.45, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.165
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.02
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 265.171
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.076
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 10,
+      "seconds": 0.333,
+      "server_timing": "app;dur=52.15, db;dur=23.64, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.173
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.039
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 291.532
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 40.865
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 11,
+      "seconds": 0.268,
+      "server_timing": "app;dur=24.56, db;dur=10.66, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.477
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.024
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 266.964
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.086
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 11,
+      "seconds": 0.289,
+      "server_timing": "app;dur=45.43, db;dur=22.30, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.122
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.029
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 287.898
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.151
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 12,
+      "seconds": 0.274,
+      "server_timing": "app;dur=37.83, db;dur=18.55, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.17
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.023
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 271.848
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.158
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 12,
+      "seconds": 0.302,
+      "server_timing": "app;dur=49.74, db;dur=23.73, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.157
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.039
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 300.901
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.116
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 13,
+      "seconds": 0.27,
+      "server_timing": "app;dur=24.92, db;dur=10.89, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.174
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.025
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 268.459
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.079
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 13,
+      "seconds": 0.282,
+      "server_timing": "app;dur=45.00, db;dur=21.18, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.195
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.054
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 281.057
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.072
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 14,
+      "seconds": 0.251,
+      "server_timing": "app;dur=22.72, db;dur=9.79, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.197
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.023
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 250.195
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.075
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 14,
+      "seconds": 0.3,
+      "server_timing": "app;dur=52.79, db;dur=25.12, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.172
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.041
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 298.77
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.06
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 15,
+      "seconds": 0.262,
+      "server_timing": "app;dur=29.63, db;dur=12.40, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.158
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.021
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 260.102
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.088
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 15,
+      "seconds": 0.291,
+      "server_timing": "app;dur=49.39, db;dur=22.83, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.177
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.04
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 289.481
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.247
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 16,
+      "seconds": 0.265,
+      "server_timing": "app;dur=26.73, db;dur=12.02, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.279
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.028
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 263.158
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.082
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.138
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 16,
+      "seconds": 0.302,
+      "server_timing": "app;dur=56.71, db;dur=26.22, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.155
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.039
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 301.039
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.174
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.012
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 17,
+      "seconds": 0.286,
+      "server_timing": "app;dur=22.68, db;dur=9.87, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.261
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.031
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 284.759
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.082
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 17,
+      "seconds": 0.278,
+      "server_timing": "app;dur=45.63, db;dur=22.46, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.159
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.129
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 276.808
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.123
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 18,
+      "seconds": 0.27,
+      "server_timing": "app;dur=23.48, db;dur=10.00, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.41
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.027
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 268.334
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.075
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 18,
+      "seconds": 0.29,
+      "server_timing": "app;dur=45.30, db;dur=21.86, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.32
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.096
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 288.241
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.076
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.011
+        }
+      ]
+    },
+    {
+      "operation": "report",
+      "iteration": 19,
+      "seconds": 0.253,
+      "server_timing": "app;dur=25.53, db;dur=12.17, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.209
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.031
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 251.079
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.167
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.01
+        }
+      ]
+    },
+    {
+      "operation": "review_save",
+      "iteration": 19,
+      "seconds": 0.302,
+      "server_timing": "app;dur=43.71, db;dur=20.85, connect;dur=0.00",
+      "client_trace": [
+        {
+          "phase": "http11.send_request_headers",
+          "ms": 0.153
+        },
+        {
+          "phase": "http11.send_request_body",
+          "ms": 0.044
+        },
+        {
+          "phase": "http11.receive_response_headers",
+          "ms": 300.862
+        },
+        {
+          "phase": "http11.receive_response_body",
+          "ms": 0.071
+        },
+        {
+          "phase": "http11.response_closed",
+          "ms": 0.009
+        }
+      ]
+    }
+  ]
+}

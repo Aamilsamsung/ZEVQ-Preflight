@@ -1,0 +1,190 @@
+{
+  "application_commit": "0ec00899b75006235d956b0cbd032b0d949ed910",
+  "render_deploy": "dep-dbgvlt5g1s2s73cdcpug",
+  "github_run": 40698349254,
+  "github_job": 122851059720,
+  "ci_status": "success",
+  "python": {
+    "passed": 116,
+    "skipped": 1
+  },
+  "postgresql": {
+    "passed": 25
+  },
+  "workflow_browser": {
+    "passed": 37
+  },
+  "supplemental_browser": {
+    "passed": 11
+  },
+  "synthetic_restore": {
+    "row_counts": true,
+    "login": true,
+    "report": true,
+    "tenant_isolation": true,
+    "scope": "Disposable PostgreSQL16 CI only"
+  },
+  "hosted_checks": [
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Viewer repository writes denied",
+      "status": "PASS",
+      "evidence": "HTTP 403"
+    },
+    {
+      "feature": "Viewer audit denied",
+      "status": "PASS",
+      "evidence": "Viewer cannot read privileged audit records"
+    },
+    {
+      "feature": "Viewer cannot add members",
+      "status": "PASS",
+      "evidence": "No membership granted"
+    },
+    {
+      "feature": "Owner connects permitted repository",
+      "status": "PASS",
+      "evidence": "HTTP 409"
+    },
+    {
+      "feature": "Controlled owner scan completes",
+      "status": "PASS",
+      "evidence": "96260831-a92d-4dd4-baf5-8b3ef79665d4"
+    },
+    {
+      "feature": "Foreign user report denied",
+      "status": "PASS",
+      "evidence": "HTTP404 for existing private report"
+    },
+    {
+      "feature": "Viewer can read own-organization report",
+      "status": "PASS",
+      "evidence": "Authorized read only"
+    },
+    {
+      "feature": "Viewer cannot cancel scans",
+      "status": "PASS",
+      "evidence": "Role enforced before job mutation"
+    },
+    {
+      "feature": "Viewer cannot self-promote",
+      "status": "PASS",
+      "evidence": "No privilege escalation"
+    },
+    {
+      "feature": "Owner grants developer in synthetic org",
+      "status": "PASS",
+      "evidence": "HTTP 200"
+    },
+    {
+      "feature": "Developer write now permitted",
+      "status": "PASS",
+      "evidence": "HTTP 201"
+    },
+    {
+      "feature": "Owner demotes to viewer",
+      "status": "PASS",
+      "evidence": "Role changed"
+    },
+    {
+      "feature": "Demotion takes effect on existing session",
+      "status": "PASS",
+      "evidence": "No logout/relogin needed"
+    },
+    {
+      "feature": "Synthetic password change succeeds",
+      "status": "PASS",
+      "evidence": "All sessions must reauthenticate"
+    },
+    {
+      "feature": "Other synthetic session revoked",
+      "status": "PASS",
+      "evidence": "HTTP401"
+    },
+    {
+      "feature": "New password authenticates",
+      "status": "PASS",
+      "evidence": "HTTP 200"
+    }
+  ],
+  "remaining_verification": [
+    "Hosted provider backup restoration",
+    "Hosted mobile/touch",
+    "Manual accessibility",
+    "Real operator recovery drill"
+  ]
+}

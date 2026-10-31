@@ -1,0 +1,192 @@
+{
+  "base": "http://127.0.0.1:8000",
+  "executed_at": "2026-10-28T10:47:40.047Z",
+  "results": [
+    {
+      "name": "Public page /",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /features",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /how-it-works",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /use-cases",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /docs",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /faq",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /security",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /pricing",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /contact",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /privacy",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /terms",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Public page /login",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Account login",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Persistent login after refresh",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Workspace survives blocked optional browser storage",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Search filters actual scan history",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Connect public repository",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "OpenAPI comparison finds removed endpoint",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Evidence and rule visible",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Authenticated JSON report download",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Authenticated CSV report download",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "ZIP source scan through background worker",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Workspace page history",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Workspace page team",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Workspace page audit",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Workspace page settings",
+      "status": "PASS",
+      "details": "390, 768 and 1440px; no horizontal overflow"
+    },
+    {
+      "name": "Account export and deletion controls present",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Mobile navigation opens, navigates, closes",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "mobile responsive layout",
+      "status": "PASS",
+      "details": "390px; no document horizontal overflow"
+    },
+    {
+      "name": "mobile new scan layout",
+      "status": "PASS",
+      "details": "390px; no document horizontal overflow"
+    },
+    {
+      "name": "tablet responsive layout",
+      "status": "PASS",
+      "details": "768px; no document horizontal overflow"
+    },
+    {
+      "name": "tablet new scan layout",
+      "status": "PASS",
+      "details": "768px; no document horizontal overflow"
+    },
+    {
+      "name": "desktop responsive layout",
+      "status": "PASS",
+      "details": "1440px; no document horizontal overflow"
+    },
+    {
+      "name": "desktop new scan layout",
+      "status": "PASS",
+      "details": "1440px; no document horizontal overflow"
+    },
+    {
+      "name": "Keyboard skip navigation",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Sign out",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "No browser console errors or uncaught exceptions",
+      "status": "PASS",
+      "details": ""
+    }
+  ],
+  "console_errors": []
+}

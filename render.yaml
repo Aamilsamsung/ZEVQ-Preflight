@@ -1,8 +1,26 @@
+# Free evaluation: one web instance, process-separated static worker, external free PostgreSQL.
+# Do not upgrade compute or enable paid database resources.
 services:
   - type: web
-    name: zevq-preflight
+    name: zevq-preflight-staging
     runtime: python
+    region: singapore
+    branch: implementation/secure-preflight
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: 'off'
+    buildCommand: pip install -r requirements.txt && python -m pip check
+    startCommand: python -m app.serve
     healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.12
+      - key: PREFLIGHT_MODE
+        value: staging
+      - key: STAGING_PASSWORD
+        generateValue: true
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false

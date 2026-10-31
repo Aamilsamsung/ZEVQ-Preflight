@@ -1,0 +1,763 @@
+{
+  "base": "https://zevq-preflight-staging.onrender.com",
+  "scope": "Actual hosted application; existing synthetic account; no customer source, no new scans, no security bypass",
+  "results": [
+    {
+      "feature": "Hosted synthetic account login",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted session persists after refresh",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted dashboard at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 797
+      }
+    },
+    {
+      "feature": "Hosted accessibility dashboard at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted repositories at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 359
+      }
+    },
+    {
+      "feature": "Hosted accessibility repositories at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted new at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 326
+      }
+    },
+    {
+      "feature": "Hosted accessibility new at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "aria-prohibited-attr",
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted history at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 441
+      }
+    },
+    {
+      "feature": "Hosted accessibility history at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted scan at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 452
+      }
+    },
+    {
+      "feature": "Hosted accessibility scan at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted team at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 841
+      }
+    },
+    {
+      "feature": "Hosted accessibility team at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted audit at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 338
+      }
+    },
+    {
+      "feature": "Hosted accessibility audit at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted alerts at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 327
+      }
+    },
+    {
+      "feature": "Hosted accessibility alerts at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted settings at 390px",
+      "status": "PASS",
+      "evidence": {
+        "width": 390,
+        "navigation_ms": 325
+      }
+    },
+    {
+      "feature": "Hosted accessibility settings at 390px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast",
+          "link-in-text-block"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted dashboard at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 298
+      }
+    },
+    {
+      "feature": "Hosted accessibility dashboard at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted repositories at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 401
+      }
+    },
+    {
+      "feature": "Hosted accessibility repositories at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted new at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 372
+      }
+    },
+    {
+      "feature": "Hosted accessibility new at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "aria-prohibited-attr",
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted history at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 533
+      }
+    },
+    {
+      "feature": "Hosted accessibility history at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted scan at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 370
+      }
+    },
+    {
+      "feature": "Hosted accessibility scan at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted team at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 609
+      }
+    },
+    {
+      "feature": "Hosted accessibility team at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted audit at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 452
+      }
+    },
+    {
+      "feature": "Hosted accessibility audit at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted alerts at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 431
+      }
+    },
+    {
+      "feature": "Hosted accessibility alerts at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted settings at 768px",
+      "status": "PASS",
+      "evidence": {
+        "width": 768,
+        "navigation_ms": 463
+      }
+    },
+    {
+      "feature": "Hosted accessibility settings at 768px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast",
+          "link-in-text-block"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted dashboard at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 315
+      }
+    },
+    {
+      "feature": "Hosted accessibility dashboard at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted repositories at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 418
+      }
+    },
+    {
+      "feature": "Hosted accessibility repositories at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted new at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 871
+      }
+    },
+    {
+      "feature": "Hosted accessibility new at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "aria-prohibited-attr",
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted history at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 624
+      }
+    },
+    {
+      "feature": "Hosted accessibility history at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted scan at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 835
+      }
+    },
+    {
+      "feature": "Hosted accessibility scan at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted team at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 921
+      }
+    },
+    {
+      "feature": "Hosted accessibility team at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted audit at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 456
+      }
+    },
+    {
+      "feature": "Hosted accessibility audit at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted alerts at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 868
+      }
+    },
+    {
+      "feature": "Hosted accessibility alerts at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted settings at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "width": 1440,
+        "navigation_ms": 853
+      }
+    },
+    {
+      "feature": "Hosted accessibility settings at 1440px",
+      "status": "PASS",
+      "evidence": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast",
+          "link-in-text-block"
+        ]
+      }
+    },
+    {
+      "feature": "Hosted mobile navigation",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted finding history",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted JSON report download",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted keyboard and reduced motion",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted logout",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    },
+    {
+      "feature": "Hosted application console",
+      "status": "PASS",
+      "evidence": "Observed in actual hosted Chromium session"
+    }
+  ],
+  "console_errors": [],
+  "accessibility": [
+    {
+      "route": "dashboard",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "repositories",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "new",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "history",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "scan/03693309-e7b0-4508-ad15-29cee7a4e967",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "team",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "audit",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "alerts",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "settings",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "route": "dashboard",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "repositories",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "new",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "history",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "scan/03693309-e7b0-4508-ad15-29cee7a4e967",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "team",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "audit",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "alerts",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "settings",
+      "width": 768,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "route": "dashboard",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "repositories",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "new",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "history",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "scan/03693309-e7b0-4508-ad15-29cee7a4e967",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "team",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "audit",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "alerts",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "route": "settings",
+      "width": 1440,
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    }
+  ]
+}

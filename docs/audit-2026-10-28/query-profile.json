@@ -1,0 +1,14 @@
+{
+  "scope": "Local SQLite staging middleware, ordinary cookie authentication, empty organization",
+  "dashboard_queries": 7,
+  "statement_types": [
+    "SELECT",
+    "SELECT",
+    "SELECT",
+    "SELECT",
+    "SELECT",
+    "SELECT",
+    "SELECT"
+  ],
+  "hosted_query_plan": "NOT TESTED"
+}

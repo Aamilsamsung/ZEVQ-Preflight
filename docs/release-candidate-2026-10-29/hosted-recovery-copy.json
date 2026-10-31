@@ -1,0 +1,29 @@
+{
+  "project": "dawn-bonus-77001287",
+  "snapshot_branch": "br-orange-water-b36lbess",
+  "queryable_branch": "br-mute-bread-b3znuqmn",
+  "source_branch": "br-solitary-hall-b3y011t5",
+  "parent_lsn": "0/1DC1868",
+  "source_timestamp_utc": "2026-10-29T01:37:32Z",
+  "snapshot_created_utc": "2026-10-29T01:37:53Z",
+  "compute_started_utc": "2026-10-29T01:50:18Z",
+  "schema": "0003",
+  "table_counts": {
+    "users": 4,
+    "organizations": 4,
+    "memberships": 5,
+    "sessions": 9,
+    "repositories": 5,
+    "scans": 25,
+    "finding_reviews": 3,
+    "finding_review_events": 53,
+    "audit_events": 91,
+    "retention_policies": 1,
+    "cleanup_runs": 1
+  },
+  "all_11_count_and_fingerprint_comparisons_match": true,
+  "application_recovery": "BLOCKED: runner DNS gaierror; no credentials retrieved",
+  "service_rollback": "NOT TESTED",
+  "staging_connection_unchanged": true,
+  "destructive_operation_performed": false
+}

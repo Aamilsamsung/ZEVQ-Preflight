@@ -1,0 +1,464 @@
+{
+  "base": "https://zevq-preflight-staging.onrender.com",
+  "executed_at": "2026-10-28T10:44:51Z",
+  "checks": [
+    {
+      "feature": "Anonymous login page",
+      "status": "PASS",
+      "evidence": "HTTP 200; 3 sequential samples",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Anonymous workspace gate",
+      "status": "PASS",
+      "evidence": "HTTP 303 redirect /login",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Anonymous API denial",
+      "status": "PASS",
+      "evidence": "HTTP 401",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Closed registration",
+      "status": "PASS",
+      "evidence": "HTTP 403",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Live API login",
+      "status": "PASS",
+      "evidence": "HTTP 200",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Cookie security flags",
+      "status": "PASS",
+      "evidence": "Secure / HttpOnly / SameSite=Strict / 7-day lifetime",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Missing CSRF rejected",
+      "status": "PASS",
+      "evidence": "HTTP 403",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Foreign Origin rejected",
+      "status": "PASS",
+      "evidence": "HTTP 403",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Controlled audit workspace",
+      "status": "PASS",
+      "evidence": "Created labeled synthetic organization f95c92d4-ae93-46b7-b788-fe3c10191e35",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Nonmember organization /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Nonmember organization /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Nonmember organization /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Nonmember organization /members",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Nonmember organization /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Unsafe repository input http://127.0.0.1/private",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Unsafe repository input https://github.com/a/b",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Unsafe repository input a/b/../../x",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "ZIP traversal rejected ../escape.py",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "ZIP traversal rejected C:/escape.py",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Malformed ZIP rejected",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Malformed contract rejected",
+      "status": "PASS",
+      "evidence": "HTTP 422",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Known OpenAPI endpoint removal",
+      "status": "PASS",
+      "evidence": "6505af7b-1f4e-42a4-8c46-ae2d23652f05: [(None, 'high')]",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Access-controlled json export",
+      "status": "PASS",
+      "evidence": "HTTP 200; 2298 bytes",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Access-controlled csv export",
+      "status": "PASS",
+      "evidence": "HTTP 200; 244 bytes",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Anonymous report denial",
+      "status": "PASS",
+      "evidence": "HTTP 401",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Scan ID scoped to organization",
+      "status": "PASS",
+      "evidence": "HTTP 404; same owner, wrong organization",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Unchanged contract safe control",
+      "status": "PASS",
+      "evidence": "3b45cabd-0e2b-42cf-869d-b859446c6a42: 0 findings",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Python removal and signature changes",
+      "status": "PASS",
+      "evidence": "d33bd4af-d00a-4c99-8aee-714e9e1a7b4c: [('Public function signature changed: public_api', 'medium'), ('Public module function removed: removed_api', 'high')]; both expected changes detected (medium signature, high removal); corrected overly strict two-high test oracle",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Unchanged Python safe control",
+      "status": "PASS",
+      "evidence": "c0fdc15b-d488-40af-a8a2-dc6c77a7e3e5: 0 findings",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Public GitHub branch comparison",
+      "status": "PASS",
+      "evidence": "8ebf41f8-3818-4670-88e8-b1945117875c; main \u2192 main; status completed",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Idempotency same scan returned",
+      "status": "PASS",
+      "evidence": "HTTP 202; stable job ID",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Invalid ref produces honest failed scan",
+      "status": "PASS",
+      "evidence": "d68814fe-c545-4bdd-9394-6c77069c47f1; GitHub archive unavailable (HTTP 404); check public access, ref and rate limits",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "History includes controlled scans",
+      "status": "PASS",
+      "evidence": "HTTP 200; 6 scans",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Dashboard aggregates real scans",
+      "status": "PASS",
+      "evidence": "HTTP 200; counts 6",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Authenticated page security headers",
+      "status": "PASS",
+      "evidence": "content-security-policy, x-frame-options, x-content-type-options, strict-transport-security, referrer-policy",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Logged-out session replay denied",
+      "status": "PASS",
+      "evidence": "HTTP 401",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Anonymous errors carry security headers",
+      "status": "FAIL",
+      "evidence": "HTTP 401; missing content-security-policy,x-frame-options,x-content-type-options,strict-transport-security,referrer-policy",
+      "severity": "Low"
+    },
+    {
+      "feature": "Live bounded account login rate limit",
+      "status": "PASS",
+      "evidence": "[401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429]; Retry-After 900",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Source/secret path protected /.env",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Source/secret path protected /.git/config",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Source/secret path protected /static/%2e%2e/app/security.py",
+      "status": "PASS",
+      "evidence": "HTTP 404",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Provisioning secret absent from public assets",
+      "status": "PASS",
+      "evidence": "Exact known operator secret values absent; values never recorded",
+      "severity": "\u2014"
+    },
+    {
+      "feature": "Account export works",
+      "status": "PASS",
+      "evidence": "HTTP 200; no password or session hash fields",
+      "severity": "\u2014"
+    }
+  ],
+  "timings_ms": {
+    "GET /login": [
+      7998.6,
+      471.7,
+      256.7
+    ],
+    "GET /app": [
+      259.5,
+      265.0
+    ],
+    "GET /api/auth/me": [
+      248.2,
+      273.1,
+      257.2,
+      7129.4
+    ],
+    "POST /api/auth/register": [
+      259.3
+    ],
+    "POST /api/auth/login": [
+      8867.4
+    ],
+    "POST /api/orgs": [
+      267.8,
+      252.5,
+      338.5
+    ],
+    "GET /api/orgs/17b22175-c26a-4ce6-a1a4-f6493082f31d/repos": [
+      273.7
+    ],
+    "GET /api/orgs/f924ace4-51bc-4faf-9f7b-a9e225427d19/scans": [
+      266.9
+    ],
+    "GET /api/orgs/4b9eb44d-67c5-4a95-aa94-e5e91eb8aab4/dashboard": [
+      261.9
+    ],
+    "GET /api/orgs/f742a916-e7cb-43f7-b53f-65936f63b60f/members": [
+      268.1
+    ],
+    "GET /api/orgs/6039e141-db1b-4ab0-8a67-c3bb06ee23b2/audit": [
+      273.6
+    ],
+    "POST /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/repos": [
+      282.4,
+      280.3,
+      294.7,
+      289.2
+    ],
+    "POST /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/zip": [
+      279.5,
+      268.6,
+      270.0,
+      698.9,
+      703.6
+    ],
+    "POST /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/contracts": [
+      282.9,
+      296.0,
+      280.1
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/6505af7b-1f4e-42a4-8c46-ae2d23652f05": [
+      288.9,
+      475.0,
+      500.6,
+      499.7
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/6505af7b-1f4e-42a4-8c46-ae2d23652f05/report": [
+      497.9,
+      285.2,
+      7631.2
+    ],
+    "GET /api/orgs/786e8193-c901-4aff-961b-18f5bd5e6f59/scans/6505af7b-1f4e-42a4-8c46-ae2d23652f05": [
+      7507.9
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/3b45cabd-0e2b-42cf-869d-b859446c6a42": [
+      582.8,
+      606.3,
+      599.8
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/d33bd4af-d00a-4c99-8aee-714e9e1a7b4c": [
+      601.6,
+      496.9,
+      498.1
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/c0fdc15b-d488-40af-a8a2-dc6c77a7e3e5": [
+      496.1,
+      504.9,
+      403.2,
+      1002.3,
+      499.8,
+      582.2,
+      324.3
+    ],
+    "POST /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans": [
+      294.7,
+      390.3,
+      285.6
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/8ebf41f8-3818-4670-88e8-b1945117875c": [
+      485.2,
+      599.5,
+      496.8,
+      285.0,
+      517.1
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans/d68814fe-c545-4bdd-9394-6c77069c47f1": [
+      526.3,
+      595.4,
+      496.0,
+      706.9
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/scans": [
+      505.3,
+      276.8,
+      289.4,
+      277.1
+    ],
+    "GET /api/orgs/f95c92d4-ae93-46b7-b788-fe3c10191e35/dashboard": [
+      276.8,
+      286.3,
+      282.7,
+      277.3
+    ],
+    "GET /api/ready": [
+      271.9,
+      276.8,
+      264.8
+    ],
+    "POST /api/auth/logout": [
+      268.3
+    ]
+  },
+  "scans": [
+    {
+      "id": "6505af7b-1f4e-42a4-8c46-ae2d23652f05",
+      "states": [
+        "queued",
+        "running",
+        "completed"
+      ],
+      "wall_ms": 6060.9,
+      "engine_ms": 122.29,
+      "status": "completed"
+    },
+    {
+      "id": "3b45cabd-0e2b-42cf-869d-b859446c6a42",
+      "states": [
+        "queued",
+        "running",
+        "completed"
+      ],
+      "wall_ms": 5069.6,
+      "engine_ms": 202.44,
+      "status": "completed"
+    },
+    {
+      "id": "d33bd4af-d00a-4c99-8aee-714e9e1a7b4c",
+      "states": [
+        "queued",
+        "running",
+        "completed"
+      ],
+      "wall_ms": 5296.0,
+      "engine_ms": 219.32,
+      "status": "completed"
+    },
+    {
+      "id": "c0fdc15b-d488-40af-a8a2-dc6c77a7e3e5",
+      "states": [
+        "queued",
+        "running",
+        "completed"
+      ],
+      "wall_ms": 11517.5,
+      "engine_ms": 122.17,
+      "status": "completed"
+    },
+    {
+      "id": "8ebf41f8-3818-4670-88e8-b1945117875c",
+      "states": [
+        "queued",
+        "running",
+        "completed"
+      ],
+      "wall_ms": 7679.4,
+      "engine_ms": 2497.06,
+      "status": "completed"
+    },
+    {
+      "id": "d68814fe-c545-4bdd-9394-6c77069c47f1",
+      "states": [
+        "queued",
+        "running",
+        "failed"
+      ],
+      "wall_ms": 6610.9,
+      "engine_ms": null,
+      "status": "failed"
+    }
+  ]
+}

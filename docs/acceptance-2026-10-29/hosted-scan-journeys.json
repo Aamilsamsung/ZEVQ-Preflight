@@ -1,0 +1,46 @@
+{
+  "base": "https://zevq-preflight-staging.onrender.com",
+  "scope": "Three actual hosted UI submissions; existing isolated synthetic account; fixed authorized public repository; static inspection only",
+  "results": [
+    {
+      "source": "openapi",
+      "status": "PASS",
+      "scan_id": "f1f319a6-980d-4361-bf24-5f7eef62dd46",
+      "findings": 1,
+      "engine": "0.2.1",
+      "elapsed_ms": 11264,
+      "exports": [
+        "JSON",
+        "CSV"
+      ],
+      "refresh_and_history": true
+    },
+    {
+      "source": "github",
+      "status": "PASS",
+      "scan_id": "38238088-26a4-4673-95d1-931a11995f85",
+      "findings": 0,
+      "engine": "0.2.1",
+      "elapsed_ms": 11577,
+      "exports": [
+        "JSON",
+        "CSV"
+      ],
+      "refresh_and_history": true
+    },
+    {
+      "source": "zip",
+      "status": "PASS",
+      "scan_id": "b2044e98-75e5-41ba-be29-61037388ce1c",
+      "findings": 1,
+      "engine": "0.2.1",
+      "elapsed_ms": 12142,
+      "exports": [
+        "JSON",
+        "CSV"
+      ],
+      "refresh_and_history": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,38 @@
+{
+  "scope": "Local real pages, disabled backend and explicitly mocked enabled email API responses; not real delivery",
+  "results": [
+    {
+      "feature": "Actual disabled delivery /forgot-password",
+      "status": "PASS"
+    },
+    {
+      "feature": "Actual disabled delivery /reset-password",
+      "status": "PASS"
+    },
+    {
+      "feature": "Actual disabled delivery /verify-email",
+      "status": "PASS"
+    },
+    {
+      "feature": "Email request UI using mocked provider response",
+      "status": "PASS"
+    },
+    {
+      "feature": "Mismatch announced and fragment removed",
+      "status": "PASS"
+    },
+    {
+      "feature": "Single-use reset UI success using mocked API",
+      "status": "PASS"
+    },
+    {
+      "feature": "Mobile reset state automated accessibility",
+      "status": "PASS"
+    }
+  ],
+  "axe_incomplete": [
+    "color-contrast",
+    "link-in-text-block"
+  ],
+  "errors": []
+}

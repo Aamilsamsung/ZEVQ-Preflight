@@ -1,0 +1,160 @@
+{
+  "results": [
+    {
+      "feature": "Signed-in landing CTA opens workspace",
+      "status": "PASS"
+    },
+    {
+      "feature": "Owner role editor persists membership changes",
+      "status": "PASS"
+    },
+    {
+      "feature": "Password confirmation mismatch is actionable",
+      "status": "PASS"
+    },
+    {
+      "feature": "Finding decisions persist, expire explicitly and retain history",
+      "status": "PASS"
+    },
+    {
+      "feature": "Scan comparison selects real reports and preserves uncertainty",
+      "status": "PASS"
+    },
+    {
+      "feature": "Retention policy and dry run do not delete data",
+      "status": "PASS"
+    },
+    {
+      "feature": "Notifications use stored operational data",
+      "status": "PASS"
+    },
+    {
+      "feature": "Mobile audit table supports keyboard access",
+      "status": "PASS"
+    },
+    {
+      "feature": "Review renders four real summary rows",
+      "status": "PASS"
+    },
+    {
+      "feature": "Confirmation dialog has accessible name",
+      "status": "PASS"
+    },
+    {
+      "feature": "Accessibility /",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /login",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility finding-review",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility scan-comparison",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility mobile-audit",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#dashboard",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#settings",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility /app#new",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "feature": "Accessibility confirmation-dialog",
+      "status": "PASS",
+      "evidence": []
+    }
+  ],
+  "axe": [
+    {
+      "page": "/",
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "/login",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "finding-review",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "scan-comparison",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "mobile-audit",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "/app#dashboard",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "/app#settings",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    },
+    {
+      "page": "/app#new",
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "page": "confirmation-dialog",
+      "violations": [],
+      "incomplete": [
+        "color-contrast",
+        "link-in-text-block"
+      ]
+    }
+  ]
+}

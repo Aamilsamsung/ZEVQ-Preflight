@@ -1,0 +1,5 @@
+{
+  "source": "Existing SSL_CERT_FILE system-managed OpenAI CA",
+  "sha256": "ab6933a81e6f0d142e6d5f58ed465589d899a523c2752055761af11d4ee38f2b",
+  "verification": "openssl verifies existing root; CA:TRUE; imported into ephemeral runner NSS; Chromium certificate verification remains enabled"
+}

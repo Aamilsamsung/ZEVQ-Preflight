@@ -1,0 +1,10 @@
+{
+  "scope": "One read-only EXPLAIN ANALYZE on the synthetic QA organization scan list, live Neon; not a general benchmark",
+  "total_table_rows": 25,
+  "returned_rows": 13,
+  "plan": "sequential scan then in-memory quicksort then limit100",
+  "planning_ms": 0.742,
+  "execution_ms": 0.088,
+  "sort_memory_kb": 26,
+  "index_change": false
+}

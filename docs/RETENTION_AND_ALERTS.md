@@ -1,0 +1,13 @@
+# Retention and in-app operational alerts
+
+Retention is disabled by default. Saving a policy does not delete records or enable scheduling. An organization owner can select a manual retention age of7–3650 days, run a dry run, inspect at most100 old terminal scan IDs and explicitly apply that preview within10 minutes. Application requires the exact confirmation phrase, a reason and a final dialog. The API enforces owner authorization, tenant scope, CSRF, preview ownership, expiry and current policy version. Applied previews are idempotent and retain an audit reference/count/reason.
+
+Active jobs and recently updated records are excluded. Any scan with current review data or review-event history is always preserved. Apply locks candidate scan rows using the same locking boundary as review writes, then rechecks review records in a fresh statement. A new review after preview or concurrent with cleanup is preserved. Upload payloads already follow terminal-job cleanup; this feature does not delete organizations, users or review data. Scheduled cleanup is intentionally not enabled, and no live cleanup is performed during release verification.
+
+Policy version changes invalidate outstanding previews. A preview is a bounded batch, not a promise to delete every matching record. Owners can inspect the latest50 preview/application records and the organization audit log. No time-based audit/run history pruning is currently configured. Existing customers are not silently opted into cleanup. Migration0003 is additive and inserts no live policies.
+
+Notifications displays real signals derived from up to100 failed/queued/running jobs created in the last7 days: failed jobs, at least3 failures observed within the last hour, running jobs older than their180-second lease and queued jobs older than300 seconds. A delayed-job signal does not prove the worker is unavailable. Idle queues do not imply a healthy worker. Each member can persist their own acknowledgements, scoped to organization and user, through audit records. Another member's acknowledgement is unaffected.
+
+These are in-app alerts, visible when an authorized member opens Notifications. Email/Slack/service-availability delivery is explicitly disabled because no delivery provider is configured. This is not an out-of-band uptime monitor, on-call service or complete monitoring system. Full alert-delivery and recovery gates remain open.
+
+Rollback application code while retaining additive schema0003 (and0002 review tables). Do not downgrade the live schema and discard cleanup audit records. Tests and migration downgrade checks use disposable local/CI databases only.

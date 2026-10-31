@@ -1,0 +1,14 @@
+{
+  "scope": "Disposable local SQLite, three known OpenAPI fixtures, two threads running static analysis; not customer code, hosted throughput, or a leak test",
+  "jobs": 3,
+  "concurrency": 2,
+  "passed": 3,
+  "execution_ms": [
+    0.76,
+    2.6,
+    3.44
+  ],
+  "p50_ms": 2.6,
+  "p95_ms": 3.44,
+  "batch_wall_ms": 17.03
+}

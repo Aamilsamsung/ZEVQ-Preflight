@@ -1,0 +1,120 @@
+{
+  "scope": "Three synthetic users, two isolated staging organizations; no customer data",
+  "checks": [
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /repos",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /scans",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /dashboard",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /members",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Cross-user /audit",
+      "status": "PASS",
+      "evidence": "HTTP 404"
+    },
+    {
+      "feature": "Viewer repository writes denied",
+      "status": "PASS",
+      "evidence": "HTTP 403"
+    },
+    {
+      "feature": "Viewer audit denied",
+      "status": "PASS",
+      "evidence": "Viewer cannot read privileged audit records"
+    },
+    {
+      "feature": "Viewer cannot add members",
+      "status": "PASS",
+      "evidence": "No membership granted"
+    },
+    {
+      "feature": "Owner connects permitted repository",
+      "status": "PASS",
+      "evidence": "HTTP 201"
+    },
+    {
+      "feature": "Controlled owner scan completes",
+      "status": "PASS",
+      "evidence": "4dc47fb5-17f0-464c-a5c2-2f24686ac61e"
+    },
+    {
+      "feature": "Foreign user report denied",
+      "status": "PASS",
+      "evidence": "HTTP404 for existing private report"
+    },
+    {
+      "feature": "Viewer can read own-organization report",
+      "status": "PASS",
+      "evidence": "Authorized read only"
+    },
+    {
+      "feature": "Viewer cannot cancel scans",
+      "status": "PASS",
+      "evidence": "Role enforced before job mutation"
+    }
+  ]
+}

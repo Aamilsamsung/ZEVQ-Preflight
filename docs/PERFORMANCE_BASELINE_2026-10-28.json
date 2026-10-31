@@ -1,0 +1,147 @@
+{
+  "hosted": {
+    "phase": "before",
+    "scope": "Three sequential report/save pairs on the same synthetic finding and reused HTTPS client; no load test or guaranteed cold-start equivalence",
+    "rows": [
+      {
+        "operation": "login",
+        "seconds": 8.057
+      },
+      {
+        "operation": "report",
+        "iteration": 0,
+        "seconds": 0.313,
+        "server_timing": null
+      },
+      {
+        "operation": "review_save",
+        "iteration": 0,
+        "seconds": 0.391,
+        "server_timing": null
+      },
+      {
+        "operation": "report",
+        "iteration": 1,
+        "seconds": 0.28,
+        "server_timing": null
+      },
+      {
+        "operation": "review_save",
+        "iteration": 1,
+        "seconds": 0.325,
+        "server_timing": null
+      },
+      {
+        "operation": "report",
+        "iteration": 2,
+        "seconds": 0.269,
+        "server_timing": null
+      },
+      {
+        "operation": "review_save",
+        "iteration": 2,
+        "seconds": 0.29,
+        "server_timing": null
+      }
+    ]
+  },
+  "local_auth_component": {
+    "scope": "10 sequential staging-authentication + membership calls per version on the same disposable SQLite QA database; excludes network, PostgreSQL, scan work and cold starts",
+    "baseline_commit": "9e78cde832e0d9213aae6450c5fb7d80f90ff6f4",
+    "results": {
+      "before": {
+        "samples": [
+          {
+            "queries": 5,
+            "ms": 3.865
+          },
+          {
+            "queries": 5,
+            "ms": 1.481
+          },
+          {
+            "queries": 5,
+            "ms": 0.855
+          },
+          {
+            "queries": 5,
+            "ms": 0.975
+          },
+          {
+            "queries": 5,
+            "ms": 1.268
+          },
+          {
+            "queries": 5,
+            "ms": 0.996
+          },
+          {
+            "queries": 5,
+            "ms": 0.756
+          },
+          {
+            "queries": 5,
+            "ms": 0.717
+          },
+          {
+            "queries": 5,
+            "ms": 0.621
+          },
+          {
+            "queries": 5,
+            "ms": 0.889
+          }
+        ],
+        "median_queries": 5.0,
+        "median_ms": 0.932
+      },
+      "after": {
+        "samples": [
+          {
+            "queries": 2,
+            "ms": 0.815
+          },
+          {
+            "queries": 2,
+            "ms": 0.692
+          },
+          {
+            "queries": 2,
+            "ms": 0.619
+          },
+          {
+            "queries": 2,
+            "ms": 0.657
+          },
+          {
+            "queries": 2,
+            "ms": 0.534
+          },
+          {
+            "queries": 2,
+            "ms": 0.463
+          },
+          {
+            "queries": 2,
+            "ms": 0.476
+          },
+          {
+            "queries": 2,
+            "ms": 0.593
+          },
+          {
+            "queries": 2,
+            "ms": 0.523
+          },
+          {
+            "queries": 2,
+            "ms": 0.435
+          }
+        ],
+        "median_queries": 2.0,
+        "median_ms": 0.564
+      }
+    }
+  },
+  "failed_attempt": "First hosted login measurement timed out before a baseline was recorded; one retry completed. No cold-start equivalence or throughput claim."
+}

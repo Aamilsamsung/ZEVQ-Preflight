@@ -1,0 +1,157 @@
+[
+  {
+    "check": "Refresh retains login",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/app"
+  },
+  {
+    "check": "Review summary renders selected inputs",
+    "status": "FAIL",
+    "severity": "Medium",
+    "evidence": "Review visibly contains [object HTMLDivElement] four times"
+  },
+  {
+    "check": "Live contract scan and evidence expansion",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/app#scan/66762936-5d5e-4f06-830e-6220fb91c697"
+  },
+  {
+    "check": "Browser JSON report download",
+    "status": "PASS",
+    "evidence": "Download completed; file path returned"
+  },
+  {
+    "check": "Navigation Projects",
+    "status": "PASS",
+    "heading": "Repositories",
+    "interaction_ms": 388
+  },
+  {
+    "check": "Navigation Reports",
+    "status": "PASS",
+    "heading": "Scan history",
+    "interaction_ms": 1360
+  },
+  {
+    "check": "Navigation Organizations",
+    "status": "PASS",
+    "heading": "Team members",
+    "interaction_ms": 1376
+  },
+  {
+    "check": "Navigation Audit log",
+    "status": "PASS",
+    "heading": "Audit log",
+    "interaction_ms": 1360
+  },
+  {
+    "check": "Navigation Settings",
+    "status": "PASS",
+    "heading": "Workspace settings",
+    "interaction_ms": 1057
+  },
+  {
+    "check": "Navigation Dashboard",
+    "status": "PASS",
+    "heading": "Deploy with confidence",
+    "interaction_ms": 1401
+  },
+  {
+    "check": "Documentation page",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/docs"
+  },
+  {
+    "check": "Public navigation Product",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/features",
+    "heading": "Product capabilities"
+  },
+  {
+    "check": "Public navigation How it works",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/how-it-works",
+    "heading": "How Preflight works"
+  },
+  {
+    "check": "Public navigation Security",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/security",
+    "heading": "Security & trust"
+  },
+  {
+    "check": "Public navigation Contact",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/contact",
+    "heading": "Contact ZEVQ Labs"
+  },
+  {
+    "check": "Public navigation FAQ",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/faq",
+    "heading": "Frequently asked questions"
+  },
+  {
+    "check": "Public navigation Use cases",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/use-cases",
+    "heading": "Use cases"
+  },
+  {
+    "check": "Public navigation Pricing",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/pricing",
+    "heading": "Pricing"
+  },
+  {
+    "check": "Public navigation Privacy",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/privacy",
+    "heading": "Privacy notice — release candidate"
+  },
+  {
+    "check": "Public navigation Terms",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/terms",
+    "heading": "Evaluation terms — draft"
+  },
+  {
+    "check": "Public navigation Cookies",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/privacy#cookies",
+    "heading": "Privacy notice — release candidate"
+  },
+  {
+    "check": "Landing page",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/"
+  },
+  {
+    "check": "Signed-in landing CTA returns to workspace",
+    "status": "FAIL",
+    "severity": "Low",
+    "evidence": "Authenticated session exists but CTA opens login form"
+  },
+  {
+    "check": "Destructive confirmation cancellation",
+    "status": "PASS",
+    "evidence": "Opened Delete account modal and cancelled; no deletion submitted"
+  },
+  {
+    "check": "Organization switching",
+    "status": "PASS",
+    "evidence": "Dropdown switched to synthetic QA organization and settings updated"
+  },
+  {
+    "check": "Dialog accessible name",
+    "status": "FAIL",
+    "severity": "Medium",
+    "evidence": "Native confirmation dialog has no aria-label or aria-labelledby; heading is not associated"
+  },
+  {
+    "check": "Browser ZIP scan",
+    "status": "PASS",
+    "url": "https://zevq-preflight-staging.onrender.com/app#scan/f0a053b1-a4cc-4982-913f-50c7457abb04",
+    "evidence": "Harmless safe.py uploaded; completed static report rendered"
+  }
+]
