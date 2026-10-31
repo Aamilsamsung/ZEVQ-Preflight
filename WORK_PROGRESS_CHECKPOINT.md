@@ -1,22 +1,12 @@
-# ZEVQ PREFLIGHT — CHECKPOINT 4
+# ZEVQ PREFLIGHT — CHECKPOINT 5
 
-Time:2026-10-31T18:31:02Z / 1November2026 00:01:02IST.
-Milestone:55actual hostedAPIacceptance checks passed following safe staging deployment and migration0006.
-Changes:production QA/security/deployment/release reports and current blocker inventory reconciled;sanitized hostedAPIevidence committed. Application code unchanged since tested candidate.
-Git deployed:e612f03dda7cd10d139ec4b95472ce978d5bf14c. Development branch implementation/public-onboarding-20261029;this checkpoint'sSHAis its containing Git commit. Never overwrite newer remote work.
-Tests:55hostedAPIchecks passed/0failed:23isolation/roles,13reviews,9ZIP/session/security/exports,8comparisons,2publicGitHub/idempotency. Earlier fresh local224passed/5skipped,8monitor checks,pip check clean. Candidate CI passed twice. Hosted browser/email/private authorization not claimed.
-Deployment:dep-dbj34r7b9u1s73cu1qqg LIVE on existing Free service srv-dbgr4v0n74is73d798e0,release branch secure-preflight,commit e612f03. AutoDeployoff. Healthok/database reachable;live schema0006;public registration and delivery disabled.
-Data:baseline4users/28scans/4orgs/3reviews/9sessions preserved at deployment. Subsequently created3isolated syntheticQAusers/2QAorgs and bounded scans/reviews for hosted acceptance;credentials remain ignored0600local fixture,never committed. Existing account passwords were not reset. No live customer data deleted.
-Concurrency:user reports old Work Stop fails. Multiple checks showed no unexplained branch changes,CI,deployment or Neon activity. Only this session's deployment and syntheticQAknown actions observed. This cannot prove old session termination. Recheck heads/service/deploy before every mutation;expected-head guard;no force pushes;stop/report unexpected changes. No second deploy queued.
-Blockers:
-- Render HTTP healthCheckPath is blank. Set /health on the existing service and read it back; endpoint itself returns200/database reachable. Connector has no service-settings update capability.
-- Actual email delivery is disabled and unverified. Configure approved TLS SMTP sender through host secrets; prove received verification/resend/reset messages,expiry,password setup and revocation. Never paste secrets in chat.
-- Private GitHub requires actual owner-authorized repository-restricted credential acceptance;fixture tests are not real authorization. GitHub App/OAuth remain unavailable.
-- Actual external incident/recovery notification receipt is unverified. The monitoring schedule exists only on a non-default branch; main remains the original MVP. Do not claim scheduling or blindly replace main.
-- Hosted browser/manual keyboard/responsive acceptance is blocked by environment:CUA cannot start due read-only sessions mount;local Chromium fails with socket Operation not permitted. Existing CI local-browser evidence is valid but is not current hosted browser acceptance.
-- Isolated hosted restored-application journey is unverified because this runner cannot resolve Neon endpoints. Exact generated PostgreSQL migration DDL and record/constraint checks passed on the hosted snapshot;CI synthetic restore and rollback-app tests passed.
-- Owner approval of current Terms/Privacy draft and public support/retention readiness remains required. No new legal approval is inferred.
-
-Next:external owner/operator/browser access is required for mandatory remaining gates. Current environment cannot change Render health settings or perform hosted browser acceptance. Preserve deployed staging with launch flags disabled. Do not repeat passing tests or loop browser failures. All independently executed work and evidence are preserved.
-Estimated remaining effort:hours of hosted/integration acceptance after prerequisites;public deadline at risk,not an unattended execution promise.
-Deadline:2November2026 approximately23:50IST,48hours from user's execution attachment. Final current verdict:NOT READY — BLOCKERS REMAIN.
+Time:2026-10-31T18:45:10Z / 1November2026 00:15:10IST.
+Milestone: real hosted anonymous Chromium/mobile/keyboard/automated accessibility acceptance passed19checks,0failed,0blocked.
+Changes: added scripts/hosted_gate_qa.cjs and .github/workflows/hosted-gate-qa.yml;CI filters isolate anonymous acceptance tooling/documentation. Actual application code and database unchanged since deployed candidate. Application Tests workflow also ran because its own configuration changed;do not manually repeat successful suites.
+Git tooling:7b44f4b74b4ed58cc91e1d653ad684899eb74a75. This checkpoint'sSHAis the containing commit. Active development public-onboarding;release branch remains e612f03.
+Tests:run41230780595/job124624366608 SUCCESS,summary19passed/0failed/0blocked. Five actual hosted pages(login,register,forgot/reset password,verify-email) at390/768/1440px:HTTP200,no horizontal overflow,keyboard focus and zero axe violations. Registration gate disabled;anonymous /app redirects tologin;reduced motion and runtime JS checked. Artifact13053716933. These are anonymous pages,NOT authenticated workspace journeys or real mailbox receipt. Earlier55hostedAPIchecks and224local/5skip remain valid;do not repeat without changes.
+Deployment:dep-dbj34r7b9u1s73cu1qqg LIVE,e612f03,existing Free Render service;live schema0006;public registration/email disabled. No redeploy needed for test-only tooling.
+Concurrency:remote development head matched expected6947573 before tooling commit and7b44f4b before checkpoint;no conflicting deployment observed. Expected-head guard used for tooling push. Old Work termination still cannot be proven;recheck before each mutation.
+Remaining blockers:Render provider HTTPhealth path blank;approved SMTP secrets/sender and received signup/reset mail;real scoped private GitHub authorization;actual external incident/recovery receipt and default-branch schedule placement;authenticated hosted browser journeys;hosted restored-app journey;legal approval. Local CUA/browser restrictions remain but CI provides a supported hosted-browser execution path.
+Next:run an explicitly labeled synthetic notification drill using actual GitHub notification transport,then verify receipt in the connected owner inbox. Do not interrupt staging or create a false production outage. Continue preparing external prerequisites while receipt is pending.
+Estimated effort:hours after owner configuration/access;public readiness AT RISK. Deadline2November2026 about23:50IST. No unattended execution promise.
