@@ -1,26 +1,12 @@
-# ZEVQ PREFLIGHT — CHECKPOINT 7
+# ZEVQ PREFLIGHT — CHECKPOINT 8
 
-Time:2026-10-31T18:56:27Z / 1November2026 00:26:27IST.
-Milestone:all currently independent acceptance tooling and owner prerequisites prepared;7targeted recovery safety tests pass;real hosted anonymousbrowser and notificationtransport evidence preserved.
-Changes:strict isolated hosted-recovery application runner/workflow,endpoint/fingerprint tests,fresh-run request trigger,exact OWNER_SETUP_ACTIONS.md,LEGAL_DRAFT_FOR_OWNER_REVIEW.md and reconciled final reports. Existing application code remains unchanged.
-Git:recovery runner1b084e4c9a7c06596b1cc5eb274072e521c4a203;notification fixb9480e3;this checkpointSHAis containingcommit;active public-onboarding. Deployedapp e612f03.
-Tests:
-- Actual hosted API:55passed/0failed (Checkpoint4;no repetition).
-- Actual hosted anonymous Chromium:19passed/0failed/0blocked at390/768/1440px,5pages,zero axe violations;keyboard focus,overflow,registration gate,redirect,reducedmotion,JS runtime. Run41230780595/job124624366608/artifact13053716933;tooling7b44f4b.
-- Notification safety:4deterministic checks passed. Corrected actual GitHub transport run41231200409/job124625606531 succeeded:syntheticissue6,one recoverycomment,closed after real healthyprobe. Inboxreceipt NOT VERIFIED. First run41231059090 failed due index lag;issue5 closed as incomplete. Fixb9480e3 reads exact returned issueID;one diagnosed correction,no blind retry.
-- Recovery runner safety:7new local tests passed,0failed;explicit snapshot endpoint only,verifiedTLS,original-row fingerprints unchanged by synthetic additions and detection of original-row edits. Actual hosted application test BLOCKED by missing secret;not counted as pass. Initial fingerprint fixture lacked Alembic table;fixed only disposable fixture and reran targeted7tests successfully.
-- Earlier local224passed/5skipped,pipcheck clean,8monitor checks;schema0006andbaseline customer data preserved. ExistingCI on7b44f4b and b9480e3 passed;newer1b084e4CI run41231594434 completedSUCCESS:230SQLitepassed/5skipped,126PostgreSQLpassed,syntheticrestore/rollbackpassed,andalllocalbrowserworkflowstepspassed. Do not restart passing suites.
-
-Deployment:dep-dbj34r7b9u1s73cu1qqg LIVE;e612f03;Free;schema0006;autoDeployoff;no redeployment needed. Render HTTPhealth path stillblank. Public access/registration/email remain gated.
-Concurrency:all observed branch/deploy changes accounted for;expected1b084e4verified before this batch. No forcepush,overwritingnewerhead or customerdatadeletion. Old Work termination stillnotprovable. Continue checkingheads/deploys before mutations. Use expected-head lease and stoponconflict.
-Remaining:
-1. Render healthCheckPath remains blank on provider re-read. Owner must save /health in existing service settings;connector cannot edit this setting.
-2. SMTP sender/secrets and actual verification/resend/reset inbox journeys remain unavailable. Keep public registration/access disabled.
-3. Real private GitHub authorization/scans/disconnect/provider revocation require a repository-restricted credential entered through the SaaS owner form;ChatGPT connector access is not a customer credential.
-4. Incident/recovery GitHub transport passed,but no matching email was observed in the connected inbox. Owner notification preferences/subscription and a new deliberate receipt drill required. Recurring schedule remains off default branch/opt-in;worker monitor token unavailable.
-5. Authenticated hosted workspace/mobile/keyboard/accessibility journeys still need secure QA credentials or interactive browser access. Anonymous hosted browser checks are completed and must not be repeated without changes.
-6. Isolated recovery application runner is prepared but cannot connect until Actions secret PREFLIGHT_RECOVERY_DATABASE_URL is configured for br-orange-boat-b3dljf23. Its first run stopped at missing-secret prerequisite before any DB connection. Existing generated-DDL snapshot and syntheticCI recovery checks remain valid,not a completed restored-app journey.
-7. Owner legal approval of exact draft and public support/retention readiness remain required. Read LEGAL_DRAFT_FOR_OWNER_REVIEW.md and OWNER_SETUP_ACTIONS.md.
-
-Next:owner completes secure setup actions (no secret values in chat). Then first recheckconcurrency/providerdeployment. For recovery,createfreshRECOVERY_RUN_REQUEST.md aftersecretisready;do not rerunoldjobSHAafternewercommits,because its strictconcurrencyguard refuses. Run only newly unblocked acceptance. For notifications,onefreshdeliberatedrill afterdeliverysettingschanged;no blindretry. No independent liveconfiguration capability remains available in this session.
-Estimated remaining:hours of integration/hosted acceptance after prerequisites;deadline2November2026 about23:50IST AT RISK. CurrentverdictNOT READY — BLOCKERS REMAIN. No unattendedexecutionpromise.
+Time:2026-11-01T03:42:33Z / 1November2026 09:12:33IST.
+Milestone:fresh locked-dependency advisory audit completed;secure authenticated hosted-browser workflow prepared.
+Changes:browser_fixture.cjs/test_browser_fixture.cjs,authenticated CI workflow,guarded QAorganization selection,source-head checks before login/logout,screenshot suppression and sanitized CIresults;AUTHENTICATED_BROWSER_ACCEPTANCE.md;fresh dependency evidence.
+Git:containing checkpoint commit;parent753f713. Deployedapp remains e612f03 and application code unchanged.
+Tests:8new fixture validation/redaction checks passed,0failed;JSsyntax/diffchecks passed. pip-audit2.10.1 audited35exact pinned requirements viaPyPI:0known vulnerabilities,0skipped. RequirementsSHA256:6e99eeeb74521973f4db42f7c4fa81f29dedde23040e01f5e9348de728578df0. No dependency versions changed. This is current advisory coverage,not a proof of vulnerability-free software. Audit used --no-deps --disable-pip --strict on exact pinned manifest;not a fresh transitive dependency resolution.
+CI/hosted:authenticated suite awaits PREFLIGHT_HOSTED_BROWSER_FIXTURE secret;NOT EXECUTED. Prior230SQLite/126PostgreSQL/5skip,55hostedAPI,19anonymousbrowser and7recoveryguard results retained;not repeated. Existing CI browser/restore evidence retained.
+Deployment:dep-dbj34r7b9u1s73cu1qqg LIVE,e612f03,Free;schema0006;no redeploy needed for tooling. Public registration remains disabled.
+Concurrency:remotehead753f713,latestdeployment and schema0006 re-read immediately before batch;no unexplained activity. Guarded branch update,no force.
+Remaining:Render /health provider setting,SMTP/actual mailbox journeys,private repository authorization,notification inbox receipt/schedule/authenticatedbrowser/recoverysecret,legalapproval. New secure QA secret procedure documented;never paste secrets in chat.
+Next:complete the newly requested recovery/monitoring/operations/release/owner documents and compare legal draft with actual product behavior;continue without repeating successful suites. CurrentverdictNOT READY — BLOCKERS REMAIN;deadline2November2026 23:50IST unchanged.
