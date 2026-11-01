@@ -1,0 +1,49 @@
+{
+  "timestamp": {
+    "utc": "2026-11-01T03:55:12+00:00",
+    "ist": "2026-11-01T09:25:12+05:30"
+  },
+  "full_ci": {
+    "run_id": 41270626594,
+    "job_id": 124742481396,
+    "conclusion": "success",
+    "sqlite_passed": 233,
+    "postgres_passed": 126,
+    "skipped": 5,
+    "summary": [
+      "2026-11-01T03:50:00.7084025Z 233 passed, 5 skipped, 4 warnings in 59.17s",
+      "2026-11-01T03:51:03.3056936Z 126 passed, 4 warnings in 58.67s",
+      "2026-11-01T03:51:07.2765345Z Restore checks passed: row counts, login, report evidence, review history and two-user isolation",
+      "2026-11-01T03:51:08.4595385Z Rollback compatibility passed: previous source, existing session, report/reviews/history, tenant isolation and additive schema preservation",
+      "2026-11-01T03:51:10.3512093Z External monitor: 8 deterministic checks passed; real notification delivery NOT TESTED.",
+      "2026-11-01T03:51:58.2504203Z   \"passed\": 37,",
+      "2026-11-01T03:52:08.7771846Z   \"passed\": 19,",
+      "2026-11-01T03:52:08.7772561Z   \"failed\": []",
+      "2026-11-01T03:52:11.4256379Z {\"passed\":7,\"failed\":0}",
+      "2026-11-01T03:52:14.7438989Z {\"passed\":4,\"failed\":0}",
+      "2026-11-01T03:52:17.1995795Z {\"passed\":4,\"failed\":0}"
+    ]
+  },
+  "rollback_startup": {
+    "run_id": 41270626650,
+    "job_id": 124742481483,
+    "conclusion": "success",
+    "lines": [
+      "2026-11-01T03:49:05.2433382Z 2 passed in 3.37s",
+      "2026-11-01T03:49:09.3171009Z 2 passed in 3.71s"
+    ]
+  },
+  "dependency_audit": {
+    "packages": 35,
+    "known_vulnerabilities": 0,
+    "skipped": 0,
+    "source": "dependency-audit.json",
+    "scope": "exact pinned manifest via PyPI, no new dependency resolution"
+  },
+  "authenticated_browser": {
+    "fixture_tests_passed": 8,
+    "hosted_execution": "PENDING SECRET"
+  },
+  "latest_configuration_get": "15s timeout; no outage inference",
+  "public_release": "NOT READY"
+}

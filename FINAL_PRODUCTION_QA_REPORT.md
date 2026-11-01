@@ -1,22 +1,35 @@
-# NOT READY — BLOCKERS REMAIN
+# Production QA — NOT READY — BLOCKERS REMAIN
 
-Evidence reconciled 2026-10-31T18:56:27Z (1November2026 IST).
-Existing staging https://zevq-preflight-staging.onrender.com;Render dep-dbj34r7b9u1s73cu1qqg LIVE at e612f03dda7cd10d139ec4b95472ce978d5bf14c;release branch implementation/secure-preflight,development implementation/public-onboarding-20261029;Neon0006;Free infrastructure;autoDeployoff. Application code unchanged since accepted candidate. Documentation SHA is this file's containing commit.
+- Live URL: https://zevq-preflight-staging.onrender.com
+- Deployed application: `e612f03dda7cd10d139ec4b95472ce978d5bf14c`
+- Render deployment: `dep-dbj34r7b9u1s73cu1qqg` — live
+- Render service: `srv-dbgr4v0n74is73d798e0`, Free, automatic deployment off
+- Configured release branch: `implementation/secure-preflight`
+- Active development branch: `implementation/public-onboarding-20261029`
+- Neon project: `dawn-bonus-77001287`; live migration: `0006`
+- Report commit: the Git commit containing this file.
 
-## Verified
-- Actual hosted API:55passed/0failed (Checkpoint4;no repetition).
-- Actual hosted anonymous Chromium:19passed/0failed/0blocked at390/768/1440px,5pages,zero axe violations;keyboard focus,overflow,registration gate,redirect,reducedmotion,JS runtime. Run41230780595/job124624366608/artifact13053716933;tooling7b44f4b.
-- Notification safety:4deterministic checks passed. Corrected actual GitHub transport run41231200409/job124625606531 succeeded:syntheticissue6,one recoverycomment,closed after real healthyprobe. Inboxreceipt NOT VERIFIED. First run41231059090 failed due index lag;issue5 closed as incomplete. Fixb9480e3 reads exact returned issueID;one diagnosed correction,no blind retry.
-- Recovery runner safety:7new local tests passed,0failed;explicit snapshot endpoint only,verifiedTLS,original-row fingerprints unchanged by synthetic additions and detection of original-row edits. Actual hosted application test BLOCKED by missing secret;not counted as pass. Initial fingerprint fixture lacked Alembic table;fixed only disposable fixture and reran targeted7tests successfully.
-- Earlier local224passed/5skipped,pipcheck clean,8monitor checks;schema0006andbaseline customer data preserved. ExistingCI on7b44f4b and b9480e3 passed;newer1b084e4CI run41231594434 completedSUCCESS:230SQLitepassed/5skipped,126PostgreSQLpassed,syntheticrestore/rollbackpassed,andalllocalbrowserworkflowstepspassed. Do not restart passing suites.
+| Area | Executed evidence | Limit |
+|---|---|---|
+| Core hosted APIs | 55 passed | Provisioned synthetic identities; not public email onboarding |
+| Anonymous hosted browser | 19 passed, 0 failed/blocked; run 41230780595 | Five anonymous pages at 390/768/1440px; not authenticated workspace |
+| Current full CI | 233 SQLite passed, 126 PostgreSQL passed, 5 skipped; run 41270626594 | Skips are not passes |
+| Dependency advisory review | pip-audit 2.10.1; 35 exact pins; 0 known vulnerabilities, 0 skipped | PyPI advisories and pinned manifest; not proof of absence of vulnerabilities or a new transitive resolution |
+| QA fixture safety | 8 local validation/redaction checks passed | Authenticated hosted runner still awaits a secret |
+| Recovery runner safety | 7 local tests passed | Actual isolated hosted application run awaits its secret |
+| Notification drill | 4 safety checks; actual issue 6, recovery comment and closure; run 41231200409 | Inbox receipt and recurring scheduling unverified |
+| Rollback startup | 2 local tests; dedicated run 41270626650: 2 SQLite and 2 PostgreSQL passed | Prepared source bundle; not an actual hosted rollback |
 
-## Mandatory remaining acceptance
-1. Render healthCheckPath remains blank on provider re-read. Owner must save /health in existing service settings;connector cannot edit this setting.
-2. SMTP sender/secrets and actual verification/resend/reset inbox journeys remain unavailable. Keep public registration/access disabled.
-3. Real private GitHub authorization/scans/disconnect/provider revocation require a repository-restricted credential entered through the SaaS owner form;ChatGPT connector access is not a customer credential.
-4. Incident/recovery GitHub transport passed,but no matching email was observed in the connected inbox. Owner notification preferences/subscription and a new deliberate receipt drill required. Recurring schedule remains off default branch/opt-in;worker monitor token unavailable.
-5. Authenticated hosted workspace/mobile/keyboard/accessibility journeys still need secure QA credentials or interactive browser access. Anonymous hosted browser checks are completed and must not be repeated without changes.
-6. Isolated recovery application runner is prepared but cannot connect until Actions secret PREFLIGHT_RECOVERY_DATABASE_URL is configured for br-orange-boat-b3dljf23. Its first run stopped at missing-secret prerequisite before any DB connection. Existing generated-DDL snapshot and syntheticCI recovery checks remain valid,not a completed restored-app journey.
-7. Owner legal approval of exact draft and public support/retention readiness remain required. Read LEGAL_DRAFT_FOR_OWNER_REVIEW.md and OWNER_SETUP_ACTIONS.md.
+| Remaining gate | Required action/evidence |
+|---|---|
+| Render HTTP health check | Save `/health` in existing service settings; independently read back provider configuration |
+| Real email | Configure approved TLS SMTP sender in Render; verify received verification/resend/reset messages and complete protected user journeys |
+| Private GitHub | Owner authorizes one restricted private fixture through Preflight; verify revisions, findings, isolation, disconnect and provider revocation |
+| Notification receipt/scheduling | Configure GitHub subscription/email preferences; one fresh receipt drill; review default-branch workflow placement and opt-in/token configuration |
+| Authenticated hosted browser | Configure `PREFLIGHT_HOSTED_BROWSER_FIXTURE` as an Actions secret; trigger a fresh guarded browser run |
+| Isolated hosted recovery | Configure `PREFLIGHT_RECOVERY_DATABASE_URL` for the named snapshot as an Actions secret; trigger a fresh guarded run |
+| Legal/support | Explicit owner review of draft, retention/support decisions and factual amendments |
+| Public launch | All technical gates pass, followed by a separate explicit owner launch authorization |
 
-Anonymous browser and provisioned-account API checks do not prove real public email onboarding,private authorization,authenticated browser rendering or inbox delivery. No public launch claimed.
+
+The rollback startup gap was reproduced and a prepared source-bundle remedy passed dedicated SQLite/PostgreSQL CI. An old Render artifact is not a proven rollback path. Authenticated browser and actual hosted restored-application runners are prepared but unexecuted pending secure prerequisites. No visual/UI completion or public onboarding claim is inferred from unit tests, anonymous pages or provisioned API identities.
