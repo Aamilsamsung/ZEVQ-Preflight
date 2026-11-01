@@ -1,0 +1,44 @@
+name: Previous application startup on additive schema
+on:
+  push:
+    branches: [implementation/public-onboarding-20261029]
+    paths:
+      - scripts/prepare_rollback_bundle.py
+      - tests/test_rollback_bundle.py
+      - .github/workflows/rollback-startup-qa.yml
+permissions:
+  contents: read
+jobs:
+  rollback-startup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: preflight
+          POSTGRES_PASSWORD: ci-only-rollback-fixture-password
+          POSTGRES_DB: preflight_rollback
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install locked dependencies
+        run: pip install -r requirements.txt
+      - name: SQLite rollback startup and preserved data
+        run: python -m pytest tests/test_rollback_bundle.py -q
+      - name: Disposable PostgreSQL rollback startup and preserved data
+        env:
+          ROLLBACK_TEST_DATABASE_URL: postgresql+psycopg://preflight:ci-only-rollback-fixture-password@localhost:5432/preflight_rollback
+        run: python -m pytest tests/test_rollback_bundle.py -q
